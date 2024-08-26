@@ -33,23 +33,8 @@ function waypoint826_place_files() {
 }
 
 function waypoint826_define_paths() {
-	//Global variable
-    //$plugin_template_path = plugins_url ('templates/singlar-tableofcontents.php',__FILE__);
-    define('table_of_contents_dir', plugin_dir_path(__FILE__));
-}
 
-function waypoint826_register() {
-    register_sidebar(
-        array(
-            'name'          => __( 'Table of Contents Sidebar', 'textdomain' ),
-            'id'            => 'table-of-contents-sidebar',
-            'description'   => __( 'A table of contents sidebar for Wordpress themes.', 'textdomain' ),
-            'before_widget' => '<div id="%1$s" class="widget %2$s">',
-            'after_widget'  => '</div>',
-            'before_title'  => '<h2 class="widget-title">',
-            'after_title'   => '</h2>',
-        )
-    );
+    //define('table_of_contents_dir', plugin_dir_path(__FILE__));
 }
 
 
@@ -58,10 +43,10 @@ function waypoint826_register() {
 function waypoint826_activate () {
 	//Trigger function to copy files
 	//waypoint826_place_files();
-	waypoint826_define_paths();
+	//waypoint826_define_paths();
 }
 
-register_activation_hook(__FILE__, 'pluginprefix_activate' );
+register_activation_hook(__FILE__, 'waypoint826_activate' );
 
 //add_action( 'widgets_init', 'waypoint826_register' );
 
@@ -83,11 +68,11 @@ function waypoint826_deactivate() {
 
 	// Check if the template already exists in the theme directory
 	// Will probably need a for loop eventually
-    if (file_exists($will_delete)) {
+    //if (file_exists($will_delete)) {
 
         // Copy the file from the plugin folder to the theme folder
         //unlink($will_delete);
-    }
+    //}
 
 }
 
@@ -115,17 +100,16 @@ register_deactivation_hook(__FILE__,  'waypoint826_deactivate' );
     //$destination_sidebar = get_stylesheet_directory() . '/sidebar-tableofcontents.php';
    // copy($source_sidebar, $destination_sidebar);
 
-}
+
 
 
 // Run plugin
 
-function waypoint826_run () {
 
-if (is_home()) {
 
-    echo "works";
-
+function waypoint826_run() {
+    // Your custom code here
+    if (is_page()) {
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -137,7 +121,8 @@ if (is_home()) {
     }
 }
 
-add_action( 'init', 'waypoint826_run' );
+add_action('wp', 'waypoint826_run');
+
 
 
 
