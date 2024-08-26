@@ -115,6 +115,18 @@ function waypoint826_run() {
     document.addEventListener('DOMContentLoaded', function() {
         // Your JavaScript code here
         console.log('This is the home page');
+
+        // Create the main container to hold the waypoint table of contents
+        let mainContainer = document.createElement('div');
+        mainContainer.className = 'waypoint826-main';
+        console.log(mainContainer);
+
+        // Append the main waypoint container to a DIV element on the page
+        var parentDiv = document.querySelector('.main-wrapper');
+        parentDiv.appendChild(mainContainer);
+        console.log(parentDiv);
+
+
     });
     </script>
     <?php
