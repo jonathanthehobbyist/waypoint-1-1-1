@@ -137,12 +137,26 @@ function waypoint826_run() {
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
         mainContainer.className = 'waypoint826-main';
-        console.log(mainContainer);
+
+        //console.log(mainContainer); can delete eventually
 
         // Append the main waypoint container to a DIV element on the page
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
-        console.log(parentDiv);
+        
+        //console.log(parentDiv); can delete eventually
+
+        // Create the list of h2, h3, h4
+        // Text is inside 2 span elements nexted inside the h4s, I'll have to investigate that
+        // Init elements to hold list of Hs
+        var toc_list = document.getElementsByTagName('h2');
+        const list = document.createElement('ol');
+
+        var headings = document.querySelectorAll("h2, h3, h4");
+
+        headings.forEach(function(heading) {
+            console.log(heading); // Logs each <h2>, <h3>, and <h4> element
+        });
 
 
     });
