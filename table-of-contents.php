@@ -144,12 +144,6 @@ function waypoint826_run() {
         parentDiv.appendChild(mainContainer);
         console.log(parentDiv);
 
-        // Step 3: Add styles to the new div
-        mainContainer.style.backgroundColor = "#ff0000"; // Set background color
-        mainContainer.style.width = "100px"; // Set border
-        mainContainer.style.height = "100px"; // Set padding
-  
-
 
     });
     </script>
