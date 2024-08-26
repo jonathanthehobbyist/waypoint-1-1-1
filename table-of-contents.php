@@ -1,12 +1,9 @@
 <?php
 /**
- * Plugin Name: Table of contents
- * Description: Adds a table of contents to pages and posts that use a newly installed template file called Table of Contents Template
+ * Plugin Name: Waypoint 826 - Table of Contents
+ * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
  */
-
-// Add 3 files 1) ADDED template-tableofcontents.php in the active theme directory which calls 2) ADDED singular-tableofcontents.php in the active theme directory which needs 3) sidebar-tableofcontents.php in the active theme directory
-
 
 // Activate plugin
 /*
@@ -60,13 +57,15 @@ function waypoint826_register() {
 
 function waypoint826_activate () {
 	//Trigger function to copy files
-	waypoint826_place_files();
+	//waypoint826_place_files();
 	waypoint826_define_paths();
 }
 
 register_activation_hook(__FILE__, 'pluginprefix_activate' );
 
-add_action( 'widgets_init', 'waypoint826_register' );
+//add_action( 'widgets_init', 'waypoint826_register' );
+
+
 
 // Deactivate plugin
 /*
@@ -79,7 +78,7 @@ function waypoint826_deactivate() {
 	// Remove files previously added - be damn careful
 
 	// Define path of file(s) to be removed
-	$will_delete = get_stylesheet_directory() . '/templates/template-tableofcontents.php';
+	//$will_delete = get_stylesheet_directory() . '/templates/template-tableofcontents.php';
 
 
 	// Check if the template already exists in the theme directory
@@ -87,7 +86,7 @@ function waypoint826_deactivate() {
     if (file_exists($will_delete)) {
 
         // Copy the file from the plugin folder to the theme folder
-        unlink($will_delete);
+        //unlink($will_delete);
     }
 
 }
@@ -117,6 +116,28 @@ register_deactivation_hook(__FILE__,  'waypoint826_deactivate' );
    // copy($source_sidebar, $destination_sidebar);
 
 }
+
+
+// Run plugin
+
+function waypoint826_run () {
+
+if (is_home()) {
+
+    echo "works";
+
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Your JavaScript code here
+        console.log('This is the home page');
+    });
+    </script>
+    <?php
+    }
+}
+
+add_action( 'init', 'waypoint826_run' );
 
 
 
