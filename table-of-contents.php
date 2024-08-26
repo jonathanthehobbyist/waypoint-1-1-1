@@ -14,6 +14,22 @@
 
 // Activation functions
 
+function waypoint826_enqueue_styles() {
+    // Register the style
+    wp_enqueue_style(
+        'waypoint-style', // Handle for the stylesheet
+        plugin_dir_url(__FILE__) . 'css/waypoint-style.css', // Path to the stylesheet
+        array(), // Dependencies (if any)
+        '1.0.0', // Version number (optional)
+        'all' // Media type (optional, e.g., 'all', 'screen', 'print')
+    );
+}
+
+
+
+
+
+
 function waypoint826_place_files() {
 
 	//function blah() copies files from the plugin directory into Wordpress core
@@ -47,6 +63,8 @@ function waypoint826_activate () {
 }
 
 register_activation_hook(__FILE__, 'waypoint826_activate' );
+
+add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 //add_action( 'widgets_init', 'waypoint826_register' );
 
@@ -125,6 +143,12 @@ function waypoint826_run() {
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
         console.log(parentDiv);
+
+        // Step 3: Add styles to the new div
+        mainContainer.style.backgroundColor = "#ff0000"; // Set background color
+        mainContainer.style.width = "100px"; // Set border
+        mainContainer.style.height = "100px"; // Set padding
+  
 
 
     });
