@@ -5,13 +5,6 @@
  * Author: Jon Simmons
  */
 
-// Activate plugin
-/*
-* from https://developer.wordpress.org/plugins/plugin-basics/activation-deactivation-hooks/
-* On activate, download files to proper directories
-*
-*/
-
 // Activation functions
 
 function waypoint826_enqueue_styles() {
@@ -25,105 +18,19 @@ function waypoint826_enqueue_styles() {
     );
 }
 
+function waypoint826_place_files() {}
 
+function waypoint826_define_paths() {}
 
-
-
-
-function waypoint826_place_files() {
-
-	//function blah() copies files from the plugin directory into Wordpress core
-
-	//define files to be inserted from plugin folder
-	$source_template = plugin_dir_path(__FILE__) . 'templates/template-tableofcontents.php';
-
-	//define destination path
-	$destination_template = get_stylesheet_directory() . '/templates/template-tableofcontents.php';
-
-	// Check if the template already exists in the theme directory
-    if (!file_exists($destination_template)) {
-
-        // Copy the file from the plugin folder to the theme folder
-        copy($source_template, $destination_template);
-    }
-}
-
-function waypoint826_define_paths() {
-
-    //define('table_of_contents_dir', plugin_dir_path(__FILE__));
-}
-
-
-// Activation calls
-
-function waypoint826_activate () {
-	//Trigger function to copy files
-	//waypoint826_place_files();
-	//waypoint826_define_paths();
-}
+function waypoint826_activate () {} // Activation calls
 
 register_activation_hook(__FILE__, 'waypoint826_activate' );
 
 add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
-//add_action( 'widgets_init', 'waypoint826_register' );
-
-
-
-// Deactivate plugin
-/*
-* On deactivate, delete files from directories - clean way to handle this
-*
-*
-*/
-
-function waypoint826_deactivate() {
-	// Remove files previously added - be damn careful
-
-	// Define path of file(s) to be removed
-	//$will_delete = get_stylesheet_directory() . '/templates/template-tableofcontents.php';
-
-
-	// Check if the template already exists in the theme directory
-	// Will probably need a for loop eventually
-    //if (file_exists($will_delete)) {
-
-        // Copy the file from the plugin folder to the theme folder
-        //unlink($will_delete);
-    //}
-
-}
-
-// Deactivation calls
+function waypoint826_deactivate() {}  // Deactivate plugin
 
 register_deactivation_hook(__FILE__,  'waypoint826_deactivate' );
-
-
-
-
-
-    //Global variable
-    //$plugin_template_path = plugins_url ('templates/singlar-tableofcontents.php',__FILE__);
-    //define('table_of_contents_dir', plugin_dir_path(__FILE__));
-
-        //DELETE by 9.01.24
-
-    //adding other files, will need the conditional to check if they exist
-   // $source_singular = plugin_dir_path(__FILE__) . 'templates/singular-tableofcontents.php';
-   // $destination_singular = get_stylesheet_directory() . '/singular-tableofcontents.php';
-    //copy($source_singular, $destination_singular);
-
-	//adding other files, will need the conditional to check if they exist
-    //$source_sidebar = plugin_dir_path(__FILE__) . '/sidebar-tableofcontents.php';
-    //$destination_sidebar = get_stylesheet_directory() . '/sidebar-tableofcontents.php';
-   // copy($source_sidebar, $destination_sidebar);
-
-
-
-
-// Run plugin
-
-
 
 function waypoint826_run() {
     // Your custom code here
@@ -144,30 +51,15 @@ function waypoint826_run() {
         parentDiv.appendChild(mainContainer);
         //console.log(parentDiv); can delete eventually
 
-        
-
         // Create the list of h2, h3, h4
-
         // Init elements to hold list of h4s
         var headings = document.querySelectorAll("h4");
-        // Could be more...
+
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
         list.classList.add('list-wrapper');
 
         for (i=0; i<headings.length; i++) {
-
-            /*
-            *  LEARNING
-            *  var variables are not block scoped, are accessible outside of {}
-            *  meaning they are accessible only within a function, but for example are accessible outside of a for loop {}
-            *
-            *  let variables are block scoped (only relevant within the 'block': {} )
-            * 
-            *  const variables are block scoped
-            *
-            */
-
 
             // Tests to see if there's a span element inside the h2, h3, h4
             if(headings[i].getElementsByTagName('span')[0]) {
@@ -175,14 +67,12 @@ function waypoint826_run() {
                 var listOfH2InnerText = headings[i].getElementsByTagName('span')[0];
 
             } else {
-
-             continue;
-
+                continue;
             }
-            // console.log(listOfH2InnerText);
 
             // Duplicates how the h2, h3, h4 is written - 'dirty version'
            var innerSpan = listOfH2InnerText.innerText;
+           console.log(innerSpan);
 
            // Cleans up the string to make it into a usable class name / on-page anchor link
            var str = listOfH2InnerText.innerText;
@@ -197,40 +87,18 @@ function waypoint826_run() {
             listOfH2InnerText.id = str;
             
             // Create a list item and link for each h2, h3, h4
-            
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.href = "#" + str;
             link.innerHTML = innerSpan;
 
-            console.log(innerSpan);
-
+            // append
             listItem.appendChild(link);
             list.appendChild(listItem);
-        }
 
-        // Now we need to take the list generated, put it into an ol (ordered list) and insert it into the DIV
-
-        /*
-        *
-        *  Structure of the DIV to hold ol, li
-        *
-        *  waypoint826-main
-        *  |
-        *  └--ol
-        *    |
-        *    |--li 
-        *    |  |
-        *    |  └-- href, InnerHTML
-        *    |
-        *    └--li etc
-        *
-        */
-
-        // Append ol list to waypoint826-main, append li to ol
+        } //end for loop
 
         // Fetch the newly created parent div where you want to insert the new element
-        //let tocDiv = document.querySelector('.waypoint826-main');
         
         if (mainContainer) {
              // If parent div has first child, insert mainContainer before first child
@@ -288,13 +156,10 @@ function waypoint826_run() {
 
             const marginLeftValue = parseFloat(computedStyle.marginLeft);
             var marginTopValue = parseFloat(computedStyle.marginTop);
-            console.log(marginTopValue);
+            //console.log(marginTopValue);
          
-           
-
             //Resize content
          
-
             // NEED NOTE HERE
             var relativeRect = headings[0].getBoundingClientRect();
 
@@ -395,7 +260,7 @@ function waypoint826_run() {
             //console.log('Page scrolled!');
 
             var y = document.documentElement.scrollTop || document.body.scrollTop;
-            console.log(y);
+            //console.log(y);
 
             if ( (y - 200) >= top) { 
                 box.classList.add('stick');
@@ -412,12 +277,36 @@ function waypoint826_run() {
 
         // chatGPT might have a better solution to the observer
 
+        /* REQUIREMENTS
+        *
+        *  Need 2 arrays, one is a nav array, one is a 'zone' array
+        *  In this schema, the nav = list-wrapper and the zone = 
+        *
+        */
 
+        const navLinks = document.querySelectorAll('.list-wrapper a');
+        console.log(navLinks);
+        console.log(headings);
 
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const zoneId = entry.target.id;
+                const correspondingLink = document.querySelector(`.list-wrapper a[data-zone="${zoneId}"]`);
 
+                if (entry.isIntersecting) {
+                    correspondingLink.classList.add('active');
+                } else {
+                    correspondingLink.classList.remove('active');
+                }
+            });
+        }, {
+            root: null, // Default is the viewport
+            threshold: 0.5 // Trigger when 50% of the zone is visible
+        });
 
-
-
+        document.querySelectorAll('.zone').forEach(zone => {
+            observer.observe(zone);
+        });
 
 
 
@@ -429,51 +318,7 @@ function waypoint826_run() {
         *
         */
 
-        let observer;
-
-        function setupIntersectionObserver() {
-            // block-scoped variable, lists all ol li a
-            const tocLinks = document.querySelectorAll('.list-wrapper li a');
-            console.log(tocLinks);
-
-            // block-scoped variable creates an array of
-           // const listOfLinks = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
-
-            const listOfLinks = [...tocLinks].map(link => document.querySelector(link.getAttribute('href')));
-
-            console.log(listOfLinks);
-
-            // Callback function to handle the intersections
-            const handleIntersect = (entries, observer) => {
-
-                // This?
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                    // Clear previous active list items
-                    const tocListItems = document.querySelectorAll('.list-wrapper li');
-                    tocListItems.forEach(li => li.classList.remove('active'));
-
-                    const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
-                            if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
-                              activeLink.parentElement.classList.add('active');
-                            }
-                    }
-                });
-            };
-
-          // Set up the observer
-          const options = {
-            rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
-            threshold: 0
-          };
-
-          observer = new IntersectionObserver(handleIntersect, options);
-
-          listOfLinks.forEach(listOfLinks => observer.observe(listOfLinks));
-        } // END setupIntersectionObserver
-
-        // Call the function to set it up
-        setupIntersectionObserver();
+    
 
 
 
