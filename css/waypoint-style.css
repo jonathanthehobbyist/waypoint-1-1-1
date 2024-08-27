@@ -11,10 +11,14 @@
 *
 */
 
+html {
+    scroll-behavior: smooth;
+}
+
 .waypoint826-main {
 
 	
-	width: 300px;
+	width: 250px;
 	background-color:none;
 	border-right: 1px solid #ccc;
 	position: absolute;
@@ -33,9 +37,11 @@ ol.list-wrapper {
 	font-family: 'League Spartan';
 }
 
-.waypoint826-main ol li {}
+.waypoint826-main ol li.active::marker {}
 
-.waypoint826-main ol li.active a {
+
+.waypoint826-main ol li.active a, 
+.waypoint826-main ol li.active::marker {
 	font-weight: 600;
 	color: #555555!important;
 }
@@ -53,6 +59,8 @@ ol.list-wrapper {
 
 #waypoint826-primary-container.stick {
 	position: fixed;
+	/* right: calc(100% - 10px); /* Adjusting the left position by 10px */
+	width: 250px;
 	top: 0!important;
 }
 

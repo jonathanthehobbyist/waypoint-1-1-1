@@ -109,6 +109,7 @@ function waypoint826_run() {
             }
         }
 
+        // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
           
             // .main-container .row-container
@@ -132,6 +133,7 @@ function waypoint826_run() {
             // Set the absolute div's position
             //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
             mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
+            console.log(marginLeftValue);
 
         } // end positionMainContainer
 
@@ -196,7 +198,7 @@ function waypoint826_run() {
         //console.log(menuHeight);
 
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y + 100 + 'px');
+        mainContainer.style.top = (distanceFromTop.y + 130 + 'px');
         //console.log(distanceFromTop);
 
 
@@ -210,8 +212,9 @@ function waypoint826_run() {
             var y = document.documentElement.scrollTop || document.body.scrollTop;
             //console.log(y);
 
-            if ( (y - 200) >= top) { 
+            if ( (y - 80) >= top) { 
                 box.classList.add('stick');
+               
             } else { 
                 box.classList.remove('stick');
             }
@@ -247,7 +250,7 @@ function waypoint826_run() {
 
           // Set up the observer
           const options = {
-            rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
+            rootMargin: '0px 0px -50% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
             threshold: 0
           };
 
