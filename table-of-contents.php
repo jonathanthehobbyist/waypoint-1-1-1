@@ -137,13 +137,11 @@ function waypoint826_run() {
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
         mainContainer.className = 'waypoint826-main';
-
         //console.log(mainContainer); can delete eventually
 
         // Append the main waypoint container to a DIV element on the page
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
-        
         //console.log(parentDiv); can delete eventually
 
         // Create the list of h2, h3, h4
@@ -154,9 +152,26 @@ function waypoint826_run() {
 
         var headings = document.querySelectorAll("h2, h3, h4");
 
-        headings.forEach(function(heading) {
-            console.log(heading); // Logs each <h2>, <h3>, and <h4> element
-        });
+        //headings.forEach(function(heading) {
+            //console.log(heading); // Logs each <h2>, <h3>, and <h4> element
+        //});
+
+        for (i=0; i<headings.length; i++) {
+
+            // Tests to see if there's a span element inside the h2, h3, h4
+            if(headings[i].getElementsByTagName('span')[0]) {
+
+                var listOfH2InnerText = headings[i].getElementsByTagName('span')[0];
+
+            } else {
+
+             continue;
+
+            }
+            // console.log(listOfH2InnerText);
+           var innerSpan = listOfH2InnerText.innerText;
+           console.log(innerSpan);
+        }
 
 
     });
