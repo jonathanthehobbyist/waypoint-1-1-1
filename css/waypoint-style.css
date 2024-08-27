@@ -18,7 +18,6 @@
 	background-color:none;
 	border-right: 1px solid #ccc;
 	position: absolute;
-	top: 0;
 	/* right: 80%; */
 	padding: 20px;
 }
@@ -27,8 +26,10 @@
 
 }
 
-#waypoint826-primary-container.sticky {
+#waypoint826-primary-container.stick {
 	position: fixed;
+	top: 0!important;
+	
 }
 
 .limit-width {

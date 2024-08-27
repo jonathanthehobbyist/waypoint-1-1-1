@@ -281,21 +281,22 @@ function waypoint826_run() {
             const computedStyle = window.getComputedStyle(contentElement);
             // Access the left margin
             const marginLeft = computedStyle.marginLeft;
-            const widthOfContent = computedStyle.width;
+            const marginTop = computedStyle.marginTop;
 
             // Computer style returns a string not a number
-            console.log('width:', widthOfContent);
+            //console.log('width:', widthOfContent);
 
             const marginLeftValue = parseFloat(computedStyle.marginLeft);
-            const widthValue = parseFloat(computedStyle.width);
-            //console.log('Left margin px:', marginLeftValue);
+            var marginTopValue = parseFloat(computedStyle.marginTop);
+            console.log(marginTopValue);
+         
+           
 
             //Resize content
-           // contentElement.style.maxWidth = (widthValue * .5) + 'px';
+         
 
             // NEED NOTE HERE
-            let relativeRect = headings[0].getBoundingClientRect();
-            let leftPositionRR = relativeRect.left;
+            var relativeRect = headings[0].getBoundingClientRect();
 
             // Set the absolute div's position
             //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
@@ -303,159 +304,110 @@ function waypoint826_run() {
             // console.log(mainContainer.offsetWidth);
             //console.log(mainContainer.left);
 
-            }
+        } // end positionMainContainer
 
-            // Run the function when the page loads
-            window.addEventListener('load', positionMainContainer);
+        // Run the function when the page loads
+        window.addEventListener('load', positionMainContainer);
 
-            // Run the function whenever the window is resized
-            //window.addEventListener('resize', positionMainContainer); need to set a delay timer
+        // Run the function whenever the window is resized
+        //window.addEventListener('resize', positionMainContainer); need to set a delay timer
 
-            window.addEventListener('resize', () => {
-                setTimeout(() => {
-                    positionMainContainer();
-                    //const rect = headings[0].getBoundingClientRect();
-                    //console.log(rect);
-                }, 0); // Adjust delay as needed
-            });
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                positionMainContainer();
+                //const rect = headings[0].getBoundingClientRect();
+                //console.log(rect);
+            }, 0); // Adjust delay as needed
+        });
 
-            // Find all elements with margin 0 auto and shrink + push to the left by some px
+        // Find all elements with margin 0 auto and shrink + push to the left by some px
 
-            // First, find all elems and add them to an array
+        // First, find all elems and add them to an array
 
-            function findAutoMarginElements() {
-                const allElements = document.querySelectorAll('*');
-                var autoMarginElements = [];
+        function findAutoMarginElements() {
+            const allElements = document.querySelectorAll('*');
+            var autoMarginElements = [];
 
-                    allElements.forEach(element => {
-                        const computedStyle = window.getComputedStyle(element);
-                        const marginLeft = computedStyle.marginLeft;
-                        const marginRight = computedStyle.marginRight;
-                        const marginTop = computedStyle.marginTop;
-                        const marginBottom = computedStyle.marginBottom;
+                allElements.forEach(element => {
+                    const computedStyle = window.getComputedStyle(element);
+                    const marginLeft = computedStyle.marginLeft;
+                    const marginRight = computedStyle.marginRight;
+                    const marginTop = computedStyle.marginTop;
+                    const marginBottom = computedStyle.marginBottom;
 
-                        if (marginLeft === 'auto' && marginRight === 'auto') {
-                            autoMarginElements.push(element);
-                        }
-                    });
-
-                    return autoMarginElements;
-            }
-
-            var elementsWithAutoMargin = findAutoMarginElements();
-            console.log(elementsWithAutoMargin.length);
-
-            /*
-            *   Second, parse the results and add 'position: relative', offset and new width
-            *   
-            *   To add the correct 'right' offset, we'll need to calculate the viewport size, add a new width
-            *
-            *
-            */
-
-            for (i=0; i<elementsWithAutoMargin.length; i++) {
-
-                // Something
-                // elementsWithAutoMargin[i].style.position = 'relative';
-                // elementsWithAutoMargin[i].style.width = '80%';
-                // console.log(elementsWithAutoMargin[i]);
-
-
-            }
-
-
-
-            window.addEventListener('scroll', function() {
-
-                // If scrolled to the very top
-                if (window.scrollY === 0) {
-                    // Find all active menu items and remove the 'active' class
-                    document.querySelectorAll('.list-wrapper li.active').forEach(item => {
-                        item.classList.remove('active');
-                        // tested, works
-                        });
+                    if (marginLeft === 'auto' && marginRight === 'auto') {
+                        autoMarginElements.push(element);
                     }
-            });
+                });
 
-            // adds a top offset and a class of stick if it's at the top
-            //not working
-            function ready() {
-                var box = document.getElementById('waypoint826-primary-container'),
-                top = box.offsetTop;
-                //this top area is working
-                
+                return autoMarginElements;
+        }
 
-                function scroll(event) {
-                    var y = document['documentElement' || 'body'].scrollTop;
-                    
-                    if (y >= top) box.classList.add('stick');
-                    else box.classList.remove('stick');
+        var elementsWithAutoMargin = findAutoMarginElements();
+        //console.log(elementsWithAutoMargin.length);
 
-                }
+        /*
+        *   Second, parse the results and add 'position: relative', offset and new width
+        *   
+        *   To add the correct 'right' offset, we'll need to calculate the viewport size, add a new width
+        *
+        *
+        */
 
-                    window.addEventListener('scroll', scroll);
-            }
-            ready();
-            /*
-            *
-            *  NOT WORKING? 
-            *
-            */
+        for (i=0; i<elementsWithAutoMargin.length; i++) {
 
-            // DOM content load listener
+            // Something
+            // elementsWithAutoMargin[i].style.position = 'relative';
+            // elementsWithAutoMargin[i].style.width = '80%';
+            // console.log(elementsWithAutoMargin[i]);
 
-       
 
-            if (document.readyState == 'complete' || document.readyState == 'loading') {
+        }
 
-                
-                
-            } else {
-                //window.addEventListener('DOMContentLoaded', ready);
-                document.addEventListener("DOMContentLoaded", function() {
-                // Code to run after the DOM is loaded
-                ready();
-                
+        // Removes .active class from li 
+        window.addEventListener('scroll', function() {
+        // If scrolled to the very top
+        if (window.scrollY === 0) {
+            //console.log('at top');
+            // Find all active menu items and remove the 'active' class
+            document.querySelectorAll('.list-wrapper li.active').forEach(item => {
+                item.classList.remove('active');
+
                 });
             }
+        });
 
+        // Waypoint needs to start below any menu and once it hits the top of the page, it needs to stick
+        // Set the absolute div's position
+       //mainContainer.style.top = marginTopValue + 'px';
+        //console.log(marginTopValue);
 
-            let observer;
+        // Offset from Browswer window top
+        const distanceFromTop = headings[0].getBoundingClientRect();
+        //console.log(distanceFromTop.y);
+        mainContainer.style.top = (distanceFromTop.y + 'px');
 
-            function setupIntersectionObserver() {
-              const tocLinks = document.querySelectorAll('.waypoint826-main li a');
-              const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
+        var box = document.getElementById('waypoint826-primary-container'),
+        top = box.offsetTop;
+        //console.log(top);
 
-              // Callback function to handle the intersections
-              const handleIntersect = (entries, observer) => {
-                entries.forEach(entry => {
-                  if (entry.isIntersecting) {
-                    // Clear previous active list items
-                    const tocListItems = document.querySelectorAll('.waypoint826-main li');
-                    tocListItems.forEach(li => li.classList.remove('active'));
-                    // Working 8/27 12:42pm CST
+        window.addEventListener('scroll', function(event) {
+            //console.log('Page scrolled!');
 
-                    const activeLink = document.querySelector(`.waypoint826-main li a[href="#${entry.target.id}"]`);
-                    if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
-                      activeLink.parentElement.classList.add('active');
-                    }
-                  }
-                });
-              };
+            var y = document.documentElement.scrollTop || document.body.scrollTop;
+            console.log(y);
 
-              // Set up the observer
-              const options = {
-                rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
-                threshold: 0
-              };
-
-              observer = new IntersectionObserver(handleIntersect, options);
-
-              sections.forEach(section => observer.observe(section));
+            if ( (y - 200) >= top) { 
+                box.classList.add('stick');
+            } else { 
+                box.classList.remove('stick');
             }
 
-            // Call the function to set it up
-            setupIntersectionObserver();
+        });
+
+        
+
+
 
 
     });
