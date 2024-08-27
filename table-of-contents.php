@@ -405,7 +405,75 @@ function waypoint826_run() {
 
         });
 
-        
+
+
+
+
+
+        // chatGPT might have a better solution to the observer
+
+
+
+
+
+
+
+
+
+
+        /*
+        *  
+        *   
+        *   OBSERVER
+        *
+        *
+        */
+
+        let observer;
+
+        function setupIntersectionObserver() {
+            // block-scoped variable, lists all ol li a
+            const tocLinks = document.querySelectorAll('.list-wrapper li a');
+            console.log(tocLinks);
+
+            // block-scoped variable creates an array of
+           // const listOfLinks = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
+
+            const listOfLinks = [...tocLinks].map(link => document.querySelector(link.getAttribute('href')));
+
+            console.log(listOfLinks);
+
+            // Callback function to handle the intersections
+            const handleIntersect = (entries, observer) => {
+
+                // This?
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                    // Clear previous active list items
+                    const tocListItems = document.querySelectorAll('.list-wrapper li');
+                    tocListItems.forEach(li => li.classList.remove('active'));
+
+                    const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
+                            if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
+                              activeLink.parentElement.classList.add('active');
+                            }
+                    }
+                });
+            };
+
+          // Set up the observer
+          const options = {
+            rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
+            threshold: 0
+          };
+
+          observer = new IntersectionObserver(handleIntersect, options);
+
+          listOfLinks.forEach(listOfLinks => observer.observe(listOfLinks));
+        } // END setupIntersectionObserver
+
+        // Call the function to set it up
+        setupIntersectionObserver();
 
 
 

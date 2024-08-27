@@ -22,6 +22,21 @@
 	padding: 20px;
 }
 
+
+/*   LIST STYLING   */
+
+
+.waypoint826-main ol {}
+
+ol.list-wrapper {}
+
+.waypoint826-main ol li {}
+
+.waypoint826-main ol li a {}
+
+.waypoint826-main ol li a.active {}
+
+
 #waypoint826-primary-container {
 
 }
@@ -29,7 +44,6 @@
 #waypoint826-primary-container.stick {
 	position: fixed;
 	top: 0!important;
-	
 }
 
 .limit-width {
