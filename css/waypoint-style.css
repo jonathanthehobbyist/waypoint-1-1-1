@@ -32,9 +32,13 @@ ol.list-wrapper {}
 
 .waypoint826-main ol li {}
 
+.waypoint826-main ol li.active a {
+	font-weight: bold;
+}
+
 .waypoint826-main ol li a {}
 
-.waypoint826-main ol li a.active {}
+.waypoint826-main ol li.active a {}
 
 
 #waypoint826-primary-container {

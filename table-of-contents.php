@@ -112,38 +112,9 @@ function waypoint826_run() {
             }
         }
 
-        /*
-        *
-        *  I need to find the left bounding box of the element that mainContainer should align to on its right side
-        *  -- That isn't its parent. That's actually the H2 from above
-        */
-
         function positionMainContainer() {
           
-            // Optional check if DOM is loaded
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    //console.log('DOM is fully loaded and parsed');
-                    // Your code here
-                });
-            } else {
-                //console.log('DOM is already ready');
-                // Your code here
-            }
-
-            /*
-            *   CHEAT
-            *   I'm using non-programmatic knowledge to offet the mainContainer
-            *   I'm using the margin value of limit-width, which won't be standard at all
-            *   Cheat is marginLeftValue
-            */
-
-            // Primary colors
-
-
             // .main-container .row-container
-
             const contentElement = document.querySelector('.limit-width');
             // Get the computed styles for the contentElement
             const computedStyle = window.getComputedStyle(contentElement);
@@ -152,11 +123,9 @@ function waypoint826_run() {
             const marginTop = computedStyle.marginTop;
 
             // Computer style returns a string not a number
-            //console.log('width:', widthOfContent);
 
             const marginLeftValue = parseFloat(computedStyle.marginLeft);
             var marginTopValue = parseFloat(computedStyle.marginTop);
-            //console.log(marginTopValue);
          
             //Resize content
          
@@ -165,17 +134,15 @@ function waypoint826_run() {
 
             // Set the absolute div's position
             //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
-            mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // Align the right edge to the left edge of the relative div
-            // console.log(mainContainer.offsetWidth);
-            //console.log(mainContainer.left);
+            mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
 
         } // end positionMainContainer
+
 
         // Run the function when the page loads
         window.addEventListener('load', positionMainContainer);
 
         // Run the function whenever the window is resized
-        //window.addEventListener('resize', positionMainContainer); need to set a delay timer
 
         window.addEventListener('resize', () => {
             setTimeout(() => {
@@ -188,7 +155,7 @@ function waypoint826_run() {
         // Find all elements with margin 0 auto and shrink + push to the left by some px
 
         // First, find all elems and add them to an array
-
+        // Experiment 8/27/24 may delete later
         function findAutoMarginElements() {
             const allElements = document.querySelectorAll('*');
             var autoMarginElements = [];
@@ -209,25 +176,7 @@ function waypoint826_run() {
         }
 
         var elementsWithAutoMargin = findAutoMarginElements();
-        //console.log(elementsWithAutoMargin.length);
-
-        /*
-        *   Second, parse the results and add 'position: relative', offset and new width
-        *   
-        *   To add the correct 'right' offset, we'll need to calculate the viewport size, add a new width
-        *
-        *
-        */
-
-        for (i=0; i<elementsWithAutoMargin.length; i++) {
-
-            // Something
-            // elementsWithAutoMargin[i].style.position = 'relative';
-            // elementsWithAutoMargin[i].style.width = '80%';
-            // console.log(elementsWithAutoMargin[i]);
-
-
-        }
+ 
 
         // Removes .active class from li 
         window.addEventListener('scroll', function() {
@@ -242,19 +191,14 @@ function waypoint826_run() {
             }
         });
 
-        // Waypoint needs to start below any menu and once it hits the top of the page, it needs to stick
-        // Set the absolute div's position
-       //mainContainer.style.top = marginTopValue + 'px';
-        //console.log(marginTopValue);
-
         // Offset from Browswer window top
         const distanceFromTop = headings[0].getBoundingClientRect();
+
         //console.log(distanceFromTop.y);
         mainContainer.style.top = (distanceFromTop.y + 'px');
 
         var box = document.getElementById('waypoint826-primary-container'),
         top = box.offsetTop;
-        //console.log(top);
 
         window.addEventListener('scroll', function(event) {
             //console.log('Page scrolled!');
@@ -270,13 +214,6 @@ function waypoint826_run() {
 
         });
 
-
-
-
-
-
-        // chatGPT might have a better solution to the observer
-
         /* REQUIREMENTS
         *
         *  Need 2 arrays, one is a nav array, one is a 'zone' array
@@ -284,44 +221,45 @@ function waypoint826_run() {
         *
         */
 
-        const navLinks = document.querySelectorAll('.list-wrapper a');
-        console.log(navLinks);
-        console.log(headings);
+        let observer;
 
-        const observer = new IntersectionObserver((entries) => {
+        function setupIntersectionObserver() {
+          const tocLinks = document.querySelectorAll('.list-wrapper li a');
+          const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
+
+
+          // Callback function to handle the intersections
+          const handleIntersect = (entries, observer) => {
             entries.forEach(entry => {
-                const zoneId = entry.target.id;
-                const correspondingLink = document.querySelector(`.list-wrapper a[data-zone="${zoneId}"]`);
+              if (entry.isIntersecting) {
+                // Clear previous active list items
+                // This area works
+                const tocListItems = document.querySelectorAll('.list-wrapper li');
+                tocListItems.forEach(li => li.classList.remove('active'));
 
-                if (entry.isIntersecting) {
-                    correspondingLink.classList.add('active');
-                } else {
-                    correspondingLink.classList.remove('active');
+                const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
+                if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
+                  activeLink.parentElement.classList.add('active');
                 }
+              }
             });
-        }, {
-            root: null, // Default is the viewport
-            threshold: 0.5 // Trigger when 50% of the zone is visible
-        });
+          };
 
-        document.querySelectorAll('.zone').forEach(zone => {
-            observer.observe(zone);
-        });
+          // Set up the observer
+          const options = {
+            rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
+            threshold: 0
+          };
 
+          observer = new IntersectionObserver(handleIntersect, options);
 
+          sections.forEach(section => observer.observe(section));
+        }
 
-        /*
-        *  
-        *   
-        *   OBSERVER
-        *
-        *
-        */
+        // Call the function to set it up
+        setupIntersectionObserver();
 
-    
-
-
-
+      
 
     });
     </script>
