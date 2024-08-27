@@ -44,15 +44,12 @@ function waypoint826_run() {
         let mainContainer = document.createElement('div');
         mainContainer.className = 'waypoint826-main';
         mainContainer.id = 'waypoint826-primary-container';
-        //console.log(mainContainer); can delete eventually
 
         // Append the main waypoint container to a DIV element on the page
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
-        //console.log(parentDiv); can delete eventually
 
-        // Create the list of h2, h3, h4
-        // Init elements to hold list of h4s
+        // Create the list of h2 and/or h3 and/or h4
         var headings = document.querySelectorAll("h4");
 
         // var headings = document.querySelectorAll("h2, h3, h4");
@@ -192,10 +189,17 @@ function waypoint826_run() {
         });
 
         // Offset from Browswer window top
-        const distanceFromTop = headings[0].getBoundingClientRect();
+
+        // const distanceFromTop = headings[0].getBoundingClientRect();  don't get rid of yet
+        var menuHeight = document.querySelector('.row-menu');
+        const distanceFromTop = menuHeight.getBoundingClientRect();
+        //console.log(menuHeight);
 
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y + 'px');
+        mainContainer.style.top = (distanceFromTop.y + 100 + 'px');
+        //console.log(distanceFromTop);
+
+
 
         var box = document.getElementById('waypoint826-primary-container'),
         top = box.offsetTop;
@@ -214,31 +218,27 @@ function waypoint826_run() {
 
         });
 
-        /* REQUIREMENTS
-        *
-        *  Need 2 arrays, one is a nav array, one is a 'zone' array
-        *  In this schema, the nav = list-wrapper and the zone = 
-        *
-        */
-
+        // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
 
         function setupIntersectionObserver() {
-          const tocLinks = document.querySelectorAll('.list-wrapper li a');
-          const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
 
+            // array of links
+            const tocLinks = document.querySelectorAll('.list-wrapper li a');
+            //not sure
+            const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
 
           // Callback function to handle the intersections
           const handleIntersect = (entries, observer) => {
             entries.forEach(entry => {
               if (entry.isIntersecting) {
                 // Clear previous active list items
-                // This area works
                 const tocListItems = document.querySelectorAll('.list-wrapper li');
                 tocListItems.forEach(li => li.classList.remove('active'));
 
                 const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
                 if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
+                    //adds active class to .li
                   activeLink.parentElement.classList.add('active');
                 }
               }
@@ -258,8 +258,6 @@ function waypoint826_run() {
 
         // Call the function to set it up
         setupIntersectionObserver();
-
-      
 
     });
     </script>

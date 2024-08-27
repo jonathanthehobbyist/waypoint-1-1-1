@@ -13,13 +13,13 @@
 
 .waypoint826-main {
 
-	height: 300px;
+	
 	width: 300px;
 	background-color:none;
 	border-right: 1px solid #ccc;
 	position: absolute;
 	/* right: 80%; */
-	padding: 20px;
+	padding: 60px 20px 80px 20px;
 }
 
 
@@ -28,15 +28,21 @@
 
 .waypoint826-main ol {}
 
-ol.list-wrapper {}
+ol.list-wrapper {
+	color: #777777;
+	font-family: 'League Spartan';
+}
 
 .waypoint826-main ol li {}
 
 .waypoint826-main ol li.active a {
-	font-weight: bold;
+	font-weight: 600;
+	color: #555555!important;
 }
 
-.waypoint826-main ol li a {}
+.waypoint826-main ol.list-wrapper li a {
+	color: #888888;
+}
 
 .waypoint826-main ol li.active a {}
 
