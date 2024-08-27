@@ -169,9 +169,36 @@ function waypoint826_run() {
 
             }
             // console.log(listOfH2InnerText);
+
+            // Duplicates how the h2, h3, h4 is written - 'dirty version'
            var innerSpan = listOfH2InnerText.innerText;
-           console.log(innerSpan);
+
+           // Cleans up the string to make it into a usable class name / on-page anchor link
+           var str = listOfH2InnerText.innerText;
+           str = str.replace(/^\s/g, ''); //matches any space at the beginning of an input
+           str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
+           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+]/g, '').toLowerCase(); //matches 
+           // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
+
+           //console.log(str);
+
+           // Assign a unique ID to the h2, h3, h4 tag based on its position
+            listOfH2InnerText.id = str;
+            
+            // Create a list item and link for each h2, h3, h4
+            
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = "#" + str;
+            link.innerHTML = innerSpan;
+
+            console.log(innerSpan);
+
+            listItem.appendChild(link);
+            list.appendChild(listItem);
         }
+
+        // Now we need to take the list generated, put it into an ol (ordered list) and insert it into the DIV
 
 
     });
