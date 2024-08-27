@@ -136,6 +136,7 @@ function waypoint826_run() {
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
         mainContainer.className = 'waypoint826-main';
+        mainContainer.id = 'waypoint826-primary-container';
         //console.log(mainContainer); can delete eventually
 
         // Append the main waypoint container to a DIV element on the page
@@ -152,6 +153,7 @@ function waypoint826_run() {
         // Could be more...
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
+        list.classList.add('list-wrapper');
 
         for (i=0; i<headings.length; i++) {
 
@@ -242,7 +244,6 @@ function waypoint826_run() {
             }
         }
 
-
         /*
         *
         *  I need to find the left bounding box of the element that mainContainer should align to on its right side
@@ -270,18 +271,29 @@ function waypoint826_run() {
             *   Cheat is marginLeftValue
             */
 
-            const element = document.querySelector('.limit-width');
-            // Get the computed styles for the element
-            const computedStyle = window.getComputedStyle(element);
+            // Primary colors
+
+
+            // .main-container .row-container
+
+            const contentElement = document.querySelector('.limit-width');
+            // Get the computed styles for the contentElement
+            const computedStyle = window.getComputedStyle(contentElement);
             // Access the left margin
             const marginLeft = computedStyle.marginLeft;
+            const widthOfContent = computedStyle.width;
 
             // Computer style returns a string not a number
-            //console.log('Left margin:', marginLeft);
+            console.log('width:', widthOfContent);
 
             const marginLeftValue = parseFloat(computedStyle.marginLeft);
+            const widthValue = parseFloat(computedStyle.width);
             //console.log('Left margin px:', marginLeftValue);
 
+            //Resize content
+           // contentElement.style.maxWidth = (widthValue * .5) + 'px';
+
+            // NEED NOTE HERE
             let relativeRect = headings[0].getBoundingClientRect();
             let leftPositionRR = relativeRect.left;
 
@@ -350,6 +362,100 @@ function waypoint826_run() {
 
 
             }
+
+
+
+            window.addEventListener('scroll', function() {
+
+                // If scrolled to the very top
+                if (window.scrollY === 0) {
+                    // Find all active menu items and remove the 'active' class
+                    document.querySelectorAll('.list-wrapper li.active').forEach(item => {
+                        item.classList.remove('active');
+                        // tested, works
+                        });
+                    }
+            });
+
+            // adds a top offset and a class of stick if it's at the top
+            //not working
+            function ready() {
+                var box = document.getElementById('waypoint826-primary-container'),
+                top = box.offsetTop;
+                //this top area is working
+                
+
+                function scroll(event) {
+                    var y = document['documentElement' || 'body'].scrollTop;
+                    
+                    if (y >= top) box.classList.add('stick');
+                    else box.classList.remove('stick');
+
+                }
+
+                    window.addEventListener('scroll', scroll);
+            }
+            ready();
+            /*
+            *
+            *  NOT WORKING? 
+            *
+            */
+
+            // DOM content load listener
+
+       
+
+            if (document.readyState == 'complete' || document.readyState == 'loading') {
+
+                
+                
+            } else {
+                //window.addEventListener('DOMContentLoaded', ready);
+                document.addEventListener("DOMContentLoaded", function() {
+                // Code to run after the DOM is loaded
+                ready();
+                
+                });
+            }
+
+
+            let observer;
+
+            function setupIntersectionObserver() {
+              const tocLinks = document.querySelectorAll('.waypoint826-main li a');
+              const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
+
+              // Callback function to handle the intersections
+              const handleIntersect = (entries, observer) => {
+                entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                    // Clear previous active list items
+                    const tocListItems = document.querySelectorAll('.waypoint826-main li');
+                    tocListItems.forEach(li => li.classList.remove('active'));
+                    // Working 8/27 12:42pm CST
+
+                    const activeLink = document.querySelector(`.waypoint826-main li a[href="#${entry.target.id}"]`);
+                    if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
+                      activeLink.parentElement.classList.add('active');
+                    }
+                  }
+                });
+              };
+
+              // Set up the observer
+              const options = {
+                rootMargin: '0px 0px -80% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
+                threshold: 0
+              };
+
+              observer = new IntersectionObserver(handleIntersect, options);
+
+              sections.forEach(section => observer.observe(section));
+            }
+
+            // Call the function to set it up
+            setupIntersectionObserver();
 
 
     });
