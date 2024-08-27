@@ -13,9 +13,13 @@
 
 .waypoint826-main {
 
-	height: 100px;
-	width: 100px;
+	height: 300px;
+	width: 300px;
 	background-color:#FF0000;
+	position: absolute;
+	top: 0;
+	right: 80%;
+	padding: 20px;
 }
 
 

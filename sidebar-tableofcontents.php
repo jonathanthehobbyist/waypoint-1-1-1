@@ -56,13 +56,8 @@
          // Get the parent div [PD] where you want to insert the new element
         
         if (window.innerWidth < 960) {
-            //if the viewport is small, load to article
-
-            //how could this work with pages?
-
-
-
-
+            // if the viewport is small, load to article
+            // How could this work with pages?
             var parentDiv = document.querySelector('.post-inner');
             //console.log(parentDiv);
         } else {

@@ -131,8 +131,7 @@ function waypoint826_run() {
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Your JavaScript code here
-        console.log('This is the home page');
+        // console.log('This is the home page');
 
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
@@ -144,17 +143,18 @@ function waypoint826_run() {
         parentDiv.appendChild(mainContainer);
         //console.log(parentDiv); can delete eventually
 
+        // Housekeeping
+        //var childElement = document.querySelector('.mainContainer');
+        //var parentElement = childElement.parentElement;
+        //parentElement.style.position = "relative";
+
         // Create the list of h2, h3, h4
-        // Text is inside 2 span elements nexted inside the h4s, I'll have to investigate that
-        // Init elements to hold list of Hs
-        var toc_list = document.getElementsByTagName('h2');
+
+        // Init elements to hold list of h4s
+        var headings = document.querySelectorAll("h4");
+        // Could be more...
+        // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
-
-        var headings = document.querySelectorAll("h2, h3, h4");
-
-        //headings.forEach(function(heading) {
-            //console.log(heading); // Logs each <h2>, <h3>, and <h4> element
-        //});
 
         for (i=0; i<headings.length; i++) {
 
@@ -199,6 +199,40 @@ function waypoint826_run() {
         }
 
         // Now we need to take the list generated, put it into an ol (ordered list) and insert it into the DIV
+
+        /*
+        *
+        *  Structure of the DIV to hold ol, li
+        *
+        *  waypoint826-main
+        *  |
+        *  └--ol
+        *    |
+        *    |--li 
+        *    |  |
+        *    |  └-- href, InnerHTML
+        *    |
+        *    └--li etc
+        *
+        */
+
+        // Append ol list to waypoint826-main, append li to ol
+
+        // Fetch the newly created parent div where you want to insert the new element
+        //let tocDiv = document.querySelector('.waypoint826-main');
+        
+        if (mainContainer) {
+             // If parent div has first child, insert mainContainer before first child
+            if (mainContainer.firstChild) {
+                 mainContainer.insertBefore(list, mainContainer.firstChild);
+            } else {
+                // If mainContainer has 0 children, append
+                mainContainer.appendChild(list);
+                //tocDiv.appendChild(content);
+                //tocDiv.appendChild(list);
+            }
+        }
+        
 
 
     });
