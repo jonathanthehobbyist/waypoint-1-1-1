@@ -143,10 +143,7 @@ function waypoint826_run() {
         parentDiv.appendChild(mainContainer);
         //console.log(parentDiv); can delete eventually
 
-        // Housekeeping
-        //var childElement = document.querySelector('.mainContainer');
-        //var parentElement = childElement.parentElement;
-        //parentElement.style.position = "relative";
+        
 
         // Create the list of h2, h3, h4
 
@@ -157,6 +154,18 @@ function waypoint826_run() {
         const list = document.createElement('ol');
 
         for (i=0; i<headings.length; i++) {
+
+            /*
+            *  LEARNING
+            *  var variables are not block scoped, are accessible outside of {}
+            *  meaning they are accessible only within a function, but for example are accessible outside of a for loop {}
+            *
+            *  let variables are block scoped (only relevant within the 'block': {} )
+            * 
+            *  const variables are block scoped
+            *
+            */
+
 
             // Tests to see if there's a span element inside the h2, h3, h4
             if(headings[i].getElementsByTagName('span')[0]) {
@@ -232,6 +241,65 @@ function waypoint826_run() {
                 //tocDiv.appendChild(list);
             }
         }
+
+
+        /*
+        *
+        *  I need to find the left bounding box of the element that mainContainer should align to on its right side
+        *  -- That isn't its parent. That's actually the H2 from above
+        */
+
+
+        // Find mainContainer's parent
+        var parentElement = mainContainer.parentElement;
+
+        function positionMainContainer() {
+          
+          // For reference: 
+          // var relativeDiv = document.querySelector('.relative-div');    h2
+          // var mainContainer = document.querySelector('.absolute-div');  mainContainer
+
+          // Get the bounding rectangle of the relative div
+
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM is fully loaded and parsed');
+        // Your code here
+    });
+} else {
+    console.log('DOM is already ready');
+    // Your code here
+}
+
+
+
+          /* headings[0].style.opacity = '1';
+          headings[0].style.visibility = 'visibility'; */
+          var relativeRect = headings[0].getBoundingClientRect();
+          console.log(relativeRect);
+          //console.log(headings[0]);
+
+          // Set the absolute div's position
+          //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
+          mainContainer.style.left = (relativeRect.left - mainContainer.offsetWidth) + 'px'; // Align the right edge to the left edge of the relative div
+          // console.log(relativeRect.left);
+        }
+
+        // Run the function when the page loads
+        window.addEventListener('load', positionMainContainer);
+
+        // Run the function whenever the window is resized
+        //window.addEventListener('resize', positionMainContainer); need to set a delay timer
+
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                positionMainContainer();
+                //const rect = headings[0].getBoundingClientRect();
+                //console.log(rect);
+            }, 2000); // Adjust delay as needed
+        });
+
         
 
 
