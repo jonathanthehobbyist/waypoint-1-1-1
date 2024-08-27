@@ -249,58 +249,107 @@ function waypoint826_run() {
         *  -- That isn't its parent. That's actually the H2 from above
         */
 
-
-        // Find mainContainer's parent
-        var parentElement = mainContainer.parentElement;
-
         function positionMainContainer() {
           
-          // For reference: 
-          // var relativeDiv = document.querySelector('.relative-div');    h2
-          // var mainContainer = document.querySelector('.absolute-div');  mainContainer
+            // Optional check if DOM is loaded
 
-          // Get the bounding rectangle of the relative div
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    //console.log('DOM is fully loaded and parsed');
+                    // Your code here
+                });
+            } else {
+                //console.log('DOM is already ready');
+                // Your code here
+            }
+
+            /*
+            *   CHEAT
+            *   I'm using non-programmatic knowledge to offet the mainContainer
+            *   I'm using the margin value of limit-width, which won't be standard at all
+            *   Cheat is marginLeftValue
+            */
+
+            const element = document.querySelector('.limit-width');
+            // Get the computed styles for the element
+            const computedStyle = window.getComputedStyle(element);
+            // Access the left margin
+            const marginLeft = computedStyle.marginLeft;
+
+            // Computer style returns a string not a number
+            //console.log('Left margin:', marginLeft);
+
+            const marginLeftValue = parseFloat(computedStyle.marginLeft);
+            //console.log('Left margin px:', marginLeftValue);
+
+            let relativeRect = headings[0].getBoundingClientRect();
+            let leftPositionRR = relativeRect.left;
+
+            // Set the absolute div's position
+            //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
+            mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // Align the right edge to the left edge of the relative div
+            // console.log(mainContainer.offsetWidth);
+            //console.log(mainContainer.left);
+
+            }
+
+            // Run the function when the page loads
+            window.addEventListener('load', positionMainContainer);
+
+            // Run the function whenever the window is resized
+            //window.addEventListener('resize', positionMainContainer); need to set a delay timer
+
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    positionMainContainer();
+                    //const rect = headings[0].getBoundingClientRect();
+                    //console.log(rect);
+                }, 0); // Adjust delay as needed
+            });
+
+            // Find all elements with margin 0 auto and shrink + push to the left by some px
+
+            // First, find all elems and add them to an array
+
+            function findAutoMarginElements() {
+                const allElements = document.querySelectorAll('*');
+                var autoMarginElements = [];
+
+                    allElements.forEach(element => {
+                        const computedStyle = window.getComputedStyle(element);
+                        const marginLeft = computedStyle.marginLeft;
+                        const marginRight = computedStyle.marginRight;
+                        const marginTop = computedStyle.marginTop;
+                        const marginBottom = computedStyle.marginBottom;
+
+                        if (marginLeft === 'auto' && marginRight === 'auto') {
+                            autoMarginElements.push(element);
+                        }
+                    });
+
+                    return autoMarginElements;
+            }
+
+            var elementsWithAutoMargin = findAutoMarginElements();
+            console.log(elementsWithAutoMargin.length);
+
+            /*
+            *   Second, parse the results and add 'position: relative', offset and new width
+            *   
+            *   To add the correct 'right' offset, we'll need to calculate the viewport size, add a new width
+            *
+            *
+            */
+
+            for (i=0; i<elementsWithAutoMargin.length; i++) {
+
+                // Something
+                // elementsWithAutoMargin[i].style.position = 'relative';
+                // elementsWithAutoMargin[i].style.width = '80%';
+                // console.log(elementsWithAutoMargin[i]);
 
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM is fully loaded and parsed');
-        // Your code here
-    });
-} else {
-    console.log('DOM is already ready');
-    // Your code here
-}
-
-
-
-          /* headings[0].style.opacity = '1';
-          headings[0].style.visibility = 'visibility'; */
-          var relativeRect = headings[0].getBoundingClientRect();
-          console.log(relativeRect);
-          //console.log(headings[0]);
-
-          // Set the absolute div's position
-          //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
-          mainContainer.style.left = (relativeRect.left - mainContainer.offsetWidth) + 'px'; // Align the right edge to the left edge of the relative div
-          // console.log(relativeRect.left);
-        }
-
-        // Run the function when the page loads
-        window.addEventListener('load', positionMainContainer);
-
-        // Run the function whenever the window is resized
-        //window.addEventListener('resize', positionMainContainer); need to set a delay timer
-
-        window.addEventListener('resize', () => {
-            setTimeout(() => {
-                positionMainContainer();
-                //const rect = headings[0].getBoundingClientRect();
-                //console.log(rect);
-            }, 2000); // Adjust delay as needed
-        });
-
-        
+            }
 
 
     });
