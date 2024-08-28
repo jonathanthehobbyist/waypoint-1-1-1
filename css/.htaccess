@@ -1,0 +1,15 @@
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^www\.jonsimmons\.co$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^jonsimmons\.co$ [NC]
+RewriteRule ^(.*)$ http://localhost:8888/$1 [L,R=301]
+
+# Handle WordPress permalinks
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress

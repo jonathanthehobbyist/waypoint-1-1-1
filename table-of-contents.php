@@ -18,6 +18,197 @@ function waypoint826_enqueue_styles() {
     );
 }
 
+
+/*
+function wporg_add_custom_box() {
+    $screens = [ 'post', 'wporg_cpt' ];
+    foreach ( $screens as $screen ) {
+        add_meta_box(
+            'wporg_box_id',                 // Unique ID
+            'Custom Meta Box Title',      // Box title
+            'wporg_custom_box_html',  // Content callback, must be of type callable
+            $screen,                            // Post type
+              'normal',                             // Context (normal, side, advanced)
+        'high'                                // Priority (default, high, low)
+        );
+    }
+}
+add_action( 'add_meta_boxes', 'wporg_add_custom_box' ); 
+*/
+
+function wporg_custom_box_html( $post ) {
+    $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
+
+    ?>
+
+    <!--label for="wporg_field">Description for this field</label-->
+    <!--select name="wporg_field" id="wporg_field" class="postbox">
+        <option value="">Select something...</option>
+        <option value="something" <?php selected( $value, 'something' ); ?>>Something</option>
+        <option value="else" <?php selected( $value, 'else' ); ?>>Else</option>
+    </select-->
+    <br />
+    <input type="checkbox" id="wporg_field" name="wporg_field" value="checked" />
+    <label for="wporg_field">Enable => Waypoint | Table of Contents</label>
+    <br /><div><p>This will add Waypoint to the left side of the post</p></div>
+    <hr>
+     <div><p><b>Elements to include (dont use yet)</b></p></div>
+     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
+     <label for="enable_waypoint826_checkbox">h1</label>
+     <br />
+     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
+     <label for="enable_waypoint826_checkbox">h2</label>
+     <br />
+     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
+     <label for="enable_waypoint826_checkbox">h3</label>
+     <br />
+     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
+     <label for="enable_waypoint826_checkbox">h4</label>
+     <br />
+     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
+     <label for="enable_waypoint826_checkbox">h5</label>
+     <br />
+     <br /><div><p>This will add Waypoint to the left side of the post</p></div><br />
+
+    <?php
+} 
+
+
+
+add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
+
+ function my_custom_plugin_add_meta_box() {
+    add_meta_box(
+        'my_custom_plugin_meta_box',          // Unique ID
+        'Post settings for Waypoint table of contents',                   // Box title
+        'wporg_custom_box_html', // Content callback, must be of type callable
+        ['post', 'page', 'portfolio'],        // Post types where the meta box should appear
+        'normal',                             // Context (normal, side, advanced)
+        'high'                                // Priority (default, high, low)
+    );
+}
+
+function wporg_save_postdata( $post_id ) {
+    if ( array_key_exists( 'wporg_field', $_POST ) ) {
+        update_post_meta(
+            $post_id,
+            '_wporg_meta_key',
+            $_POST['wporg_field']
+        );
+    }
+}
+add_action( 'save_post', 'wporg_save_postdata' );
+
+/*
+
+
+function my_custom_plugin_meta_box_callback($post) {
+    // Output your custom fields or content here
+
+    //enabled single check box
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">Add Waypoint Table of Contents to this content</label>';
+    echo '<br /><div><p>This will add Waypoint to the left side of the post</p></div><br />';
+    
+
+    echo '<hr><br />';
+    echo '<label for="my_custom_field">Anchor to element with class or ID:</label>';
+    echo '&nbsp;&nbsp;<input type="text" id="my_custom_field" name="my_custom_field" value="" />';
+    echo '<br /><div><p>Choose a container or element - Waypoint will use that element to position from the left side of the viewport</p></div><hr>';
+
+echo '<br /><div><p><b>Elements to include</b></p></div>';
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">h1</label>';
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">h2</label>';
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">h3</label>';
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">h4</label>';
+    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
+    echo '<label for="enable_waypoint826_checkbox">h5</label>';
+    echo '<br /><div><p>This will add Waypoint to the left side of the post</p></div><br />';
+}
+
+*/
+
+/* add_action('save_post', 'my_custom_plugin_save_meta_box_data');
+
+function my_custom_plugin_save_meta_box_data($post_id) {
+    // Check if our nonce is set.
+    if (!isset($_POST['my_custom_plugin_nonce'])) {
+        return $post_id;
+    }
+    
+    $nonce = $_POST['my_custom_plugin_nonce'];
+
+    // Verify that the nonce is valid.
+    if (!wp_verify_nonce($nonce, 'my_custom_plugin_save_meta_box_data')) {
+        return $post_id;
+    }
+
+    // If this is an autosave, our form has not been submitted, so we don't want to do anything.
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return $post_id;
+    }
+
+    // Check the user's permissions.
+    if ('page' == $_POST['post_type']) {
+        if (!current_user_can('edit_page', $post_id)) {
+            return $post_id;
+        }
+    } else {
+        if (!current_user_can('edit_post', $post_id)) {
+            return $post_id;
+        }
+    }
+
+    // Sanitize user input.
+    $my_data = sanitize_text_field($_POST['my_custom_field']);
+
+    // Update the meta field in the database.
+    update_post_meta($post_id, '_my_custom_field', $my_data);
+} */
+
+//Saving data on posts?
+/*
+// Example in a template file or a plugin function
+$my_saved_data = get_post_meta(get_the_ID(), '_my_custom_field', true);
+
+if (!empty($my_saved_data)) {
+    echo '<p>Custom Field Value: ' . esc_html($my_saved_data) . '</p>';
+}
+
+// Saving options on a settings page?
+update_option('my_plugin_option', sanitize_text_field($_POST['my_plugin_option']));
+
+//retrieve settings via
+$my_plugin_option = get_option('my_plugin_option', 'default_value');
+
+if ($my_plugin_option) {
+    echo '<p>Plugin Option Value: ' . esc_html($my_plugin_option) . '</p>';
+}
+
+
+*/
+
+
+// Need scripts or styles?
+/* 
+add_action('admin_enqueue_scripts', 'my_custom_plugin_enqueue_scripts');
+
+function my_custom_plugin_enqueue_scripts($hook) {
+    // Only load on the post editor screen
+    if ('post.php' != $hook && 'post-new.php' != $hook) {
+        return;
+    }
+
+    wp_enqueue_script('my_custom_plugin_script', plugin_dir_url(__FILE__) . 'js/custom-script.js', array('jquery'), '1.0', true);
+    wp_enqueue_style('my_custom_plugin_style', plugin_dir_url(__FILE__) . 'css/custom-style.css');
+}
+*/
+
+
 function waypoint826_place_files() {}
 
 function waypoint826_define_paths() {}
@@ -33,7 +224,13 @@ function waypoint826_deactivate() {}  // Deactivate plugin
 register_deactivation_hook(__FILE__,  'waypoint826_deactivate' );
 
 function waypoint826_run() {
-    // Your custom code here
+
+            /* 
+            * 
+            *   PROGRAMMATIC - Pass in post-id or page-id for enabled
+            * 
+            */ 
+
     if (is_page()) {
     ?>
     <script>
@@ -49,12 +246,26 @@ function waypoint826_run() {
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
 
+
+            /* 
+            * 
+            *   PROGRAMMATIC - pass in list of h1, h2, h3 etc
+            * 
+            */ 
+
+
         // Create the list of h2 and/or h3 and/or h4
         var headings = document.querySelectorAll("h4");
 
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
         list.classList.add('list-wrapper');
+
+        // Create a header or title area
+        var contentParagraph = document.createElement('p');
+        contentParagraph.className = "content";
+        contentParagraph.innerHTML = "Contents";
+        // use this .appendChild(contentParagraph);
 
         for (i=0; i<headings.length; i++) {
 
@@ -111,6 +322,12 @@ function waypoint826_run() {
 
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
+
+                    /* 
+                    * 
+                    *   PROGRAMMATIC - pass in element to attach to 
+                    * 
+                    */ 
           
             // .main-container .row-container
             const contentElement = document.querySelector('.limit-width');
@@ -197,8 +414,16 @@ function waypoint826_run() {
         const distanceFromTop = menuHeight.getBoundingClientRect();
         //console.log(menuHeight);
 
+
+                /* 
+                * 
+                *   PROGRAMMATIC - Clean this up, and pass in offset from top
+                * 
+                */ 
+
+
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y + 130 + 'px');
+        mainContainer.style.top = (distanceFromTop.y + 100 + 'px');
         //console.log(distanceFromTop);
 
 
@@ -225,11 +450,17 @@ function waypoint826_run() {
         let observer;
 
         function setupIntersectionObserver() {
+          // Disconnect existing observer if it exists
+          if (observer) {
+            observer.disconnect();
+          }
 
-            // array of links
-            const tocLinks = document.querySelectorAll('.list-wrapper li a');
-            //not sure
-            const sections = Array.from(tocLinks).map(link => document.querySelector(link.getAttribute('href')));
+          // Array of links
+          const tocLinks = document.querySelectorAll('.list-wrapper li a');
+          // Mapping links to sections
+          const sections = Array.from(tocLinks)
+            .map(link => document.querySelector(link.getAttribute('href')))
+            .filter(Boolean); // Ensure sections exist
 
           // Callback function to handle the intersections
           const handleIntersect = (entries, observer) => {
@@ -240,27 +471,71 @@ function waypoint826_run() {
                 tocListItems.forEach(li => li.classList.remove('active'));
 
                 const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
-                if (activeLink && activeLink.parentElement.tagName.toLowerCase() === 'li') {
-                    //adds active class to .li
+                if (activeLink) {
                   activeLink.parentElement.classList.add('active');
                 }
               }
             });
           };
 
-          // Set up the observer
+
+                    /* 
+                    * 
+                    *   PROGRAMMATIC - eventually, pass in rootMargin and threshold
+                    * 
+                    */ 
+
+
+          // Set up the observer with better margins and thresholds
           const options = {
-            rootMargin: '0px 0px -50% 0px', // Adjust this value if you want to highlight a TOC list item earlier or later
-            threshold: 0
+            rootMargin: '-10px 0px 0px 0px', // Adjust the top margin to handle elements near the top of the page
+            threshold: 0.1 // Consider multiple thresholds
           };
 
           observer = new IntersectionObserver(handleIntersect, options);
 
+          // Observe each section
           sections.forEach(section => observer.observe(section));
         }
 
-        // Call the function to set it up
-        setupIntersectionObserver();
+        // Reinitialize the observer on page load and when scrolling to the top
+        window.addEventListener('load', setupIntersectionObserver);
+        window.addEventListener('scroll', () => {
+          if (window.scrollY === 0) {
+            setupIntersectionObserver();
+          }
+        });
+
+
+        /* MOBILE EXPERIENCE sigh */
+
+
+        /*  PUSHING ITEMS TO AN ARRAY   */
+
+        // Assuming you have an array of <li> elements
+        // let listItems = Array.from(document.querySelectorAll('#myList li'));
+
+        // Create a new <li> element
+        // const newListItem = document.createElement('li');
+        // newListItem.textContent = 'New Item';
+
+        // Add (push) the new <li> to the array
+        // listItems.push(newListItem);
+
+        // Now listItems includes the new <li> element
+        // console.log(listItems); // The array now contains the new <li> element at the end
+
+
+        /* ADMIN  */
+
+        //https://medium.com/@hbahonar/how-to-create-wordpress-custom-admin-page-and-menu-from-scratch-ultimate-guide-updated-d7b4d2e57f96
+
+        // https://developer.wordpress.org/plugins/settings/
+
+
+
+
+
 
     });
     </script>

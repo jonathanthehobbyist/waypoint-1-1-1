@@ -11,12 +11,18 @@
 *
 */
 
+:root {
+	--primary: #4280f7;
+	--text-primary: #111111;
+	--text-secondary: #777777;
+}
+
+
 html {
     scroll-behavior: smooth;
 }
 
 .waypoint826-main {
-
 	
 	width: 250px;
 	background-color:none;
@@ -30,24 +36,34 @@ html {
 /*   LIST STYLING   */
 
 
-.waypoint826-main ol {}
+.waypoint826-main ol {
+	list-style-type: none;
+}
 
 ol.list-wrapper {
-	color: #777777;
+	
 	font-family: 'League Spartan';
 }
 
-.waypoint826-main ol li.active::marker {}
+.waypoint826-main ol.list-wrapper li {
+	color: var(--text-secondary);
+}
 
 
-.waypoint826-main ol li.active a, 
-.waypoint826-main ol li.active::marker {
-	font-weight: 600;
-	color: #555555!important;
+.waypoint826-main ol.list-wrapper li.active, 
+.waypoint826-main ol.list-wrapper li.active::marker {
+	/* display: none; */
+	font-weight: 500;
+	color: var(--text-primary)!important;
+	/*color: #555555!important;*/
 }
 
 .waypoint826-main ol.list-wrapper li a {
-	color: #888888;
+	color: var(--text-secondary);
+}
+
+.waypoint826-main ol.list-wrapper li.active a {
+	color: var(--text-primary);
 }
 
 .waypoint826-main ol li.active a {}
