@@ -5,6 +5,7 @@
  * Author: Jon Simmons
  */
 
+
 // Activation functions
 
 function waypoint826_enqueue_styles() {
@@ -36,18 +37,24 @@ function wporg_add_custom_box() {
 add_action( 'add_meta_boxes', 'wporg_add_custom_box' ); 
 */
 
+
 function wporg_custom_box_html( $post ) {
+
+    // Retrieve current value from the database
     $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
+
+    // Add a nonce field for security
+    wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
 
     ?>
 
-    <!--label for="wporg_field">Description for this field</label-->
-    <!--select name="wporg_field" id="wporg_field" class="postbox">
+    <label for="wporg_field">Description for this field</label>
+    <select name="wporg_field" id="wporg_field" class="postbox">
         <option value="">Select something...</option>
         <option value="something" <?php selected( $value, 'something' ); ?>>Something</option>
         <option value="else" <?php selected( $value, 'else' ); ?>>Else</option>
-    </select-->
-    <br />
+    </select>
+    <!--br />
     <input type="checkbox" id="wporg_field" name="wporg_field" value="checked" />
     <label for="wporg_field">Enable => Waypoint | Table of Contents</label>
     <br /><div><p>This will add Waypoint to the left side of the post</p></div>
@@ -68,14 +75,14 @@ function wporg_custom_box_html( $post ) {
      <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
      <label for="enable_waypoint826_checkbox">h5</label>
      <br />
-     <br /><div><p>This will add Waypoint to the left side of the post</p></div><br />
+     <br /><div><p>This will add Waypoint to the left side of the post</p></div><br /-->
 
     <?php
 } 
 
 
 
-add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
+
 
  function my_custom_plugin_add_meta_box() {
     add_meta_box(
@@ -88,8 +95,12 @@ add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
     );
 }
 
-function wporg_save_postdata( $post_id ) {
+add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
+
+/*function wporg_save_postdata( $post_id ) {
+    error_log("POST data: " . print_r($_POST, true));
     if ( array_key_exists( 'wporg_field', $_POST ) ) {
+        
         update_post_meta(
             $post_id,
             '_wporg_meta_key',
@@ -97,9 +108,52 @@ function wporg_save_postdata( $post_id ) {
         );
     }
 }
+add_action( 'save_post', 'wporg_save_postdata' );*/
+
+function wporg_save_postdata( $post_id ) {
+    // Log the POST data for debugging
+    //error_log("POST data: " . print_r($_POST, true));
+    error_log("Save function triggered for post ID: $post_id");
+
+    // Security checks
+    if ( ! isset( $_POST['wporg_nonce'] ) || ! wp_verify_nonce( $_POST['wporg_nonce'], 'wporg_save_postdata' ) ) {
+        error_log("Nonce verification failed.");
+        return;
+    }
+
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        error_log("Autosave detected, skipping save.");
+        return;
+    }
+
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        error_log("User does not have permission to edit this post.");
+        return;
+    }
+
+    // Check if the input field exists in the POST request
+    if ( array_key_exists( 'wporg_field', $_POST ) ) {
+        $sanitized_value = sanitize_text_field( $_POST['wporg_field'] );
+
+        // Update the meta field in the database
+        error_log("POST data: " . print_r($_POST, true));
+        update_post_meta(
+            $post_id,
+            '_wporg_meta_key',
+            $sanitized_value
+        );
+
+        // Log the saved value for debugging
+        error_log("wporg_field saved with value: $sanitized_value");
+    } else {
+        error_log("wporg_field not found in POST data.");
+    }
+}
+
 add_action( 'save_post', 'wporg_save_postdata' );
 
-/*
+
+/*http://localhost:8888/wp-admin/index.php
 
 
 function my_custom_plugin_meta_box_callback($post) {
@@ -231,6 +285,9 @@ function waypoint826_run() {
             * 
             */ 
 
+    
+
+
     if (is_page()) {
     ?>
     <script>
@@ -325,7 +382,7 @@ function waypoint826_run() {
 
                     /* 
                     * 
-                    *   PROGRAMMATIC - pass in element to attach to 
+                    *   PROGRAMMATIC - pass in page element to attach to instead of hard-code
                     * 
                     */ 
           
