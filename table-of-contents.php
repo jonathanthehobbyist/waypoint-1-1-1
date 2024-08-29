@@ -19,26 +19,12 @@ function waypoint826_enqueue_styles() {
     );
 }
 
-
-/*
-function wporg_add_custom_box() {
-    $screens = [ 'post', 'wporg_cpt' ];
-    foreach ( $screens as $screen ) {
-        add_meta_box(
-            'wporg_box_id',                 // Unique ID
-            'Custom Meta Box Title',      // Box title
-            'wporg_custom_box_html',  // Content callback, must be of type callable
-            $screen,                            // Post type
-              'normal',                             // Context (normal, side, advanced)
-        'high'                                // Priority (default, high, low)
-        );
-    }
-}
-add_action( 'add_meta_boxes', 'wporg_add_custom_box' ); 
-*/
+add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 
 function wporg_custom_box_html( $post ) {
+
+    //global $post;
 
     // Retrieve current value from the database
     $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
@@ -54,35 +40,9 @@ function wporg_custom_box_html( $post ) {
         <option value="something" <?php selected( $value, 'something' ); ?>>Something</option>
         <option value="else" <?php selected( $value, 'else' ); ?>>Else</option>
     </select>
-    <!--br />
-    <input type="checkbox" id="wporg_field" name="wporg_field" value="checked" />
-    <label for="wporg_field">Enable => Waypoint | Table of Contents</label>
-    <br /><div><p>This will add Waypoint to the left side of the post</p></div>
-    <hr>
-     <div><p><b>Elements to include (dont use yet)</b></p></div>
-     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
-     <label for="enable_waypoint826_checkbox">h1</label>
-     <br />
-     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
-     <label for="enable_waypoint826_checkbox">h2</label>
-     <br />
-     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
-     <label for="enable_waypoint826_checkbox">h3</label>
-     <br />
-     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
-     <label for="enable_waypoint826_checkbox">h4</label>
-     <br />
-     <input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> 
-     <label for="enable_waypoint826_checkbox">h5</label>
-     <br />
-     <br /><div><p>This will add Waypoint to the left side of the post</p></div><br /-->
 
     <?php
 } 
-
-
-
-
 
  function my_custom_plugin_add_meta_box() {
     add_meta_box(
@@ -97,18 +57,6 @@ function wporg_custom_box_html( $post ) {
 
 add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
 
-/*function wporg_save_postdata( $post_id ) {
-    error_log("POST data: " . print_r($_POST, true));
-    if ( array_key_exists( 'wporg_field', $_POST ) ) {
-        
-        update_post_meta(
-            $post_id,
-            '_wporg_meta_key',
-            $_POST['wporg_field']
-        );
-    }
-}
-add_action( 'save_post', 'wporg_save_postdata' );*/
 
 function wporg_save_postdata( $post_id ) {
     // Log the POST data for debugging
@@ -153,140 +101,77 @@ function wporg_save_postdata( $post_id ) {
 add_action( 'save_post', 'wporg_save_postdata' );
 
 
-/*http://localhost:8888/wp-admin/index.php
-
-
-function my_custom_plugin_meta_box_callback($post) {
-    // Output your custom fields or content here
-
-    //enabled single check box
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">Add Waypoint Table of Contents to this content</label>';
-    echo '<br /><div><p>This will add Waypoint to the left side of the post</p></div><br />';
-    
-
-    echo '<hr><br />';
-    echo '<label for="my_custom_field">Anchor to element with class or ID:</label>';
-    echo '&nbsp;&nbsp;<input type="text" id="my_custom_field" name="my_custom_field" value="" />';
-    echo '<br /><div><p>Choose a container or element - Waypoint will use that element to position from the left side of the viewport</p></div><hr>';
-
-echo '<br /><div><p><b>Elements to include</b></p></div>';
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">h1</label>';
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">h2</label>';
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">h3</label>';
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">h4</label>';
-    echo '<input type="checkbox" id="enable_waypoint826_checkbox" name="enable_waypoint826_checkbox" value="" /> ';
-    echo '<label for="enable_waypoint826_checkbox">h5</label>';
-    echo '<br /><div><p>This will add Waypoint to the left side of the post</p></div><br />';
-}
-
-*/
-
-/* add_action('save_post', 'my_custom_plugin_save_meta_box_data');
-
-function my_custom_plugin_save_meta_box_data($post_id) {
-    // Check if our nonce is set.
-    if (!isset($_POST['my_custom_plugin_nonce'])) {
-        return $post_id;
-    }
-    
-    $nonce = $_POST['my_custom_plugin_nonce'];
-
-    // Verify that the nonce is valid.
-    if (!wp_verify_nonce($nonce, 'my_custom_plugin_save_meta_box_data')) {
-        return $post_id;
-    }
-
-    // If this is an autosave, our form has not been submitted, so we don't want to do anything.
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return $post_id;
-    }
-
-    // Check the user's permissions.
-    if ('page' == $_POST['post_type']) {
-        if (!current_user_can('edit_page', $post_id)) {
-            return $post_id;
-        }
-    } else {
-        if (!current_user_can('edit_post', $post_id)) {
-            return $post_id;
-        }
-    }
-
-    // Sanitize user input.
-    $my_data = sanitize_text_field($_POST['my_custom_field']);
-
-    // Update the meta field in the database.
-    update_post_meta($post_id, '_my_custom_field', $my_data);
-} */
-
-//Saving data on posts?
 /*
-// Example in a template file or a plugin function
-$my_saved_data = get_post_meta(get_the_ID(), '_my_custom_field', true);
-
-if (!empty($my_saved_data)) {
-    echo '<p>Custom Field Value: ' . esc_html($my_saved_data) . '</p>';
-}
-
-// Saving options on a settings page?
-update_option('my_plugin_option', sanitize_text_field($_POST['my_plugin_option']));
-
-//retrieve settings via
-$my_plugin_option = get_option('my_plugin_option', 'default_value');
-
-if ($my_plugin_option) {
-    echo '<p>Plugin Option Value: ' . esc_html($my_plugin_option) . '</p>';
-}
-
-
+*
+*
+*   NOTE - admin pages are not post or page types and so running an admin vs. a user-facing page yields different results
+*
+*
 */
 
 
-// Need scripts or styles?
-/* 
-add_action('admin_enqueue_scripts', 'my_custom_plugin_enqueue_scripts');
-
-function my_custom_plugin_enqueue_scripts($hook) {
-    // Only load on the post editor screen
-    if ('post.php' != $hook && 'post-new.php' != $hook) {
-        return;
-    }
-
-    wp_enqueue_script('my_custom_plugin_script', plugin_dir_url(__FILE__) . 'js/custom-script.js', array('jquery'), '1.0', true);
-    wp_enqueue_style('my_custom_plugin_style', plugin_dir_url(__FILE__) . 'css/custom-style.css');
-}
-*/
 
 
-function waypoint826_place_files() {}
-
-function waypoint826_define_paths() {}
-
-function waypoint826_activate () {} // Activation calls
-
-register_activation_hook(__FILE__, 'waypoint826_activate' );
-
-add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
-
-function waypoint826_deactivate() {}  // Deactivate plugin
-
-register_deactivation_hook(__FILE__,  'waypoint826_deactivate' );
 
 function waypoint826_run() {
-
+            error_log("inside waypoitn826_run");
             /* 
             * 
             *   PROGRAMMATIC - Pass in post-id or page-id for enabled
             * 
             */ 
 
-    
+            // Output the JavaScript in the footer of the page
+            function custom_checkbox_js() {
+                error_log("Running custom_checkbox_js."); // this fires, OK...
+                if (is_singular('post') || is_singular('page')) {
+                    error_log("In the if"); 
+                    $post_id = get_the_ID();  //stops here
+                    error_log("post ID is $post_id");
+                    $checkbox_state = get_post_meta($post_id, 'wporg_field', true);
 
+                    ?>
+
+                    <script type="text/javascript">
+                        function run_state () {
+                            console.log("run_state");
+                            var postId = <?php echo json_encode($post_id); ?>;
+                            var checkboxState = <?php echo json_encode($checkbox_state); ?>;
+
+                            if (checkboxState === '1') {
+                                console.log('Checkbox is checked on post ID:', postId);
+                                applyCustomFunction(postId);
+                            } else {
+                                console.log('Checkbox is not checked on post ID:', postId);
+                            }
+
+                            function applyCustomFunction(postId) {
+                                alert('Checkbox is checked for post ID: ' + postId);
+                            }
+                        };
+
+                        run_state();
+                    </script>
+
+
+
+                    <?php
+                }
+            }
+add_action('wp_footer', 'custom_checkbox_js');
+
+
+    error_log("current post value from database is"); //this shows up in error log
+
+    // Retrieve data
+    function wporg_retrieve( $post ) { //$post is Global var
+
+        // Retrieve current value from the database
+        $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
+        error_log("current value from database is $value");
+    }
+
+    add_action( 'save_post', 'wporg_retrieve' );
 
     if (is_page()) {
     ?>
