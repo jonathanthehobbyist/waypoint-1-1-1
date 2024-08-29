@@ -137,11 +137,6 @@ add_action( 'save_post', 'wporg_save_postdata' );
 
 function waypoint826_run() {
             //error_log("inside waypoitn826_run");
-            /* 
-            * 
-            *   PROGRAMMATIC - Pass in post-id or page-id for enabled
-            * 
-            */ 
             
             // Output the JavaScript in the footer of the page
             function custom_checkbox_js() {
@@ -188,12 +183,25 @@ function waypoint826_run() {
         add_action('wp_footer', 'custom_checkbox_js');
    
     // I need to be able to pass in an array
-     global $post;
-        $post_id = $post->ID;
-        error_log("the post id is $post_id");
-    if (is_page() || is_single($post_id)) {
+
+    /* 
+    * 
+    *   PROGRAMMATIC - Pass in post-id or page-id for enabled
+    * 
+    */ 
+
+    global $post;
+
+    $post_id = get_the_ID(); 
+
+    // To get values, go get function wporg_custom_box_html()
+    $checkbox_state = get_post_meta($post_id, '_waypoint_enable_for_post', true);
+
+    //error_log("the post id is (string)$post");
+    if (is_page() || is_single() && $checkbox_state === '1' ) {
 
     ?>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // console.log('This is the home page');
