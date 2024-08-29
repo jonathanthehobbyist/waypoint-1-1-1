@@ -28,25 +28,38 @@ function wporg_custom_box_html( $post ) {
 
 
     // Retrieve current value for the select field
-    $select_value = get_post_meta( $post->ID, '_wporg_field', true );
+    //$select_value = get_post_meta( $post->ID, '_wporg_field', true );
 
     // Retrieve current value for the checkbox field
     $checkbox_value = get_post_meta( $post->ID, '_waypoint_enable_for_post', true );
+    $checkbox_value_H2 = get_post_meta( $post->ID, '_waypoint_H2_enable', true );
+    $checkbox_value_H3 = get_post_meta( $post->ID, '_waypoint_H3_enable', true );
+    $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
+    $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
 
     // Add a nonce field for security
     wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
 
     ?>
 
-    <label for="wporg_field">Description for this field</label>
-    <select name="wporg_field" id="wporg_field" class="postbox">
-        <option value="">Select something...</option>
-        <option value="something" <?php selected( $select_value, 'something' ); ?>>Something</option>
-        <option value="else" <?php selected( $select_value, 'else' ); ?>>Else</option>
-    </select>
-
     <input type="checkbox" id="waypoint_enable_for_post" name="waypoint_enable_for_post" value="1" <?php checked( $checkbox_value, '1' ); ?>>
     <label for="waypoint_enable_for_post">Enable Waypoint => Table of Contents</label><br>
+
+    <hr>
+
+    <div class="">
+        <p>Include in table of contents</p>
+        <input type="checkbox" id="waypoint_H2_enable" name="waypoint_H2_enable" value="1" <?php checked( $checkbox_value_H2, '1' ); ?>>
+        <label for="waypoint_H2_enable">H2</label><br>
+
+        <input type="checkbox" id="waypoint_H3_enable" name="waypoint_H3_enable" value="1" <?php checked( $checkbox_value_H3, '1' ); ?>>
+        <label for="waypoint_H3_enable">H3</label><br>
+        <input type="checkbox" id="waypoint_H4_enable" name="waypoint_H4_enable" value="1" <?php checked( $checkbox_value_H4, '1' ); ?>>
+        <label for="waypoint_H4_enable">H4</label><br>
+        <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
+        <label for="waypoint_H5_enable">H5</label><br>
+
+    </div>
 
     <?php
 } 
@@ -88,8 +101,11 @@ function wporg_save_postdata( $post_id ) {
 
   // Define an array of fields to save
     $fields = [
-        'wporg_field',
         'waypoint_enable_for_post',
+        'waypoint_H2_enable',
+        'waypoint_H3_enable',
+        'waypoint_H4_enable',
+        'waypoint_H5_enable',
         //'wporg_field_three',
         // Add more fields as needed
     ];
@@ -104,7 +120,52 @@ function wporg_save_postdata( $post_id ) {
                 $checkbox_value
             );
             error_log("$field saved with value: $checkbox_value");
-        } else {
+
+        } else if ( $field === 'waypoint_H2_enable' ) { //H2
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_H2_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_H2_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        } else if ( $field === 'waypoint_H3_enable' ) { //H3
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_H3_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_H3_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        } else if ( $field === 'waypoint_H4_enable' ) { //H4
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_H4_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_H4_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        } else if ( $field === 'waypoint_H5_enable' ) { //H5
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_H5_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_H5_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        }
             // Handle regular text fields
             if ( array_key_exists( $field, $_POST ) ) {
                 $sanitized_value = sanitize_text_field( $_POST[$field] );
@@ -114,6 +175,7 @@ function wporg_save_postdata( $post_id ) {
                     $sanitized_value
                 );
                 error_log("$field saved with sanitized value: $sanitized_value");
+
             } else {
                 error_log("$field not found in POST data.");
             }
@@ -122,7 +184,7 @@ function wporg_save_postdata( $post_id ) {
 
 
 
-}
+
 
 add_action( 'save_post', 'wporg_save_postdata' );
 
@@ -221,6 +283,8 @@ function waypoint826_run() {
             *   PROGRAMMATIC - pass in list of h1, h2, h3 etc
             * 
             */ 
+
+
 
 
         // Create the list of h2 and/or h3 and/or h4
