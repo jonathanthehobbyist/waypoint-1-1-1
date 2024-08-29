@@ -24,10 +24,14 @@ add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 function wporg_custom_box_html( $post ) {
 
-    //global $post;
+    // LIST OF ALL ADMIN functions goes here
 
-    // Retrieve current value from the database
-    $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
+
+    // Retrieve current value for the select field
+    $select_value = get_post_meta( $post->ID, '_wporg_field', true );
+
+    // Retrieve current value for the checkbox field
+    $checkbox_value = get_post_meta( $post->ID, '_waypoint_enable_for_post', true );
 
     // Add a nonce field for security
     wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
@@ -37,9 +41,12 @@ function wporg_custom_box_html( $post ) {
     <label for="wporg_field">Description for this field</label>
     <select name="wporg_field" id="wporg_field" class="postbox">
         <option value="">Select something...</option>
-        <option value="something" <?php selected( $value, 'something' ); ?>>Something</option>
-        <option value="else" <?php selected( $value, 'else' ); ?>>Else</option>
+        <option value="something" <?php selected( $select_value, 'something' ); ?>>Something</option>
+        <option value="else" <?php selected( $select_value, 'else' ); ?>>Else</option>
     </select>
+
+    <input type="checkbox" id="waypoint_enable_for_post" name="waypoint_enable_for_post" value="1" <?php checked( $checkbox_value, '1' ); ?>>
+    <label for="waypoint_enable_for_post">Enable Waypoint => Table of Contents</label><br>
 
     <?php
 } 
@@ -79,23 +86,42 @@ function wporg_save_postdata( $post_id ) {
         return;
     }
 
-    // Check if the input field exists in the POST request
-    if ( array_key_exists( 'wporg_field', $_POST ) ) {
-        $sanitized_value = sanitize_text_field( $_POST['wporg_field'] );
+  // Define an array of fields to save
+    $fields = [
+        'wporg_field',
+        'waypoint_enable_for_post',
+        //'wporg_field_three',
+        // Add more fields as needed
+    ];
 
-        // Update the meta field in the database
-        error_log("POST data: " . print_r($_POST, true));
-        update_post_meta(
-            $post_id,
-            '_wporg_meta_key',
-            $sanitized_value
-        );
-
-        // Log the saved value for debugging
-        error_log("wporg_field saved with value: $sanitized_value");
-    } else {
-        error_log("wporg_field not found in POST data.");
+    foreach ( $fields as $field ) {
+           if ( $field === 'waypoint_enable_for_post' ) {
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_enable_for_post'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_enable_for_post',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+        } else {
+            // Handle regular text fields
+            if ( array_key_exists( $field, $_POST ) ) {
+                $sanitized_value = sanitize_text_field( $_POST[$field] );
+                update_post_meta(
+                    $post_id,
+                    '_' . $field,  // Use the field name as the meta key
+                    $sanitized_value
+                );
+                error_log("$field saved with sanitized value: $sanitized_value");
+            } else {
+                error_log("$field not found in POST data.");
+            }
+        }
     }
+
+
+
 }
 
 add_action( 'save_post', 'wporg_save_postdata' );
@@ -109,32 +135,35 @@ add_action( 'save_post', 'wporg_save_postdata' );
 *
 */
 
-
-
-
-
 function waypoint826_run() {
-            error_log("inside waypoitn826_run");
+            //error_log("inside waypoitn826_run");
             /* 
             * 
             *   PROGRAMMATIC - Pass in post-id or page-id for enabled
             * 
             */ 
-
+            
             // Output the JavaScript in the footer of the page
             function custom_checkbox_js() {
-                error_log("Running custom_checkbox_js."); // this fires, OK...
-                if (is_singular('post') || is_singular('page')) {
-                    error_log("In the if"); 
-                    $post_id = get_the_ID();  //stops here
-                    error_log("post ID is $post_id");
-                    $checkbox_state = get_post_meta($post_id, 'wporg_field', true);
 
+                if (is_singular('post') || is_singular('page') || is_singular('portfolio')) {
+                    
+                    $post_id = get_the_ID(); 
+
+                    // To get values, go get function wporg_custom_box_html()
+                    $checkbox_state = get_post_meta($post_id, '_waypoint_enable_for_post', true);
+                    $field_state = get_post_meta($post_id, '_wporg_field', true);
+
+                    if ($checkbox_state === '1') {
+                        error_log("checkbox state php $checkbox_state");
+                        $post = $post_id;
+                    }
+               
                     ?>
 
                     <script type="text/javascript">
                         function run_state () {
-                            console.log("run_state");
+                        
                             var postId = <?php echo json_encode($post_id); ?>;
                             var checkboxState = <?php echo json_encode($checkbox_state); ?>;
 
@@ -146,34 +175,24 @@ function waypoint826_run() {
                             }
 
                             function applyCustomFunction(postId) {
-                                alert('Checkbox is checked for post ID: ' + postId);
+                                //alert('Checkbox is checked for post ID: ' + postId);
                             }
                         };
 
                         run_state();
                     </script>
 
-
-
                     <?php
                 }
             }
-add_action('wp_footer', 'custom_checkbox_js');
+        add_action('wp_footer', 'custom_checkbox_js');
+   
+    // I need to be able to pass in an array
+     global $post;
+        $post_id = $post->ID;
+        error_log("the post id is $post_id");
+    if (is_page() || is_single($post_id)) {
 
-
-    error_log("current post value from database is"); //this shows up in error log
-
-    // Retrieve data
-    function wporg_retrieve( $post ) { //$post is Global var
-
-        // Retrieve current value from the database
-        $value = get_post_meta( $post->ID, '_wporg_meta_key', true );
-        error_log("current value from database is $value");
-    }
-
-    add_action( 'save_post', 'wporg_retrieve' );
-
-    if (is_page()) {
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
