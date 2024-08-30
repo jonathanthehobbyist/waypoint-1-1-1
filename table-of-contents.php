@@ -5,7 +5,6 @@
  * Author: Jon Simmons
  */
 
-
 // Activation functions
 
 function waypoint826_enqueue_styles() {
@@ -24,11 +23,20 @@ add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 function wporg_custom_box_html( $post ) {
 
+    /*  
+            
+        HOW TO ADD AN ADMIN - places to look
+        • Retreive value for the admin field
+        • Waypoint_ naming structure
+        • Add input field
+        • Define the field in $fields
+        • Add it in the forEach loop in wporg_post_savedata()
+        • Add it just before the DOMContentLoaded function
+
+    */
+
+
     // LIST OF ALL ADMIN functions goes here
-
-
-    // Retrieve current value for the select field
-    //$select_value = get_post_meta( $post->ID, '_wporg_field', true );
 
     // Retrieve current value for the checkbox field
     $checkbox_value = get_post_meta( $post->ID, '_waypoint_enable_for_post', true );
@@ -59,6 +67,26 @@ function wporg_custom_box_html( $post ) {
         <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
         <label for="waypoint_H5_enable">H5</label><br>
 
+    </div>
+
+    <hr>
+
+    <div class="">
+        <p></p>
+        <label for="waypoint_add_to_page">Specify a class or ID to attach to</label><br>
+        <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="">
+        <label for="selection">Choose an option:</label>
+        <select id="selection" name="selection">
+          <option value="class">Class</option>
+          <option value="id">ID</option>
+        </select>
+        <!-- .post-content for example -->
+        <p></p>
+        
+
+        <br />
+
+        <p></p>
     </div>
 
     <?php
@@ -239,7 +267,6 @@ function waypoint826_run() {
             }
         add_action('wp_footer', 'custom_checkbox_js');
 
-   
     /*  PROGRAMMATIC - Pass in post-id or page-id for enabled   */ 
 
     global $post;
@@ -254,12 +281,7 @@ function waypoint826_run() {
     $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
-                
-   
-    //error_log("the value of checkbox h2 for this post is $checkbox_value_H2");
 
-
-    //error_log("the post id is (string)$post");
     if (is_page() || is_single() && $checkbox_state === '1' ) {
 
     ?>
@@ -276,7 +298,6 @@ function waypoint826_run() {
         // Append the main waypoint container to a DIV element on the page
         var parentDiv = document.querySelector('.main-wrapper');
         parentDiv.appendChild(mainContainer);
-
 
         /*  PROGRAMMATIC - pass in list of h1, h2, h3 etc  */ 
 
@@ -298,10 +319,6 @@ function waypoint826_run() {
         if (wph3 == '1') waypointArr.push("h3");
         if (wph4 == '1') waypointArr.push("h4");
         if (wph5 == '1') waypointArr.push("h5");
-
-        // console.log(waypointArr);
-        // old selector
-        //var headings = document.querySelectorAll("h4");
 
         // Create the list h2,h3,h4,h5 based on values passed from the page or post admin
         var headings = document.querySelectorAll(waypointArr.join(", "));
@@ -335,9 +352,6 @@ function waypoint826_run() {
             });
         });
 
-        // Optionally, log the entire array of associated elements
-        //console.log(associatedElements);
-
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
         list.classList.add('list-wrapper');
@@ -354,15 +368,11 @@ function waypoint826_run() {
             return parseInt(heading.replace('h', ''), 10);
         });
 
+        /*  Indentation settings  */
+
         // Find the arraylength
         var numberOfHeadings = valuesOfHeadings.length;
         console.log(numberOfHeadings);
-
-        // if numberOfHeadings = 1, we don't need to know the max number
-        // if "" = 2, we only need to set a margin of the lowest number
-        // if "" = 3, h3 margin=0, h4=8, h5=16
-        // arrayLength = numberOfHeadings
-        // highlest level H = topLevel
 
         // Find the highest level H number (smallest number)
         var topLevel = Math.min(...valuesOfHeadings);
@@ -379,35 +389,13 @@ function waypoint826_run() {
             });
         }
 
-        
-        // Set the base margin
+        // Set the base margin, this could be user CONFIGURABLE eventually (ask if they want nesting)
         var baseMargin = 8;
 
-        //for (i=0; i<associatedElements.length; i++) {
-        // REPLACEMENT: The for loop
         associatedElements.forEach(function(item) {
 
             var selector = item.selector; // The selector (h2, h3, etc)
             var element = item.element; // The DOM element
-
-            //console.log(associatedElements);
-
-            // Tests to see if there's a span element inside the h2, h3, h4
-            //if(item.Element.getElementsByTagName('span')[0]) {
-
-            // REPLACEMENT the if() {}
-
-
-
-                //gets the span element inside of h2, h3, h4, h5
-                //var listOfH2InnerText = associatedElements[i].getElementsByTagName('span')[0];
-
-                // REPLACEMENT: Gets the span element inside of h2, h3, h4, h5
-
-
-            //} else {
-                //continue;
-            //}
 
             // Duplicates how the h2, h3, h4 is written - 'dirty version'
            var innerContent = element.innerText;
@@ -475,12 +463,7 @@ function waypoint826_run() {
 
         }); //end for loop
 
-
-  
-
-
-
-        // Fetch the newly created parent div where you want to insert the new element
+        /*   Placing Waypoint826 table of contents into the structure of the page    */
         
         if (mainContainer) {
              // If parent div has first child, insert mainContainer before first child
@@ -489,8 +472,6 @@ function waypoint826_run() {
             } else {
                 // If mainContainer has 0 children, append
                 mainContainer.appendChild(list);
-                //tocDiv.appendChild(content);
-                //tocDiv.appendChild(list);
             }
         }
 
@@ -527,10 +508,6 @@ function waypoint826_run() {
             console.log(marginLeftValue);
 
         } // end positionMainContainer
-
-
-
-
 
         // Run the function when the page loads
         window.addEventListener('load', positionMainContainer);
@@ -681,9 +658,7 @@ function waypoint826_run() {
           }
         });
 
-
         /* MOBILE EXPERIENCE sigh */
-
 
         /*  PUSHING ITEMS TO AN ARRAY   */
 
@@ -706,11 +681,6 @@ function waypoint826_run() {
         //https://medium.com/@hbahonar/how-to-create-wordpress-custom-admin-page-and-menu-from-scratch-ultimate-guide-updated-d7b4d2e57f96
 
         // https://developer.wordpress.org/plugins/settings/
-
-
-
-
-
 
     });
     </script>
