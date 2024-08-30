@@ -306,6 +306,38 @@ function waypoint826_run() {
         // Create the list h2,h3,h4,h5 based on values passed from the page or post admin
         var headings = document.querySelectorAll(waypointArr.join(", "));
 
+        // Iterate over waypointArr instead of headings
+        waypointArr.forEach(function(selector, index) {
+            var heading = document.querySelector(selector); // Get the first matching element for this selector
+            if (heading) {
+                var newValue = 'newValue_' + index; // Example new value
+                //console.log('Original Selector:', selector, 'New Value:', newValue);
+            } else {
+                console.log('No heading found for selector:', selector);
+            }
+        });
+
+        // Array to hold the associations
+        var associatedElements = [];
+
+        // Iterate over each heading and find its corresponding selector
+        headings.forEach(function(heading) {
+            // Iterate over the selectors to find which one matches the current heading
+            waypointArr.forEach(function(selector) {
+                // Check if the heading matches the selector (e.g., by tag name)
+                if (heading.matches(selector)) {
+                    associatedElements.push({
+                        selector: selector,
+                        element: heading
+                    });
+                    console.log('Selector:', selector, 'Element:', heading);
+                }
+            });
+        });
+
+        // Optionally, log the entire array of associated elements
+        //console.log(associatedElements);
+
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
         list.classList.add('list-wrapper');
@@ -316,23 +348,73 @@ function waypoint826_run() {
         contentParagraph.innerHTML = "Contents";
         // use this .appendChild(contentParagraph);
 
-        for (i=0; i<headings.length; i++) {
+        // the map method creates a new array populated with the results of calling a provided function on every element in the calling array
+        // 
+        let valuesOfHeadings = waypointArr.map(function(heading) {
+            return parseInt(heading.replace('h', ''), 10);
+        });
+
+        // Find the arraylength
+        var numberOfHeadings = valuesOfHeadings.length;
+        console.log(numberOfHeadings);
+
+        // if numberOfHeadings = 1, we don't need to know the max number
+        // if "" = 2, we only need to set a margin of the lowest number
+        // if "" = 3, h3 margin=0, h4=8, h5=16
+        // arrayLength = numberOfHeadings
+        // highlest level H = topLevel
+
+        // Find the highest level H number (smallest number)
+        var topLevel = Math.min(...valuesOfHeadings);
+        console.log(topLevel);
+
+        // Find the loest level H number (highest number)
+        var bottomLevel = Math.max(...valuesOfHeadings);
+        console.log(topLevel);
+
+        // if every H is selected, h2, h3, h4, h5
+        if (numberOfHeadings == 4) {
+            valuesOfHeadings.sort(function(a, b) {
+                return a - b;
+            });
+        }
+
+        
+        // Set the base margin
+        var baseMargin = 8;
+
+        //for (i=0; i<associatedElements.length; i++) {
+        // REPLACEMENT: The for loop
+        associatedElements.forEach(function(item) {
+
+            var selector = item.selector; // The selector (h2, h3, etc)
+            var element = item.element; // The DOM element
+
+            //console.log(associatedElements);
 
             // Tests to see if there's a span element inside the h2, h3, h4
-            if(headings[i].getElementsByTagName('span')[0]) {
+            //if(item.Element.getElementsByTagName('span')[0]) {
 
-                var listOfH2InnerText = headings[i].getElementsByTagName('span')[0];
+            // REPLACEMENT the if() {}
 
-            } else {
-                continue;
-            }
+
+
+                //gets the span element inside of h2, h3, h4, h5
+                //var listOfH2InnerText = associatedElements[i].getElementsByTagName('span')[0];
+
+                // REPLACEMENT: Gets the span element inside of h2, h3, h4, h5
+
+
+            //} else {
+                //continue;
+            //}
 
             // Duplicates how the h2, h3, h4 is written - 'dirty version'
-           var innerSpan = listOfH2InnerText.innerText;
-           console.log(innerSpan);
+           var innerContent = element.innerText;
+           //console.log(innerContent);
 
            // Cleans up the string to make it into a usable class name / on-page anchor link
-           var str = listOfH2InnerText.innerText;
+           var str = innerContent;
            str = str.replace(/^\s/g, ''); //matches any space at the beginning of an input
            str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
            str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+]/g, '').toLowerCase(); //matches 
@@ -341,19 +423,62 @@ function waypoint826_run() {
            //console.log(str);
 
            // Assign a unique ID to the h2, h3, h4 tag based on its position
-            listOfH2InnerText.id = str;
+            element.id = str;
             
             // Create a list item and link for each h2, h3, h4
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.href = "#" + str;
-            link.innerHTML = innerSpan;
+            link.innerHTML = innerContent;
+
+            // Add a class that says whether this came from an h2, h3, h4, or h5 elem
+            listItem.classList.add(item.selector + '_selector');
+
+            switch (numberOfHeadings) {
+
+                    case '1':
+                        break;
+
+                    case '2':
+                        //highest number IE bottomLevel gets a margin of 8px assigned
+                        if(item.selector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        break;
+                        
+                    case '3':
+                        // The topLevel - 1 (middle level) gets a base*1 margin
+                        if(item.selector != bottomLevel && item.selector != topLevel) { 
+                            listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        } else if (item.selector == bottomLevel) {
+                        // The topLevel - 2 gets a base*2 margin 
+                         listItem.style.marginLeft = (baseMargin * 2) + "px";
+                        }
+                        break;
+
+                    case '4':
+                        // TopLevel - 1 gets a base*1 margin
+                        // TopLevel - 2 gets a base*2 margin
+                        // TopLevel - 3 gets a base*3 margin
+
+                        if(item.selector == valuesOfHeadings[1]) { //topLevel -1
+                            listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        } else if (item.selector == valuesOfHeadings[2]) { //topLevel -2
+                            listItem.style.marginLeft = (baseMargin * 2) + "px";
+                        } else if (item.selector == bottomLevel) { //topLeft -3
+                         listItem.style.marginLeft = (baseMargin * 3) + "px";
+                        }
+                        break;
+            }
 
             // append
             listItem.appendChild(link);
             list.appendChild(listItem);
 
-        } //end for loop
+        }); //end for loop
+
+
+  
+
+
 
         // Fetch the newly created parent div where you want to insert the new element
         
@@ -402,6 +527,9 @@ function waypoint826_run() {
             console.log(marginLeftValue);
 
         } // end positionMainContainer
+
+
+
 
 
         // Run the function when the page loads

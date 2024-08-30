@@ -59,6 +59,7 @@ ol.list-wrapper {
 }
 
 .waypoint826-main ol.list-wrapper li a {
+	display: inline-block;
 	color: var(--text-secondary);
 }
 
@@ -88,11 +89,15 @@ ol.list-wrapper {
 .list-wrapper {
 
 }
-/*
-*
-*		SECTION
-*
-*/
+/* SELECTORS */
+
+.waypoint826-main ol.list-wrapper li.h2_selector { margin-left: 0px; }
+
+.waypoint826-main ol.list-wrapper li.h3_selector { margin-left: 12px!important; }
+
+ol li a.h4_selector { margin-left: 6px; }
+
+ol li a.h5_selector { margin-left: 9px; }
 
 
 /*
