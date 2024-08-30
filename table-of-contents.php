@@ -182,12 +182,7 @@ function wporg_save_postdata( $post_id ) {
         }
     }
 
-
-
-
-
 add_action( 'save_post', 'wporg_save_postdata' );
-
 
 /*
 *
@@ -243,14 +238,9 @@ function waypoint826_run() {
                 }
             }
         add_action('wp_footer', 'custom_checkbox_js');
-   
-    // I need to be able to pass in an array
 
-    /* 
-    * 
-    *   PROGRAMMATIC - Pass in post-id or page-id for enabled
-    * 
-    */ 
+   
+    /*  PROGRAMMATIC - Pass in post-id or page-id for enabled   */ 
 
     global $post;
 
@@ -258,6 +248,16 @@ function waypoint826_run() {
 
     // To get values, go get function wporg_custom_box_html()
     $checkbox_state = get_post_meta($post_id, '_waypoint_enable_for_post', true);
+
+    // To get values, go get function wporg_custom_box_html()
+    $checkbox_value_H2 = get_post_meta( $post_id, '_waypoint_H2_enable', true );
+    $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
+    $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
+    $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
+                
+   
+    //error_log("the value of checkbox h2 for this post is $checkbox_value_H2");
+
 
     //error_log("the post id is (string)$post");
     if (is_page() || is_single() && $checkbox_state === '1' ) {
@@ -278,17 +278,33 @@ function waypoint826_run() {
         parentDiv.appendChild(mainContainer);
 
 
-            /* 
-            * 
-            *   PROGRAMMATIC - pass in list of h1, h2, h3 etc
-            * 
-            */ 
+        /*  PROGRAMMATIC - pass in list of h1, h2, h3 etc  */ 
 
+        // Transfer php var into js var, change into a number
+        let waypointH2 = <?php echo json_encode($checkbox_value_H2); ?>;
+        let wph2 = parseFloat(waypointH2);
+        let waypointH3 = <?php echo json_encode($checkbox_value_H3); ?>;
+        let wph3 = parseFloat(waypointH3);
+        var waypointH4 = <?php echo json_encode($checkbox_value_H4); ?>;
+        let wph4 = parseFloat(waypointH4);
+        var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
+        let wph5 = parseFloat(waypointH5);
 
+        // Create array
+        let waypointArr = [];
 
+        //push into array if the checkbox is checked ( == 1)
+        if (wph2 == '1') waypointArr.push("h2");
+        if (wph3 == '1') waypointArr.push("h3");
+        if (wph4 == '1') waypointArr.push("h4");
+        if (wph5 == '1') waypointArr.push("h5");
 
-        // Create the list of h2 and/or h3 and/or h4
-        var headings = document.querySelectorAll("h4");
+        // console.log(waypointArr);
+        // old selector
+        //var headings = document.querySelectorAll("h4");
+
+        // Create the list h2,h3,h4,h5 based on values passed from the page or post admin
+        var headings = document.querySelectorAll(waypointArr.join(", "));
 
         // var headings = document.querySelectorAll("h2, h3, h4");
         const list = document.createElement('ol');
@@ -458,8 +474,6 @@ function waypoint826_run() {
         //console.log(distanceFromTop.y);
         mainContainer.style.top = (distanceFromTop.y + 100 + 'px');
         //console.log(distanceFromTop);
-
-
 
         var box = document.getElementById('waypoint826-primary-container'),
         top = box.offsetTop;
