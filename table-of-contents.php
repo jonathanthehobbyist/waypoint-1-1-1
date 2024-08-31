@@ -445,37 +445,47 @@ function waypoint826_run() {
 
             // Add a class that says whether this came from an h2, h3, h4, or h5 elem
             listItem.classList.add(item.selector + '_selector');
+            //console.log(numberOfHeadings);
+
+            // WTF am I trying to do? 
+            // The problem: selector has an H in it (for example, h2) - and I need to compare it to a number.
+
+            var breakDownSelector = parseInt(selector.replace('h', ''),10);
+          
 
             switch (numberOfHeadings) {
 
-                    case '1':
+                    case 1:
                         break;
 
-                    case '2':
+                    case 2:
                         //highest number IE bottomLevel gets a margin of 8px assigned
-                        if(item.selector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        if(selector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
                         break;
                         
-                    case '3':
+                    case 3:
+                        console.log('3');
                         // The topLevel - 1 (middle level) gets a base*1 margin
-                        if(item.selector != bottomLevel && item.selector != topLevel) { 
+                        if(breakDownSelector != bottomLevel && breakDownSelector != topLevel) { 
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        } else if (item.selector == bottomLevel) {
+                        } else if (selector == bottomLevel) {
                         // The topLevel - 2 gets a base*2 margin 
                          listItem.style.marginLeft = (baseMargin * 2) + "px";
                         }
                         break;
 
-                    case '4':
+                    case 4:
                         // TopLevel - 1 gets a base*1 margin
                         // TopLevel - 2 gets a base*2 margin
                         // TopLevel - 3 gets a base*3 margin
-
-                        if(item.selector == valuesOfHeadings[1]) { //topLevel -1
+                        //console.log('item selector: ' + selector + ' valuesOfH: ' + valuesOfHeadings[1]);
+                        if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
+                            //console.log('item selector:' + selector + 'valuesOfH' + valuesOfHeadings);
+                            console.log("topLevel - 1");
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        } else if (item.selector == valuesOfHeadings[2]) { //topLevel -2
+                        } else if (breakDownSelector == valuesOfHeadings[2]) { //topLevel -2
                             listItem.style.marginLeft = (baseMargin * 2) + "px";
-                        } else if (item.selector == bottomLevel) { //topLeft -3
+                        } else if (breakDownSelector == bottomLevel) { //topLeft -3
                          listItem.style.marginLeft = (baseMargin * 3) + "px";
                         }
                         break;
