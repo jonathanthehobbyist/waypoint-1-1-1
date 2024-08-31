@@ -26,12 +26,12 @@ function wporg_custom_box_html( $post ) {
     /*  
             
         HOW TO ADD AN ADMIN - places to look
-        • Retreive value for the admin field
-        • Waypoint_ naming structure
-        • Add input field
-        • Define the field in $fields
-        • Add it in the forEach loop in wporg_post_savedata()
-        • Add it just before the DOMContentLoaded function
+        • Add to - Retreive value for the admin field
+        • NOTE: use Waypoint_ naming structure
+        • Add to - Add input field
+        • Add to - Define the field in $fields
+        • Add to - it in the forEach loop in wporg_post_savedata()
+        • Add to - it just before the DOMContentLoaded function
 
     */
 
@@ -44,6 +44,7 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H3 = get_post_meta( $post->ID, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
+    $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
 
     // Add a nonce field for security
     wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
@@ -74,17 +75,21 @@ function wporg_custom_box_html( $post ) {
     <div class="">
         <p></p>
         <label for="waypoint_add_to_page">Specify a class or ID to attach to</label><br>
-        <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="">
-        <label for="selection">Choose an option:</label>
-        <select id="selection" name="selection">
-          <option value="class">Class</option>
-          <option value="id">ID</option>
-        </select>
+        <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="<?php echo esc_attr( $field_value_add_to ); ?>">
+
         <!-- .post-content for example -->
         <p></p>
         
-
         <br />
+
+        <form>
+          <label for="selection">Choose an option:</label>
+          <select id="selection" name="selection">
+            <option value="class">Class</option>
+            <option value="id">ID</option>
+          </select>
+        </form>
+
 
         <p></p>
     </div>
@@ -134,6 +139,7 @@ function wporg_save_postdata( $post_id ) {
         'waypoint_H3_enable',
         'waypoint_H4_enable',
         'waypoint_H5_enable',
+        'waypoint_add_to_page',
         //'wporg_field_three',
         // Add more fields as needed
     ];
@@ -192,6 +198,16 @@ function wporg_save_postdata( $post_id ) {
             );
             error_log("$field saved with value: $checkbox_value");
 
+
+        } else if ( $field === 'waypoint_add_to_page' ) { //H5
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_H5_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
 
         }
             // Handle regular text fields
@@ -281,6 +297,7 @@ function waypoint826_run() {
     $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
+    $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
 
     if (is_page() || is_single() && $checkbox_state === '1' ) {
 
@@ -288,20 +305,9 @@ function waypoint826_run() {
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // console.log('This is the home page');
 
-        // Create the main container to hold the waypoint table of contents
-        let mainContainer = document.createElement('div');
-        mainContainer.className = 'waypoint826-main';
-        mainContainer.id = 'waypoint826-primary-container';
-
-        // Append the main waypoint container to a DIV element on the page
-        var parentDiv = document.querySelector('.main-wrapper');
-        parentDiv.appendChild(mainContainer);
-
-        /*  PROGRAMMATIC - pass in list of h1, h2, h3 etc  */ 
-
-        // Transfer php var into js var, change into a number
+        // Transfer php var into js var
+        // Change into a number
         let waypointH2 = <?php echo json_encode($checkbox_value_H2); ?>;
         let wph2 = parseFloat(waypointH2);
         let waypointH3 = <?php echo json_encode($checkbox_value_H3); ?>;
@@ -310,6 +316,24 @@ function waypoint826_run() {
         let wph4 = parseFloat(waypointH4);
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
+
+        // USER CONFIGURE
+        // a class (for now) or ID (later) to add waypoint826-main to 
+        let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
+        console.log(waypointFieldAddTo);
+
+        // Create the main container to hold the waypoint table of contents
+        let mainContainer = document.createElement('div');
+        mainContainer.className = 'waypoint826-main';
+        mainContainer.id = 'waypoint826-primary-container';
+
+        // var contentArea = document.querySelector('.main-wrapper'); // original content area (for home page)
+
+        // Append the main waypoint container to a DIV element on the page
+        var contentArea = document.querySelector('.' + waypointFieldAddTo);
+        contentArea.appendChild(mainContainer);
+
+        // USER CONFIGURE - which of the h2, h3, h4, h5 gets passed
 
         // Create array
         let waypointArr = [];
@@ -330,7 +354,7 @@ function waypoint826_run() {
                 var newValue = 'newValue_' + index; // Example new value
                 //console.log('Original Selector:', selector, 'New Value:', newValue);
             } else {
-                console.log('No heading found for selector:', selector);
+                // console.log('No heading found for selector:', selector);
             }
         });
 
@@ -347,7 +371,7 @@ function waypoint826_run() {
                         selector: selector,
                         element: heading
                     });
-                    console.log('Selector:', selector, 'Element:', heading);
+                    //console.log('Selector:', selector, 'Element:', heading);
                 }
             });
         });
@@ -372,15 +396,15 @@ function waypoint826_run() {
 
         // Find the arraylength
         var numberOfHeadings = valuesOfHeadings.length;
-        console.log(numberOfHeadings);
+        //console.log(numberOfHeadings);
 
         // Find the highest level H number (smallest number)
         var topLevel = Math.min(...valuesOfHeadings);
-        console.log(topLevel);
+        //console.log(topLevel);
 
         // Find the loest level H number (highest number)
         var bottomLevel = Math.max(...valuesOfHeadings);
-        console.log(topLevel);
+        //console.log(topLevel);
 
         // if every H is selected, h2, h3, h4, h5
         if (numberOfHeadings == 4) {
@@ -405,7 +429,7 @@ function waypoint826_run() {
            var str = innerContent;
            str = str.replace(/^\s/g, ''); //matches any space at the beginning of an input
            str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
-           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+]/g, '').toLowerCase(); //matches 
+           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+%^@*]/g, '').toLowerCase(); //matches 
            // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
 
            //console.log(str);
@@ -505,7 +529,7 @@ function waypoint826_run() {
             // Set the absolute div's position
             //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
             mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
-            console.log(marginLeftValue);
+            //console.log(marginLeftValue);
 
         } // end positionMainContainer
 
@@ -577,7 +601,7 @@ function waypoint826_run() {
 
 
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y + 100 + 'px');
+        mainContainer.style.top = (distanceFromTop.y - 124 + 'px');
         //console.log(distanceFromTop);
 
         var box = document.getElementById('waypoint826-primary-container'),
@@ -589,7 +613,18 @@ function waypoint826_run() {
             var y = document.documentElement.scrollTop || document.body.scrollTop;
             //console.log(y);
 
-            if ( (y - 80) >= top) { 
+            // Get element that mainContainer was attached to
+            // waypointFieldAddTo
+
+            // Assuming there is only one element with this class
+            var element = document.querySelector('.' + waypointFieldAddTo);
+
+            if (element) {
+                var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
+                console.log('Distance from top: ' + distanceFromTop + 'px');
+            }
+
+            if ( (y - distanceFromTop) >= top) { 
                 box.classList.add('stick');
                
             } else { 
