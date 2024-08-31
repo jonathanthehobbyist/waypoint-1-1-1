@@ -15,6 +15,7 @@
 	--primary: #4280f7;
 	--text-primary: #111111;
 	--text-secondary: #777777;
+	--base-unit: 8px;
 }
 
 
@@ -47,6 +48,8 @@ ol.list-wrapper {
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
+	margin-bottom: calc(var(--base-unit) * 1.5);
+	line-height: 1.15;
 }
 
 

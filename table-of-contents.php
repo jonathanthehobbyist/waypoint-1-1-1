@@ -36,6 +36,22 @@ function wporg_custom_box_html( $post ) {
     */
 
 
+    /*
+        ADMIN - what else is needed? 
+        - POSITION
+        - need an element to attach to on the right - individual
+        - STYLE
+        - background color / transparent - individ.
+        - Selection color - settings
+        - Color of normal type - settings
+        - Border right style (or not at all) - settings
+        - Typeography - settings
+
+        INDIVIDUAL POST/PAGE vs. SETTINGS
+
+    */
+
+
     // LIST OF ALL ADMIN functions goes here
 
     // Retrieve current value for the checkbox field
@@ -204,7 +220,7 @@ function wporg_save_postdata( $post_id ) {
             $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
             update_post_meta(
                 $post_id,
-                '_waypoint_H5_enable',
+                '_waypoint_add_to_page',
                 $checkbox_value
             );
             error_log("$field saved with value: $checkbox_value");
