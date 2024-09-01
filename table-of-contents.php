@@ -26,12 +26,13 @@ function wporg_custom_box_html( $post ) {
     /*  
             
         HOW TO ADD AN ADMIN - places to look
-        • Add to - Retreive value for the admin field
         • NOTE: use Waypoint_ naming structure
+
         • Add to - Add input field
+        • Add to - Retreive value for the admin field
         • Add to - Define the field in $fields
         • Add to - it in the forEach loop in wporg_post_savedata()
-        • Add to - it just before the DOMContentLoaded function
+        • Add to - it just before the DOMContentLoaded function to transition from php to js variables
 
     */
 
@@ -53,6 +54,7 @@ function wporg_custom_box_html( $post ) {
         - Color of normal type - settings
         - Border right style (or not at all) - settings
         - Typeography - settings
+        - Make base margin user configurabl - settings
 
         INDIVIDUAL POST/PAGE vs. SETTINGS
 
@@ -575,11 +577,13 @@ function waypoint826_run() {
             /*  ------  USER CONFIGURABLE  ----------  */
 
             if ( waypointFieldAlignToElement ) {
-                console.log("The align to field has been defined by the user");
+                //console.log("The align to field has been defined by the user");
 
-                // Remove spaces and add a dot '.' from the data passed from the user
+                // Class or ID
+                // Remove spaces and add a dot '.' from the class or ID data passed from the user
                 var alignElement = waypointFieldAlignToElement.replace(/ /g, '.');
              
+                // DOM element of class or ID 
                 // .main-container .row-container
                 const contentElement = document.querySelector('.' + alignElement);
 
@@ -608,48 +612,97 @@ function waypoint826_run() {
                 // For TABLE OF CONTENTS
                 // Temp
                 // Select the first element with the class "waypoint826-main"
-                var elementRight = document.querySelector('.waypoint826-main');
 
-                if (elementRight) {
-                    // Get the right position of the elementRight
-                    var rightPosition = elementRight.getBoundingClientRect().right;
 
-                    console.log('Right position of Waypoint:', rightPosition + 'px');
+                
+
+                var elementWaypoint = document.querySelector('.waypoint826-main');
+
+                if (elementWaypoint) {
+                    // Get the right position of the elementWaypoint
+                    var rightPosition = elementWaypoint.getBoundingClientRect().right;
+                    var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+                    var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
+
+                    console.log('width of Waypoint clean' + cleanElemWaypointWidth);
+
+                    //console.log('Right position of Waypoint:', rightPosition + 'px');
                 } else {
-                    console.log('elementRight not found');
+                    console.log('elementWaypoint not found');
                 }
 
 
                 // For CONTENT
 
-                 var elementLeft = document.querySelector('.uncell.boomapps_vccolumn');
+                 var elementContent = document.querySelector('.uncell.boomapps_vccolumn');
+                 var elemContentWidth = window.getComputedStyle(elementContent).width;
+                 var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
+                 console.log('width of main content clean' + cleanElemContentWidth);
 
-                if (elementLeft) {
-                    // Get the left position of the elementLeft
-                    var leftPosition = elementLeft.getBoundingClientRect().left;
+                 // Test if content has auto elemContentWidth, get elemContentWidth of parent
+                 // Select a child element
+                 if ( elemContentWidth == 'auto') {
+                    console.log('width is auto');
+                 }
 
-                    console.log('Left position: of maincontent', leftPosition + 'px');
+                //var childElement = document.querySelector('.child-class');
+
+                // Get the parent element
+                //var parentElement = childElement.parentElement;
+
+                //console.log(parentElement);
+
+                if (elementContent) {
+                    // Get the left position of the elementContent
+                    var leftPosition = elementContent.getBoundingClientRect().left;
+
+                    //console.log('Left position: of maincontent', leftPosition + 'px');
                 } else {
-                    console.log('elementLeft not found');
+                    console.log('elementContent not found');
                 }
 
                 // I'm not sure how this is working...
                 // What's my math...
 
                 /*
-
-                - waypoint (element) can't go beyond user assigned page elemenet (mainContainer)
-
-                if leftposition is less than the maincontainer.offsetwidth, make mainContainer invisible (cleanup)
-
-
+                *
+                * waypoint (element) can't go beyond user assigned page elemenet (mainContainer)    
+                *
+                * if leftposition is less than the maincontainer.offsetwidth, make mainContainer invisible (cleanup)
+                *
+                *
                 */
+                var viewportWidth = window.innerWidth;
+                var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
+                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 300);
+                console.log('spaceforwaypoint' + spaceForWaypoint);
+                console.log('waypointSpaceNeeded' + waypointSpaceNeeded);
 
-                console.log('elementLeft:   ' + leftPosition);
+
+                // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
+                if ( spaceForWaypoint < waypointSpaceNeeded ) {
+                    // if the width of the page is greater than 
+                    // Set mainContainer display to none
+                    //console.log('inside display none action if statement' + cleanElemWaypointWidth);
+                    mainContainer.style.display = 'none';
+                } else {
+                    mainContainer.style.display = 'block';
+                }
+                //console.log('Viewport width:' + viewportWidth + 'px' + ' content plus waypoint width: ' + contentWidth + 'px');
+               
+
+                // 
+                console.log('elementContent:   ' + leftPosition);
                 mainContainer.style.left = (leftPosition - mainContainer.offsetWidth - (baseMargin * 8)) + 'px';
                 // (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
                 console.log('Offset width of the main container:  ' + mainContainer.offsetWidth);
                 console.log('marginLeftValue from:  ' + marginLeftValue);
+
+                //  - DOM element of main content area
+                // This code breaks the fixed property of the mainContainer
+                //var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
+               // contentArea.style.transform = `translateX(${offset}px)`;
+
             } else {
                 console.log("waypointFieldAlignToElement hasn't been defined by the user");
             }
@@ -663,27 +716,9 @@ function waypoint826_run() {
 
         window.addEventListener('resize', () => {
             setTimeout(() => {
+                //after timer, call
                 positionMainContainer();
 
-                // Temp
-                // Select the element by its classes
-                var element = document.querySelector('.uncell.boomapps_vccolumn');
-
-                if (element) {
-                    // Get the left position of the element
-                    var leftPosition = element.getBoundingClientRect().left;
-
-                    console.log('Left position: of maincontent', leftPosition + 'px');
-                } else {
-                    console.log('Element not found');
-                }
-
-
-
-
-
-                //const rect = headings[0].getBoundingClientRect();
-                //console.log(rect);
             }, 0); // Adjust delay as needed
         });
 
@@ -726,20 +761,16 @@ function waypoint826_run() {
             }
         });
 
-        // Offset from Browswer window top
+        /* 
+        * 
+        *   PROGRAMMATIC - Clean this up, and pass in offset from top (.row-menu) is bespoke
+        * 
+        */ 
 
-        // const distanceFromTop = headings[0].getBoundingClientRect();  don't get rid of yet
+
         var menuHeight = document.querySelector('.row-menu');
         const distanceFromTop = menuHeight.getBoundingClientRect();
         //console.log(menuHeight);
-
-
-                /* 
-                * 
-                *   PROGRAMMATIC - Clean this up, and pass in offset from top
-                * 
-                */ 
-
 
         //console.log(distanceFromTop.y);
         mainContainer.style.top = (distanceFromTop.y + 'px');
@@ -752,10 +783,6 @@ function waypoint826_run() {
             //console.log('Page scrolled!');
 
             var y = document.documentElement.scrollTop || document.body.scrollTop;
-            //console.log(y);
-
-            // Get element that mainContainer was attached to
-            // waypointFieldAddTo
 
             // Assuming there is only one element with this class
             var element = document.querySelector('.' + waypointFieldAddTo);
