@@ -12,8 +12,8 @@
 */
 
 :root {
-	--primary: #4280f7;
-	--text-primary: #111111;
+	--primary: #2366E5; /*#4280f7;*/
+	--text-primary: #222;
 	--text-secondary: #777777;
 	--base-unit: 8px;
 }
@@ -64,10 +64,11 @@ ol.list-wrapper {
 .waypoint826-main ol.list-wrapper li a {
 	display: inline-block;
 	color: var(--text-secondary);
+	font-size: 16px;
 }
 
 .waypoint826-main ol.list-wrapper li.active a {
-	color: var(--text-primary);
+	color: var(--text-primary)!important;
 }
 
 .waypoint826-main ol li.active a {}

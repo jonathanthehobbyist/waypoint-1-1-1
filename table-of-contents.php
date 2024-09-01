@@ -459,8 +459,19 @@ function waypoint826_run() {
             });
         }
 
+
+        /*
+        *
+        *
+        *
+        *
+        */
+
         // Set the base margin, this could be user CONFIGURABLE eventually (ask if they want nesting)
         var baseMargin = 8;
+
+
+
 
         associatedElements.forEach(function(item) {
 
@@ -624,17 +635,18 @@ function waypoint826_run() {
 
                 // I'm not sure how this is working...
                 // What's my math...
+
                 /*
 
                 - waypoint (element) can't go beyond user assigned page elemenet (mainContainer)
 
-
+                if leftposition is less than the maincontainer.offsetwidth, make mainContainer invisible (cleanup)
 
 
                 */
 
                 console.log('elementLeft:   ' + leftPosition);
-                mainContainer.style.left = (leftPosition - mainContainer.offsetWidth) + 'px';
+                mainContainer.style.left = (leftPosition - mainContainer.offsetWidth - (baseMargin * 8)) + 'px';
                 // (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
                 console.log('Offset width of the main container:  ' + mainContainer.offsetWidth);
                 console.log('marginLeftValue from:  ' + marginLeftValue);
@@ -730,7 +742,7 @@ function waypoint826_run() {
 
 
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y - 124 + 'px');
+        mainContainer.style.top = (distanceFromTop.y + 'px');
         //console.log(distanceFromTop);
 
         var box = document.getElementById('waypoint826-primary-container'),
