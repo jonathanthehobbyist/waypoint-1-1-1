@@ -48,7 +48,7 @@ ol.list-wrapper {
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
-	margin-bottom: calc(var(--base-unit) * 1.5);
+	margin-bottom: calc(var(--base-unit) * 2.25);
 	line-height: 1.15;
 }
 
@@ -95,8 +95,6 @@ ol.list-wrapper {
 /* SELECTORS */
 
 .waypoint826-main ol.list-wrapper li.h2_selector { margin-left: 0px; }
-
-.waypoint826-main ol.list-wrapper li.h3_selector { margin-left: 12px!important; }
 
 ol li a.h4_selector { margin-left: 6px; }
 

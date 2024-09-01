@@ -38,9 +38,16 @@ function wporg_custom_box_html( $post ) {
 
     /*
         ADMIN - what else is needed? 
-        - POSITION
-        - need an element to attach to on the right - individual
-        - STYLE
+
+        POSITION
+
+        -   DONE: need an element to attach to on the right - individual
+        - need to adjust the center DIV right if margin: 0 auto;
+        -   DONE: peg to top element
+        - Additional right margin for mainContainer
+
+        STYLE
+
         - background color / transparent - individ.
         - Selection color - settings
         - Color of normal type - settings
@@ -48,6 +55,9 @@ function wporg_custom_box_html( $post ) {
         - Typeography - settings
 
         INDIVIDUAL POST/PAGE vs. SETTINGS
+
+        CLEAN UP
+        - Nicer animation of Waypoint moving around after a window resize
 
     */
 
@@ -61,6 +71,7 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
+    $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
     // Add a nonce field for security
     wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
@@ -98,14 +109,15 @@ function wporg_custom_box_html( $post ) {
         
         <br />
 
-        <form>
+        <!--form>
           <label for="selection">Choose an option:</label>
           <select id="selection" name="selection">
             <option value="class">Class</option>
             <option value="id">ID</option>
           </select>
-        </form>
-
+        </form-->
+        <label for="waypoint_align_to_element">Specify a class or ID to attach to</label><br>
+        <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
 
         <p></p>
     </div>
@@ -156,6 +168,7 @@ function wporg_save_postdata( $post_id ) {
         'waypoint_H4_enable',
         'waypoint_H5_enable',
         'waypoint_add_to_page',
+        'waypoint_align_to_element',
         //'wporg_field_three',
         // Add more fields as needed
     ];
@@ -221,6 +234,16 @@ function wporg_save_postdata( $post_id ) {
             update_post_meta(
                 $post_id,
                 '_waypoint_add_to_page',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+        } else if ( $field === 'waypoint_align_to_element' ) { //H5
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_align_to_element'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_align_to_element',
                 $checkbox_value
             );
             error_log("$field saved with value: $checkbox_value");
@@ -314,6 +337,7 @@ function waypoint826_run() {
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
     $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
+    $field_value_align_to_element = get_post_meta( $post_id, '_waypoint_align_to_element', true );
 
     if (is_page() || is_single() && $checkbox_state === '1' ) {
 
@@ -333,10 +357,16 @@ function waypoint826_run() {
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
 
-        // USER CONFIGURE
+        /*  ------  USER CONFIGURABLE  ----------  */
+
         // a class (for now) or ID (later) to add waypoint826-main to 
-        let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
-        console.log(waypointFieldAddTo);
+       let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
+       // console.log(waypointFieldAddTo);
+
+       // Horizontal alignment to an element
+       let waypointFieldAlignToElement = <?php echo json_encode($field_value_align_to_element); ?>;
+
+
 
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
@@ -475,12 +505,15 @@ function waypoint826_run() {
                         break;
 
                     case 2:
-                        //highest number IE bottomLevel gets a margin of 8px assigned
-                        if(selector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        // console.log('2');
+                        // Highest number IE bottomLevel gets a margin of 8px assigned
+                        // Logic to if: when breakdownselector equals bottomlevle, set the leftmargin of the li to baseMargin (8)
+                        if(breakDownSelector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
+                        console.log('bottomLevel: ' + bottomLevel + '  breakDownSelector: ' + breakDownSelector);
                         break;
                         
                     case 3:
-                        console.log('3');
+                        //console.log('3');
                         // The topLevel - 1 (middle level) gets a base*1 margin
                         if(breakDownSelector != bottomLevel && breakDownSelector != topLevel) { 
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
@@ -497,7 +530,7 @@ function waypoint826_run() {
                         //console.log('item selector: ' + selector + ' valuesOfH: ' + valuesOfHeadings[1]);
                         if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
                             //console.log('item selector:' + selector + 'valuesOfH' + valuesOfHeadings);
-                            console.log("topLevel - 1");
+                            //console.log("topLevel - 1");
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
                         } else if (breakDownSelector == valuesOfHeadings[2]) { //topLevel -2
                             listItem.style.marginLeft = (baseMargin * 2) + "px";
@@ -528,34 +561,86 @@ function waypoint826_run() {
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
 
-                    /* 
-                    * 
-                    *   PROGRAMMATIC - pass in page element to attach to instead of hard-code
-                    * 
-                    */ 
-          
-            // .main-container .row-container
-            const contentElement = document.querySelector('.limit-width');
-            // Get the computed styles for the contentElement
-            const computedStyle = window.getComputedStyle(contentElement);
-            // Access the left margin
-            const marginLeft = computedStyle.marginLeft;
-            const marginTop = computedStyle.marginTop;
+            /*  ------  USER CONFIGURABLE  ----------  */
 
-            // Computer style returns a string not a number
+            if ( waypointFieldAlignToElement ) {
+                console.log("The align to field has been defined by the user");
 
-            const marginLeftValue = parseFloat(computedStyle.marginLeft);
-            var marginTopValue = parseFloat(computedStyle.marginTop);
-         
-            //Resize content
-         
-            // NEED NOTE HERE
-            var relativeRect = headings[0].getBoundingClientRect();
+                // Remove spaces and add a dot '.' from the data passed from the user
+                var alignElement = waypointFieldAlignToElement.replace(/ /g, '.');
+             
+                // .main-container .row-container
+                const contentElement = document.querySelector('.' + alignElement);
 
-            // Set the absolute div's position
-            //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
-            mainContainer.style.left = (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
-            //console.log(marginLeftValue);
+                // Get the computed styles for the contentElement
+                const computedStyle = window.getComputedStyle(contentElement);
+
+                // Access the left margin
+                const marginLeft = computedStyle.marginLeft;
+                console.log(marginLeft);
+                const marginTop = computedStyle.marginTop;
+                console.log(marginTop);
+                // Computer style returns a string not a number
+
+                const marginLeftValue = parseFloat(computedStyle.marginLeft);
+                var marginTopValue = parseFloat(computedStyle.marginTop);
+             
+                //Resize content
+             
+                // NEED NOTE HERE
+                var relativeRect = headings[0].getBoundingClientRect();
+
+                // Set the absolute div's position
+                //mainContainer.style.top = relativeRect.top + 'px'; // Align vertically
+
+
+                // For TABLE OF CONTENTS
+                // Temp
+                // Select the first element with the class "waypoint826-main"
+                var elementRight = document.querySelector('.waypoint826-main');
+
+                if (elementRight) {
+                    // Get the right position of the elementRight
+                    var rightPosition = elementRight.getBoundingClientRect().right;
+
+                    console.log('Right position of Waypoint:', rightPosition + 'px');
+                } else {
+                    console.log('elementRight not found');
+                }
+
+
+                // For CONTENT
+
+                 var elementLeft = document.querySelector('.uncell.boomapps_vccolumn');
+
+                if (elementLeft) {
+                    // Get the left position of the elementLeft
+                    var leftPosition = elementLeft.getBoundingClientRect().left;
+
+                    console.log('Left position: of maincontent', leftPosition + 'px');
+                } else {
+                    console.log('elementLeft not found');
+                }
+
+                // I'm not sure how this is working...
+                // What's my math...
+                /*
+
+                - waypoint (element) can't go beyond user assigned page elemenet (mainContainer)
+
+
+
+
+                */
+
+                console.log('elementLeft:   ' + leftPosition);
+                mainContainer.style.left = (leftPosition - mainContainer.offsetWidth) + 'px';
+                // (marginLeftValue - mainContainer.offsetWidth) + 'px'; // align R to L edge
+                console.log('Offset width of the main container:  ' + mainContainer.offsetWidth);
+                console.log('marginLeftValue from:  ' + marginLeftValue);
+            } else {
+                console.log("waypointFieldAlignToElement hasn't been defined by the user");
+            }
 
         } // end positionMainContainer
 
@@ -567,6 +652,24 @@ function waypoint826_run() {
         window.addEventListener('resize', () => {
             setTimeout(() => {
                 positionMainContainer();
+
+                // Temp
+                // Select the element by its classes
+                var element = document.querySelector('.uncell.boomapps_vccolumn');
+
+                if (element) {
+                    // Get the left position of the element
+                    var leftPosition = element.getBoundingClientRect().left;
+
+                    console.log('Left position: of maincontent', leftPosition + 'px');
+                } else {
+                    console.log('Element not found');
+                }
+
+
+
+
+
                 //const rect = headings[0].getBoundingClientRect();
                 //console.log(rect);
             }, 0); // Adjust delay as needed
