@@ -734,21 +734,17 @@ function waypoint826_run() {
         // Removes .active class from li 
         window.addEventListener('scroll', function() {
         // If scrolled to the very top
-        if (window.scrollY === 0) {
-            //console.log('at top');
-            // Find all active menu items and remove the 'active' class
-            document.querySelectorAll('.list-wrapper li.active').forEach(item => {
-                item.classList.remove('active');
+            if (window.scrollY === 0) {
+                //console.log('at top');
+                // Find all active menu items and remove the 'active' class
+                document.querySelectorAll('.list-wrapper li.active').forEach(item => {
+                    item.classList.remove('active');
 
                 });
 
-
-            document.querySelectorAll('.list-wrapper li:first-child').forEach(function(element) {
-                element.classList.add('active');
-            });
-
-
-
+                document.querySelectorAll('.list-wrapper li:first-child').forEach(function(element) {
+                    element.classList.add('active');
+                });
 
             }
         });
@@ -759,13 +755,20 @@ function waypoint826_run() {
         * 
         */ 
 
+        // default to height of the header element with a user configurable override
 
-        var menuHeight = document.querySelector('.row-menu');
-        const distanceFromTop = menuHeight.getBoundingClientRect();
-        //console.log(menuHeight);
+
+        var menuHeight = document.querySelector('header'); //outputs an HTMLCollection
+        if (menuHeight) {
+            var distanceFromTop = menuHeight.getBoundingClientRect().top;
+        }
+
+
+        
+        console.log('Distance from the top: ' + distanceFromTop + 'px');
 
         //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop.y + 'px');
+        mainContainer.style.top = (distanceFromTop + 'px');
         //console.log(distanceFromTop);
 
         var box = document.getElementById('waypoint826-primary-container'),
