@@ -42,10 +42,11 @@ function wporg_custom_box_html( $post ) {
 
         POSITION
 
-        -   DONE: need an element to attach to on the right - individual
+        - DONE: need an element to attach to on the right - individual
         - DONE: need to adjust the center DIV right if margin: 0 auto;
-        -   DONE: peg to top element
+        - DONE: peg to top element
         - DONE: Additional right margin for mainContainer
+        - Accommodate sticky headers
 
         STYLE
 
@@ -59,7 +60,11 @@ function wporg_custom_box_html( $post ) {
         INDIVIDUAL POST/PAGE vs. SETTINGS
 
         CLEAN UP
-        - Nicer animation of Waypoint moving around after a window resize
+        - DONE: Nicer animation of Waypoint moving around after a window resize
+        - Probably needs to be scrollable in case it goes off the page
+        - First-child li could be for an 'intro' paragraph if the text is too long - Indiv
+        - Could designate which TAG to select as the 'intro'
+        - Could have an exclude setting with words to exclude per post? - Indiv. / Settings
 
     */
 
@@ -105,7 +110,7 @@ function wporg_custom_box_html( $post ) {
         <p></p>
         <label for="waypoint_add_to_page">Specify a class or ID to attach to</label><br>
         <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="<?php echo esc_attr( $field_value_add_to ); ?>">
-
+        <!-- no dot necessary for class name -->
         <!-- .post-content for example -->
         <p></p>
         
@@ -118,8 +123,11 @@ function wporg_custom_box_html( $post ) {
             <option value="id">ID</option>
           </select>
         </form-->
-        <label for="waypoint_align_to_element">Specify a class or ID to attach to</label><br>
+        <label for="waypoint_align_to_element">Enter a class name to align the menu horizontally on the page</label><br>
         <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
+        <!-- no dot necessary -->
+        <!-- This actually moves Waypoint closer to the attached element rather than doing anything with vertical position -->
+        <!-- it also can accept multiple classes separated by a space -->
 
         <p></p>
     </div>
