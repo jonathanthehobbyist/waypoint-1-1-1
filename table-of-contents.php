@@ -43,9 +43,9 @@ function wporg_custom_box_html( $post ) {
         POSITION
 
         -   DONE: need an element to attach to on the right - individual
-        - need to adjust the center DIV right if margin: 0 auto;
+        - DONE: need to adjust the center DIV right if margin: 0 auto;
         -   DONE: peg to top element
-        - Additional right margin for mainContainer
+        - DONE: Additional right margin for mainContainer
 
         STYLE
 
@@ -522,7 +522,7 @@ function waypoint826_run() {
                         // Highest number IE bottomLevel gets a margin of 8px assigned
                         // Logic to if: when breakdownselector equals bottomlevle, set the leftmargin of the li to baseMargin (8)
                         if(breakDownSelector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        console.log('bottomLevel: ' + bottomLevel + '  breakDownSelector: ' + breakDownSelector);
+                        //console.log('bottomLevel: ' + bottomLevel + '  breakDownSelector: ' + breakDownSelector);
                         break;
                         
                     case 3:
@@ -571,6 +571,8 @@ function waypoint826_run() {
             }
         }
 
+        var initPaddingLeft = window.getComputedStyle(mainContainer).paddingLeft;
+
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
 
@@ -592,9 +594,9 @@ function waypoint826_run() {
 
                 // Access the left margin
                 const marginLeft = computedStyle.marginLeft;
-                console.log(marginLeft);
+                //console.log(marginLeft);
                 const marginTop = computedStyle.marginTop;
-                console.log(marginTop);
+                //console.log(marginTop);
                 // Computer style returns a string not a number
 
                 const marginLeftValue = parseFloat(computedStyle.marginLeft);
@@ -606,7 +608,7 @@ function waypoint826_run() {
                 // Add padding to element
 
                 //  - this moves the main content area over by using padding (if it's margin 0 auto)
-                var initPaddingLeft = window.getComputedStyle(mainContainer).paddingLeft;
+                
                 var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
                 contentArea.style.paddingLeft = `${offset}px`;
                 
@@ -636,7 +638,7 @@ function waypoint826_run() {
                  // Test if content has auto elemContentWidth, get elemContentWidth of parent
                  // Select a child element
                  if ( elemContentWidth == 'auto') {
-                    console.log('width is auto');
+                    //console.log('width is auto');
                  }
 
                 if (elementContent) {
@@ -662,9 +664,13 @@ function waypoint826_run() {
                     mainContainer.style.display = 'none';
                     contentArea.style.paddingLeft = initPaddingLeft;
 
+
                 } else {
                     mainContainer.style.display = 'block';
                     contentArea.style.paddingLeft = `${offset}px`;
+                    contentArea.style.transition = 'transform 0.5s ease';
+                    mainContainer.style.transition = 'transform 0.5s ease';
+                    mainContainer.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
                 }
 
                 // Set left position relative to the user-defined content element
@@ -682,13 +688,22 @@ function waypoint826_run() {
 
         // Run the function whenever the window is resized
 
-        window.addEventListener('resize', () => {
-            setTimeout(() => {
-                //after timer, call
-                positionMainContainer();
+        function debounce(func, wait = 20, immediate = true) {
+            let timeout;
+            return function() {
+                const context = this, args = arguments;
+                const later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                const callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        }
 
-            }, 0); // Adjust delay as needed
-        });
+        window.addEventListener('resize', debounce(positionMainContainer));
 
         // Find all elements with margin 0 auto and shrink + push to the left by some px
 
@@ -726,6 +741,15 @@ function waypoint826_run() {
                 item.classList.remove('active');
 
                 });
+
+
+            document.querySelectorAll('.list-wrapper li:first-child').forEach(function(element) {
+                element.classList.add('active');
+            });
+
+
+
+
             }
         });
 
@@ -757,10 +781,11 @@ function waypoint826_run() {
 
             if (element) {
                 var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
-                console.log('Distance from top: ' + distanceFromTop + 'px');
+                //console.log('Distance from top: ' + distanceFromTop + 'px');
             }
 
             if ( (y - distanceFromTop) >= top) { 
+
                 box.classList.add('stick');
                
             } else { 
@@ -772,62 +797,74 @@ function waypoint826_run() {
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
 
-        function setupIntersectionObserver() {
-          // Disconnect existing observer if it exists
-          if (observer) {
+      function setupIntersectionObserver() {
+        // Keep
+        // console.log('IntersectionObserver called');
+        // Disconnect existing observer if it exists
+        if (observer) {
             observer.disconnect();
-          }
+        }
 
-          // Array of links
-          const tocLinks = document.querySelectorAll('.list-wrapper li a');
-          // Mapping links to sections
-          const sections = Array.from(tocLinks)
+        // Array of links
+        const tocLinks = document.querySelectorAll('.list-wrapper li a');
+        // Mapping links to sections
+        const sections = Array.from(tocLinks)
             .map(link => document.querySelector(link.getAttribute('href')))
             .filter(Boolean); // Ensure sections exist
 
-          // Callback function to handle the intersections
-          const handleIntersect = (entries, observer) => {
+        // Callback function to handle the intersections
+        const handleIntersect = (entries) => {
             entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                // Clear previous active list items
-                const tocListItems = document.querySelectorAll('.list-wrapper li');
-                tocListItems.forEach(li => li.classList.remove('active'));
+                // Keeping for troubleshooting the handleIntersect
+                // console.log('Observing entry:', entry.target.id, 'Is intersecting:', entry.isIntersecting, 'Intersection ratio:', entry.intersectionRatio);
+                if (entry.isIntersecting) {
+                    // Clear previous active list items
+                    const tocListItems = document.querySelectorAll('.list-wrapper li');
+                    tocListItems.forEach(li => li.classList.remove('active'));
 
-                const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
-                if (activeLink) {
-                  activeLink.parentElement.classList.add('active');
+                    const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
+                    if (activeLink) {
+                        // Keep
+                        // console.log('Setting active:', activeLink.parentElement);
+                        activeLink.parentElement.classList.add('active');
+                    }
                 }
-              }
             });
-          };
+        };
 
-
-                    /* 
-                    * 
-                    *   PROGRAMMATIC - eventually, pass in rootMargin and threshold
-                    * 
-                    */ 
-
-
-          // Set up the observer with better margins and thresholds
-          const options = {
+        const options = {
             rootMargin: '-10px 0px 0px 0px', // Adjust the top margin to handle elements near the top of the page
             threshold: 0.1 // Consider multiple thresholds
-          };
+        };
 
-          observer = new IntersectionObserver(handleIntersect, options);
+        observer = new IntersectionObserver(handleIntersect, options);
 
-          // Observe each section
-          sections.forEach(section => observer.observe(section));
-        }
+        // Observe each section
+        sections.forEach(section => { 
+            // Keep
+            // console.log('Observing section:', section.id);
+            observer.observe(section);
+    });
+    }
 
-        // Reinitialize the observer on page load and when scrolling to the top
-        window.addEventListener('load', setupIntersectionObserver);
-        window.addEventListener('scroll', () => {
-          if (window.scrollY === 0) {
-            setupIntersectionObserver();
-          }
-        });
+    window.addEventListener('load', setupIntersectionObserver);
+
+
+    function debounce(func, wait = 100) {
+    let timeout;
+    return function() {
+        const context = this, args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
+window.addEventListener('resize', debounce(setupIntersectionObserver));
+
+    /* window.addEventListener('resize', () => {
+        setupIntersectionObserver(); // Reset the observer on resize
+    }); */
+
 
         /* MOBILE EXPERIENCE sigh */
 

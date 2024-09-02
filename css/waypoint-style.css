@@ -31,6 +31,8 @@ html {
 	position: absolute;
 	/* right: 80%; */
 	padding: 60px 20px 80px 20px;
+	transition: left 0.5s ease;
+	transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
 
