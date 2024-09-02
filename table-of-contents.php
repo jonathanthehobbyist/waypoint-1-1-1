@@ -324,7 +324,7 @@ function waypoint826_run() {
             }
         add_action('wp_footer', 'custom_checkbox_js');
 
-    /*  PROGRAMMATIC - Pass in post-id or page-id for enabled   */ 
+    /*  ----------- VARIABLES, USER CONFIGURATION ----------  */
 
     global $post;
 
@@ -368,7 +368,7 @@ function waypoint826_run() {
        // Horizontal alignment to an element
        let waypointFieldAlignToElement = <?php echo json_encode($field_value_align_to_element); ?>;
 
-
+       /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
 
         // Create the main container to hold the waypoint table of contents
         let mainContainer = document.createElement('div');
@@ -424,7 +424,7 @@ function waypoint826_run() {
             });
         });
 
-        // var headings = document.querySelectorAll("h2, h3, h4");
+        // 
         const list = document.createElement('ol');
         list.classList.add('list-wrapper');
 
@@ -440,7 +440,7 @@ function waypoint826_run() {
             return parseInt(heading.replace('h', ''), 10);
         });
 
-        /*  Indentation settings  */
+        /*  ----------- SECTION: LEFT MARGIN FOR h2, h3, h4, h5 ----------  */
 
         // Find the arraylength
         var numberOfHeadings = valuesOfHeadings.length;
@@ -462,17 +462,12 @@ function waypoint826_run() {
         }
 
 
-        /*
-        *
-        *
-        *
-        *
-        */
+        /*  ----------- BASE MARGIN ----------  */
 
         // Set the base margin, this could be user CONFIGURABLE eventually (ask if they want nesting)
+        // Cascades to other settings
+
         var baseMargin = 8;
-
-
 
 
         associatedElements.forEach(function(item) {
@@ -510,7 +505,9 @@ function waypoint826_run() {
             // The problem: selector has an H in it (for example, h2) - and I need to compare it to a number.
 
             var breakDownSelector = parseInt(selector.replace('h', ''),10);
-          
+
+
+            /*  ----------- LOGIC FOR LEFT MARGIN FOR h2, h3, h4, h5 ----------  */
 
             switch (numberOfHeadings) {
 
@@ -576,10 +573,60 @@ function waypoint826_run() {
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
 
-            /*  ------  USER CONFIGURABLE  ----------  */
+            mainContainer.style.opacity = '0.2';
 
+            setTimeout(fullOpacity, 2000);
+
+            function fullOpacity() {
+                mainContainer.style.opacity = '1';
+            }
+
+            /*  ----------- POSITION TO TOP ----------  */
+
+            // default to height of the header element with a user configurable override
+            var menuHeight = document.querySelector('header'); //outputs an HTMLCollection
+            if (menuHeight) {
+                var distanceFromTop = menuHeight.getBoundingClientRect().top;
+            }
+
+            console.log('Distance from the top: ' + distanceFromTop + 'px');
+
+            //console.log(distanceFromTop.y);
+            mainContainer.style.top = (distanceFromTop + 'px');
+            //console.log(distanceFromTop);
+
+            var box = document.getElementById('waypoint826-primary-container'),
+            top = box.offsetTop;
+
+            window.addEventListener('scroll', function(event) {
+                //console.log('Page scrolled!');
+
+                var y = document.documentElement.scrollTop || document.body.scrollTop;
+
+                // Assuming there is only one element with this class
+                var element = document.querySelector('.' + waypointFieldAddTo);
+
+                if (element) {
+                    var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
+                    //console.log('Distance from top: ' + distanceFromTop + 'px');
+                }
+
+                if ( (y - distanceFromTop) >= top) { 
+
+                    box.classList.add('stick');
+                   
+                } else { 
+                    box.classList.remove('stick');
+                }
+
+            });
+
+            /*  ----------- WINDOW RESIZE & HORZ. ALIGNMENT ----------  */
+
+            /*  -----------  USER CONFIGURABLE  ----------  */
+
+            // User can choose an element to align Waypoint to horizontally
             if ( waypointFieldAlignToElement ) {
-                //console.log("The align to field has been defined by the user");
 
                 // Class or ID
                 // Remove spaces and add a dot '.' from the class or ID data passed from the user
@@ -654,11 +701,10 @@ function waypoint826_run() {
                 var viewportWidth = window.innerWidth;
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
                 var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 300);
-                //console.log('spaceforwaypoint' + spaceForWaypoint);
-                //console.log('waypointSpaceNeeded' + waypointSpaceNeeded);
 
                 // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
                 if ( spaceForWaypoint < waypointSpaceNeeded ) {
+
                     // if the width of the page is greater than 
                     // Set mainContainer display to none
                     mainContainer.style.display = 'none';
@@ -755,47 +801,6 @@ function waypoint826_run() {
         * 
         */ 
 
-        // default to height of the header element with a user configurable override
-
-
-        var menuHeight = document.querySelector('header'); //outputs an HTMLCollection
-        if (menuHeight) {
-            var distanceFromTop = menuHeight.getBoundingClientRect().top;
-        }
-
-
-        
-        console.log('Distance from the top: ' + distanceFromTop + 'px');
-
-        //console.log(distanceFromTop.y);
-        mainContainer.style.top = (distanceFromTop + 'px');
-        //console.log(distanceFromTop);
-
-        var box = document.getElementById('waypoint826-primary-container'),
-        top = box.offsetTop;
-
-        window.addEventListener('scroll', function(event) {
-            //console.log('Page scrolled!');
-
-            var y = document.documentElement.scrollTop || document.body.scrollTop;
-
-            // Assuming there is only one element with this class
-            var element = document.querySelector('.' + waypointFieldAddTo);
-
-            if (element) {
-                var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
-                //console.log('Distance from top: ' + distanceFromTop + 'px');
-            }
-
-            if ( (y - distanceFromTop) >= top) { 
-
-                box.classList.add('stick');
-               
-            } else { 
-                box.classList.remove('stick');
-            }
-
-        });
 
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
