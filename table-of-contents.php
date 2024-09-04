@@ -125,6 +125,9 @@ function wporg_custom_box_html( $post ) {
         </form-->
         <label for="waypoint_align_to_element">Enter a class name to align the menu horizontally on the page</label><br>
         <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
+
+        <!-- this one needs a viewport width backup -->
+
         <!-- no dot necessary -->
         <!-- This actually moves Waypoint closer to the attached element rather than doing anything with vertical position -->
         <!-- it also can accept multiple classes separated by a space -->
@@ -583,11 +586,7 @@ function waypoint826_run() {
 
             mainContainer.style.opacity = '0.2';
 
-            setTimeout(fullOpacity, 2000);
-
-            function fullOpacity() {
-                mainContainer.style.opacity = '1';
-            }
+           
 
             /*  ----------- POSITION TO TOP ----------  */
 
@@ -678,7 +677,12 @@ function waypoint826_run() {
                     var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
                     var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
 
-                    //console.log('Right position of Waypoint:', rightPosition + 'px');
+                    if (rightPosition == '0') {
+                        console.log('right position is zero');
+                        mainContainer.style.display = 'none';
+                    }
+
+                    console.log('Right position of Waypoint:', rightPosition + 'px');
                 } else {
                     console.log('elementWaypoint not found');
                 }
@@ -699,6 +703,7 @@ function waypoint826_run() {
                 if (elementContent) {
                     // Get the left position of the main content area
                     var leftPosition = elementContent.getBoundingClientRect().left;
+                    console.log('Left edge of the main content area: ' + leftPosition);
 
                     //console.log('Left position: of maincontent', leftPosition + 'px');
                 } else {
@@ -708,7 +713,8 @@ function waypoint826_run() {
                 // if Viewport gets too small, remove Waypoint
                 var viewportWidth = window.innerWidth;
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 300);
+                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 150);
+                console.log('View port width' + viewportWidth + 'Main content width ' + cleanElemContentWidth);
 
                 // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
                 if ( spaceForWaypoint < waypointSpaceNeeded ) {
@@ -720,20 +726,53 @@ function waypoint826_run() {
 
 
                 } else {
+
+                    console.log('leftPosition is true and = ' + leftPosition);
+
                     mainContainer.style.display = 'block';
                     contentArea.style.paddingLeft = `${offset}px`;
                     contentArea.style.transition = 'transform 0.5s ease';
                     mainContainer.style.transition = 'transform 0.5s ease';
-                    mainContainer.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
+                   mainContainer.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
                 }
 
                 // Set left position relative to the user-defined content element
-                mainContainer.style.left = '0px';
+                //mainContainer.style.left = '0px';
                 mainContainer.style.left = (leftPosition - offset - (baseMargin * 20)) + 'px';
 
             } else {
+                mainContainer.style.display = 'none';
                 console.log("waypointFieldAlignToElement hasn't been defined by the user");
             }
+
+            function fullOpacity() {
+                mainContainer.style.opacity = '1';
+            }
+
+                    // Pulse effect with JavaScript
+        function startPulse(duration) {
+            let isFading = false;
+            let intervalId;
+
+            // Start the interval to alternate opacity every 500ms
+            intervalId = setInterval(() => {
+                if (isFading) {
+                    mainContainer.style.opacity = '1'; // Fully visible
+                } else {
+                    mainContainer.style.opacity = '0.5'; // Semi-transparent
+                }
+                isFading = !isFading;
+            }, 400); // Change opacity every 500ms
+
+            // Stop the pulse effect after the specified duration
+            setTimeout(() => {
+                clearInterval(intervalId);
+                mainContainer.style.opacity = '1'; // Reset to fully visible
+            }, duration);
+        }
+
+        // Start the pulse for 5 seconds
+        startPulse(3000);
 
         } // end positionMainContainer
 
@@ -756,7 +795,7 @@ function waypoint826_run() {
                 if (callNow) func.apply(context, args);
             };
         }
-
+ 
         window.addEventListener('resize', debounce(positionMainContainer));
 
         // Find all elements with margin 0 auto and shrink + push to the left by some px
