@@ -62,9 +62,9 @@ function wporg_custom_box_html( $post ) {
         CLEAN UP
         - DONE: Nicer animation of Waypoint moving around after a window resize
         - Probably needs to be scrollable in case it goes off the page
-        - First-child li could be for an 'intro' paragraph if the text is too long - Indiv
-        - Could designate which TAG to select as the 'intro'
-        - Could have an exclude setting with words to exclude per post? - Indiv. / Settings
+
+        DEBUG
+        - There's a bug when you zoom to the top of the page, might be around my implementation of the header. Might need to save that value as a unchangeable variatble rarther than recalculating each time 
 
     */
 
@@ -77,6 +77,10 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H3 = get_post_meta( $post->ID, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
+
+    $checkbox_value_intro = get_post_meta( $post->ID, '_waypoint_intro_enable', true );
+    // I can re-purpose this variable, change the name
+
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
@@ -101,6 +105,10 @@ function wporg_custom_box_html( $post ) {
         <label for="waypoint_H4_enable">H4</label><br>
         <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
         <label for="waypoint_H5_enable">H5</label><br>
+        <br>
+        <input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
+        <label for="waypoint_intro_enable">Make the first item in the list an 'intro'</label><br>
+
 
     </div>
 
@@ -180,6 +188,7 @@ function wporg_save_postdata( $post_id ) {
         'waypoint_H3_enable',
         'waypoint_H4_enable',
         'waypoint_H5_enable',
+        'waypoint_intro_enable',
         'waypoint_add_to_page',
         'waypoint_align_to_element',
         //'wporg_field_three',
@@ -236,6 +245,17 @@ function wporg_save_postdata( $post_id ) {
             update_post_meta(
                 $post_id,
                 '_waypoint_H5_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        } else if ( $field === 'waypoint_intro_enable' ) { //H5
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_intro_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_intro_enable',
                 $checkbox_value
             );
             error_log("$field saved with value: $checkbox_value");
@@ -349,6 +369,8 @@ function waypoint826_run() {
     $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
+    $checkbox_value_intro = get_post_meta( $post_id, '_waypoint_intro_enable', true );
+
     $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post_id, '_waypoint_align_to_element', true );
 
@@ -369,6 +391,11 @@ function waypoint826_run() {
         let wph4 = parseFloat(waypointH4);
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
+
+        var waypointIntro = <?php echo json_encode($checkbox_value_intro); ?>;
+        let wphi = parseFloat(waypointIntro);
+
+        console.log('wphi: ' + wphi);
 
         /*  ------  USER CONFIGURABLE  ----------  */
 
@@ -481,6 +508,9 @@ function waypoint826_run() {
         var baseMargin = 8;
 
 
+
+        /*  ----------- BUILDING THE LIST CONTENT ----------  */
+
         associatedElements.forEach(function(item) {
 
             var selector = item.selector; // The selector (h2, h3, etc)
@@ -496,6 +526,25 @@ function waypoint826_run() {
            str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
            str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+%^@*]/g, '').toLowerCase(); //matches 
            // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
+
+           // First, define the list of words to exclude
+           const excludeWords = /(privacy|security|gdpr)/i; // i makes it case-insensitive
+
+           // Next, look at the parents to see if its a GDPR or privacy notice
+           const parentLevelOne = element.parentElement
+           const parentLevelTwo = parentLevelOne.parentElement;
+           const parentLevelThree = parentLevelTwo.parentElement;
+
+           const parentOneClass = parentLevelOne.className;
+           const parentTwoClass = parentLevelTwo.className;
+           const parentThreeClass = parentLevelThree.className;
+           //console.log('Parent class 1: ' + parentOneClass + 'Parent class 2: ' + parentTwoClass + 'Parent class 3: ' + parentThreeClass  );
+
+           // now exclude 
+           if ( excludeWords.test(parentOneClass) || excludeWords.test(parentTwoClass) || excludeWords.test(parentThreeClass) ) {
+            return;
+           }
+
 
            //console.log(str);
 
@@ -590,8 +639,15 @@ function waypoint826_run() {
 
             /*  ----------- POSITION TO TOP ----------  */
 
+
+            // There's an error happening here, where if I load scrolled down the page that it's not working
+
+
+
+
             // default to height of the header element with a user configurable override
             var menuHeight = document.querySelector('header'); //outputs an HTMLCollection
+            
             if (menuHeight) {
                 var distanceFromTop = menuHeight.getBoundingClientRect().top;
             }
