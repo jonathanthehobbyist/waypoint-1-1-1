@@ -78,8 +78,7 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
 
-    $checkbox_value_intro = get_post_meta( $post->ID, '_waypoint_intro_enable', true );
-    // I can re-purpose this variable, change the name
+    $field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
 
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
@@ -106,8 +105,8 @@ function wporg_custom_box_html( $post ) {
         <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
         <label for="waypoint_H5_enable">H5</label><br>
         <br>
-        <input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
-        <label for="waypoint_intro_enable">Make the first item in the list an 'intro'</label><br>
+
+
 
 
     </div>
@@ -141,6 +140,10 @@ function wporg_custom_box_html( $post ) {
         <!-- it also can accept multiple classes separated by a space -->
 
         <p></p>
+        <br />
+            <label for="waypoint_masthead_define">Define a masthead by ID or class(es)</label><br>
+                <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
+        
     </div>
 
     <?php
@@ -188,7 +191,7 @@ function wporg_save_postdata( $post_id ) {
         'waypoint_H3_enable',
         'waypoint_H4_enable',
         'waypoint_H5_enable',
-        'waypoint_intro_enable',
+        'waypoint_masthead_define',
         'waypoint_add_to_page',
         'waypoint_align_to_element',
         //'wporg_field_three',
@@ -250,12 +253,12 @@ function wporg_save_postdata( $post_id ) {
             error_log("$field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_intro_enable' ) { //H5
+        } else if ( $field === 'waypoint_masthead_define' ) { //H5
             // Handle the checkbox field
-            $checkbox_value = isset( $_POST['waypoint_intro_enable'] ) ? '1' : '0';
+            $checkbox_value = isset( $_POST['waypoint_masthead_define'] ) ? '1' : '0';
             update_post_meta(
                 $post_id,
-                '_waypoint_intro_enable',
+                '_waypoint_masthead_define',
                 $checkbox_value
             );
             error_log("$field saved with value: $checkbox_value");
@@ -369,7 +372,7 @@ function waypoint826_run() {
     $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
-    $checkbox_value_intro = get_post_meta( $post_id, '_waypoint_intro_enable', true );
+    $field_value_masthead_define = get_post_meta( $post_id, '_waypoint_masthead_define', true );
 
     $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post_id, '_waypoint_align_to_element', true );
@@ -392,10 +395,7 @@ function waypoint826_run() {
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
 
-        var waypointIntro = <?php echo json_encode($checkbox_value_intro); ?>;
-        let wphi = parseFloat(waypointIntro);
-
-        console.log('wphi: ' + wphi);
+        
 
         /*  ------  USER CONFIGURABLE  ----------  */
 
@@ -405,6 +405,9 @@ function waypoint826_run() {
 
        // Horizontal alignment to an element
        let waypointFieldAlignToElement = <?php echo json_encode($field_value_align_to_element); ?>;
+
+       // Define a masthead or menu
+       let waypointMasthead = <?php echo json_encode($field_value_masthead_define); ?>;
 
        /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
 
@@ -635,50 +638,77 @@ function waypoint826_run() {
 
             mainContainer.style.opacity = '0.2';
 
-           
-
+        
             /*  ----------- POSITION TO TOP ----------  */
 
+            // waypointMasthead
+            // Eventually will need to push this into an array, check for # or ., and then manage multiple spaces / words etc.
 
-            // There's an error happening here, where if I load scrolled down the page that it's not working
+            // searches for # or .
+            const elementHasID = /#/g;
+            const elementHasClassEs = /\./g; 
 
+            // Test, find, replace and create var menuHeight
+            if (elementHasID.test(waypointMasthead)) {
+               
+               //console.log("true");
+               var elementIDName = String(waypointMasthead.replace('#', ''));
+               var refToMasthead = document.getElementById(elementIDName);
+               // console.log('refToMasthead' + refToMasthead);
 
+            } else if (document.getElementById('masthead')) {
+
+                // Test to see if there's a masthead
+                var refToMasthead = document.getElementById('masthead'); //outputs an HTMLCollection
+            }
 
 
             // default to height of the header element with a user configurable override
-            var menuHeight = document.querySelector('header'); //outputs an HTMLCollection
-            
-            if (menuHeight) {
-                var distanceFromTop = menuHeight.getBoundingClientRect().top;
+            // 
+
+            if (refToMasthead) {
+                var distanceFromTop = refToMasthead.getBoundingClientRect().height;
             }
 
-            console.log('Distance from the top: ' + distanceFromTop + 'px');
+            //console.log('Height of menu ' + distanceFromTop + 'px');
 
-            //console.log(distanceFromTop.y);
-            mainContainer.style.top = (distanceFromTop + 'px');
-            //console.log(distanceFromTop);
+            mainContainer.style.top = ('0px');
 
             var box = document.getElementById('waypoint826-primary-container'),
             top = box.offsetTop;
 
-            window.addEventListener('scroll', function(event) {
-                //console.log('Page scrolled!');
+            //box.classList.add('stick');
 
+            window.addEventListener('scroll', function(event) {
+                
+                // 
                 var y = document.documentElement.scrollTop || document.body.scrollTop;
+
+                // User assigned variable - to define...
 
                 // Assuming there is only one element with this class
                 var element = document.querySelector('.' + waypointFieldAddTo);
+
+                //distance from top is being defined twice...
 
                 if (element) {
                     var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
 
+                // If (distance of document from top of page via scroll) - menu height is GREATER THAN distance of waypoint-main from viewport top
+                console.log('y ' + y);
+                console.log('distance from top ' + distanceFromTop);
+                console.log('top ' + top);
+
                 if ( (y - distanceFromTop) >= top) { 
 
+                    // Is at the viewport top
                     box.classList.add('stick');
+                    //mainContainer.style.top = (distanceFromTop + 'px');
                    
                 } else { 
+
                     box.classList.remove('stick');
                 }
 
@@ -789,7 +819,7 @@ function waypoint826_run() {
                     contentArea.style.paddingLeft = `${offset}px`;
                     contentArea.style.transition = 'transform 0.5s ease';
                     mainContainer.style.transition = 'transform 0.5s ease';
-                   mainContainer.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
+                   mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
                 }
 
                 // Set left position relative to the user-defined content element
@@ -813,12 +843,12 @@ function waypoint826_run() {
             // Start the interval to alternate opacity every 500ms
             intervalId = setInterval(() => {
                 if (isFading) {
-                    mainContainer.style.opacity = '1'; // Fully visible
+                    mainContainer.style.opacity = '.5'; // Fully visible
                 } else {
-                    mainContainer.style.opacity = '0.5'; // Semi-transparent
+                    mainContainer.style.opacity = '0.3'; // Semi-transparent
                 }
                 isFading = !isFading;
-            }, 400); // Change opacity every 500ms
+            }, 500); // Change opacity every 500ms
 
             // Stop the pulse effect after the specified duration
             setTimeout(() => {
