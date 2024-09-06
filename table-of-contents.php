@@ -787,40 +787,41 @@ function waypoint826_run() {
                 // Add padding to element
 
                 //  - this moves the main content area over by using padding (if it's margin 0 auto)
-                var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
+                
                 //contentArea.style.paddingLeft = `${offset}px`;
                 
+
+
+                /*  -----------  Main positioning workflow, has a REPEATABLE bug around 1434 screen size ----------  */
+
 
                 var elementWaypoint = document.querySelector('.waypoint826-main');
 
                 // Calculate widths
+                // Get the right position of the elementWaypoint
+                var rightPosition = elementWaypoint.getBoundingClientRect().right;
+                var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+                var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
 
-                if (elementWaypoint) {
-                    // Get the right position of the elementWaypoint
-                    var rightPosition = elementWaypoint.getBoundingClientRect().right;
-                    var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
-                    var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
+                if (rightPosition == '0') {
+                    
+                    mainContainer.style.display = 'none';
 
-                    if (rightPosition == '0') {
-                        
-                        mainContainer.style.display = 'none';
-
-                        // TESTING
-                        // console.log('right position is zero');
-                    }
-
-                    console.log('Right position of Waypoint:', rightPosition + 'px');
-
-                } else {
-
-                    // console.log('elementWaypoint not found');
+                    // TESTING
+                    console.log('right position is zero via IF statement');
                 }
+
+                console.log('Right position of Waypoint:', rightPosition + 'px');
 
                 // For CONTENT
 
                  // var elementContent = document.querySelector('.uncell.boomapps_vccolumn');  // old callout
                  // contentArea is the var that has been defined by the user as the element that represents the main content width
 
+
+                // contentArea is user-defined for measuring width of main content
+
+                // What do I really want to do if this doesn't work? 
 
                 if (contentArea) {
                     
@@ -866,11 +867,12 @@ function waypoint826_run() {
                     // If there's enough space for waypoint...
 
                     mainContainer.style.display = 'block';
+                    var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
                     //mainContainer.style.transition = 'transform 0.5s ease';
                     mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
                     
-                    contentArea.style.transition = 'transform 0.5s ease';
-                    contentArea.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+                    // contentArea.style.transition = 'transform 0.5s ease';
+                    // contentArea.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
                     
 
                    // TESTING
@@ -886,36 +888,37 @@ function waypoint826_run() {
 
                 // mainContainer.style.display = 'none';
                 // console.log("waypointFieldAlignToElement hasn't been defined by the user");
-            }
+
+            } // END if ( waypointFieldAlignToElement ) {
 
             function fullOpacity() {
                 mainContainer.style.opacity = '1';
             }
 
-                    // Pulse effect with JavaScript
-        function startPulse(duration) {
-            let isFading = false;
-            let intervalId;
+            // Pulse effect with JavaScript
+            function startPulse(duration) {
+                let isFading = false;
+                let intervalId;
 
-            // Start the interval to alternate opacity every 500ms
-            intervalId = setInterval(() => {
-                if (isFading) {
-                    mainContainer.style.opacity = '.5'; // Fully visible
-                } else {
-                    mainContainer.style.opacity = '0.3'; // Semi-transparent
-                }
-                isFading = !isFading;
-            }, 500); // Change opacity every 500ms
+                // Start the interval to alternate opacity every 500ms
+                intervalId = setInterval(() => {
+                    if (isFading) {
+                        mainContainer.style.opacity = '.5'; // Fully visible
+                    } else {
+                        mainContainer.style.opacity = '0.3'; // Semi-transparent
+                    }
+                    isFading = !isFading;
+                }, 500); // Change opacity every 500ms
 
-            // Stop the pulse effect after the specified duration
-            setTimeout(() => {
-                clearInterval(intervalId);
-                mainContainer.style.opacity = '1'; // Reset to fully visible
-            }, duration);
-        }
+                // Stop the pulse effect after the specified duration
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    mainContainer.style.opacity = '1'; // Reset to fully visible
+                }, duration);
+            }
 
-        // Start the pulse for 5 seconds
-        startPulse(3000);
+            // Start the pulse for 5 seconds
+            startPulse(3000);
 
         } // end positionMainContainer
 
