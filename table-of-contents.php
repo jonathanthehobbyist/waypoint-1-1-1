@@ -115,7 +115,7 @@ function wporg_custom_box_html( $post ) {
 
     <div class="">
         <p></p>
-        <label for="waypoint_add_to_page">Specify a class or ID to attach to</label><br>
+        <label for="waypoint_add_to_page">Specify a class or ID - we will append waypoint as a child to this element</label><br>
         <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="<?php echo esc_attr( $field_value_add_to ); ?>">
         <!-- no dot necessary for class name -->
         <!-- .post-content for example -->
@@ -130,7 +130,7 @@ function wporg_custom_box_html( $post ) {
             <option value="id">ID</option>
           </select>
         </form-->
-        <label for="waypoint_align_to_element">Enter a class name to align the menu horizontally on the page</label><br>
+        <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content</label><br>
         <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
 
         <!-- this one needs a viewport width backup -->
@@ -141,7 +141,7 @@ function wporg_custom_box_html( $post ) {
 
         <p></p>
         <br />
-            <label for="waypoint_masthead_define">Define a masthead by ID or class(es)</label><br>
+            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><br>
                 <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
         
     </div>
@@ -416,11 +416,48 @@ function waypoint826_run() {
         mainContainer.className = 'waypoint826-main';
         mainContainer.id = 'waypoint826-primary-container';
 
-        // var contentArea = document.querySelector('.main-wrapper'); // original content area (for home page)
-
         // Append the main waypoint container to a DIV element on the page
-        var contentArea = document.querySelector('.' + waypointFieldAddTo);
-        contentArea.appendChild(mainContainer);
+        var entirePage = document.querySelector('.' + waypointFieldAddTo);
+        entirePage.appendChild(mainContainer);
+
+        /*  ----------- USER CONFIGURABLE ----------  */
+
+        waypointFieldAlignToElement = waypointFieldAlignToElement.trim();
+        console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
+
+        // Because waypointFieldAlignToElement might have more than one class so...
+        const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
+
+        var contentArea = document.querySelector(checkAndCombineField);
+        //console.log('this is contentArea: ' + contentArea);
+
+        /*
+
+
+        contentArea is being used in the wrong way
+        I'm using it here ^^ to refer to the part of the page that waypoint gets appended to (the whole area)
+        So...the width makes sense to be about the browser width
+
+        but...later on in the code, I use it to refer to just the area of the main content, IE the writing to which waypoint is a sidebar
+
+        I need to correct this
+
+        I need to use waypointFieldAddTo to append the waypoint TOC to
+
+        I need to use waypointFieldAlignTo to calculate the width of the main content
+
+        */
+
+
+
+
+
+
+
+
+
+
+
 
         // USER CONFIGURE - which of the h2, h3, h4, h5 gets passed
 
@@ -697,9 +734,9 @@ function waypoint826_run() {
                 }
 
                 // If (distance of document from top of page via scroll) - menu height is GREATER THAN distance of waypoint-main from viewport top
-                console.log('y ' + y);
-                console.log('distance from top ' + distanceFromTop);
-                console.log('top ' + top);
+                //console.log('y ' + y);
+                //console.log('distance from top ' + distanceFromTop);
+                //console.log('top ' + top);
 
                 if ( (y - distanceFromTop) >= top) { 
 
@@ -724,7 +761,10 @@ function waypoint826_run() {
                 // Class or ID
                 // Remove spaces and add a dot '.' from the class or ID data passed from the user
                 var alignElement = waypointFieldAlignToElement.replace(/ /g, '.');
-             
+
+
+                /*--------------  NOT USING AREA  ---------------------------*/
+
                 // DOM element of class or ID 
                 // .main-container .row-container
                 const contentElement = document.querySelector('.' + alignElement);
@@ -742,15 +782,17 @@ function waypoint826_run() {
                 const marginLeftValue = parseFloat(computedStyle.marginLeft);
                 var marginTopValue = parseFloat(computedStyle.marginTop);
 
+
+                /*--------------  END -- NOT USING AREA  ---------------------------*/
+
                 // For TABLE OF CONTENTS
                 // Select the first element with the class "waypoint826-main"
 
                 // Add padding to element
 
                 //  - this moves the main content area over by using padding (if it's margin 0 auto)
-                
                 var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
-                contentArea.style.paddingLeft = `${offset}px`;
+                //contentArea.style.paddingLeft = `${offset}px`;
                 
 
                 var elementWaypoint = document.querySelector('.waypoint826-main');
@@ -775,32 +817,29 @@ function waypoint826_run() {
 
                 // For CONTENT
 
-                 var elementContent = document.querySelector('.uncell.boomapps_vccolumn');
-                 var elemContentWidth = window.getComputedStyle(elementContent).width;
-                 var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
-              
+                 // var elementContent = document.querySelector('.uncell.boomapps_vccolumn');  // old callout
+                 // contentArea is the var that has been defined by the user as the element that represents the main content width
 
-                 // Test if content has auto elemContentWidth, get elemContentWidth of parent
-                 // Select a child element
-                 if ( elemContentWidth == 'auto') {
-                    //console.log('width is auto');
-                 }
 
-                if (elementContent) {
+                if (contentArea) {
+                    console.log('contentArea is defined ' + contentArea);
+                    var elemContentWidth = window.getComputedStyle(contentArea).width;
+                    console.log('Content width is' + elemContentWidth);
+                    var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
                     // Get the left position of the main content area
-                    var leftPosition = elementContent.getBoundingClientRect().left;
-                    console.log('Left edge of the main content area: ' + leftPosition);
+                    var leftPosition = contentArea.getBoundingClientRect().left;
+                    // console.log('Left edge of the main content area: ' + leftPosition);
 
                     //console.log('Left position: of maincontent', leftPosition + 'px');
                 } else {
-                    console.log('elementContent not found');
+                    console.log('contentArea not found ' + contentArea);
                 }
 
-                // if Viewport gets too small, remove Waypoint
+                
                 var viewportWidth = window.innerWidth;
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
                 var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 150);
-                console.log('View port width' + viewportWidth + 'Main content width ' + cleanElemContentWidth);
+                console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
 
                 // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
                 if ( spaceForWaypoint < waypointSpaceNeeded ) {
@@ -808,16 +847,17 @@ function waypoint826_run() {
                     // if the width of the page is greater than 
                     // Set mainContainer display to none
                     mainContainer.style.display = 'none';
-                    contentArea.style.paddingLeft = initPaddingLeft;
+                    //contentArea.style.paddingLeft = initPaddingLeft;
+                    console.log("display: none");
 
 
                 } else {
 
-                    console.log('leftPosition is true and = ' + leftPosition);
+                    //console.log('leftPosition is true and = ' + leftPosition);
 
                     mainContainer.style.display = 'block';
-                    contentArea.style.paddingLeft = `${offset}px`;
-                    contentArea.style.transition = 'transform 0.5s ease';
+                    //contentArea.style.paddingLeft = `${offset}px`;
+                    //contentArea.style.transition = 'transform 0.5s ease';
                     mainContainer.style.transition = 'transform 0.5s ease';
                    mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
                 }
@@ -827,7 +867,7 @@ function waypoint826_run() {
                 mainContainer.style.left = (leftPosition - offset - (baseMargin * 20)) + 'px';
 
             } else {
-                mainContainer.style.display = 'none';
+                //mainContainer.style.display = 'none';
                 console.log("waypointFieldAlignToElement hasn't been defined by the user");
             }
 
