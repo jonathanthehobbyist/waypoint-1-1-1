@@ -78,6 +78,9 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
 
+    // Intro li at top
+    $checkbox_value_intro = get_post_meta( $post->ID, '_waypoint_intro_enable', true );
+
     $field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
 
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
@@ -105,7 +108,9 @@ function wporg_custom_box_html( $post ) {
         <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
         <label for="waypoint_H5_enable">H5</label><br>
         <br>
-
+        <hr>
+        <input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
+        <label for="waypoint_intro_enable">H5</label><br>
 
 
 
@@ -191,6 +196,7 @@ function wporg_save_postdata( $post_id ) {
         'waypoint_H3_enable',
         'waypoint_H4_enable',
         'waypoint_H5_enable',
+        'waypoint_intro_enable',
         'waypoint_masthead_define',
         'waypoint_add_to_page',
         'waypoint_align_to_element',
@@ -253,7 +259,18 @@ function wporg_save_postdata( $post_id ) {
             error_log("$field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_masthead_define' ) { //H5
+        } else if ( $field === 'waypoint_intro_enable' ) { // Intro enable
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_intro_enable'] ) ? '1' : '0';
+            update_post_meta(
+                $post_id,
+                '_waypoint_intro_enable',
+                $checkbox_value
+            );
+            error_log("$field saved with value: $checkbox_value");
+
+
+        } else if ( $field === 'waypoint_masthead_define' ) { // Masthead field
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_masthead_define'] ) ? '1' : '0';
             update_post_meta(
@@ -264,7 +281,7 @@ function wporg_save_postdata( $post_id ) {
             error_log("$field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_add_to_page' ) { //H5
+        } else if ( $field === 'waypoint_add_to_page' ) { // Add to page
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
             update_post_meta(
@@ -274,7 +291,7 @@ function wporg_save_postdata( $post_id ) {
             );
             error_log("$field saved with value: $checkbox_value");
 
-        } else if ( $field === 'waypoint_align_to_element' ) { //H5
+        } else if ( $field === 'waypoint_align_to_element' ) { // Align to element
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_align_to_element'] ) ? '1' : '0';
             update_post_meta(
@@ -372,6 +389,9 @@ function waypoint826_run() {
     $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
     $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
+    $checkbox_value_intro = get_post_meta( $post_id, '_waypoint_intro_enable', true );
+
+
     $field_value_masthead_define = get_post_meta( $post_id, '_waypoint_masthead_define', true );
 
     $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
@@ -398,6 +418,8 @@ function waypoint826_run() {
         
 
         /*  ------  USER CONFIGURABLE  ----------  */
+        // Enable intro at top of list
+        var waypointIntroEnable = <?php echo json_encode($checkbox_value_intro); ?>;
 
         // a class (for now) or ID (later) to add waypoint826-main to 
        let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
@@ -423,7 +445,7 @@ function waypoint826_run() {
         /*  ----------- USER CONFIGURABLE ----------  */
 
         waypointFieldAlignToElement = waypointFieldAlignToElement.trim();
-        console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
+        // console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
 
         // Because waypointFieldAlignToElement might have more than one class so...
         const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
@@ -431,36 +453,10 @@ function waypoint826_run() {
         var contentArea = document.querySelector(checkAndCombineField);
         //console.log('this is contentArea: ' + contentArea);
 
-        /*
 
-
-        contentArea is being used in the wrong way
-        I'm using it here ^^ to refer to the part of the page that waypoint gets appended to (the whole area)
-        So...the width makes sense to be about the browser width
-
-        but...later on in the code, I use it to refer to just the area of the main content, IE the writing to which waypoint is a sidebar
-
-        I need to correct this
-
-        I need to use waypointFieldAddTo to append the waypoint TOC to
-
-        I need to use waypointFieldAlignTo to calculate the width of the main content
-
-        */
-
-
-
-
-
-
-
-
-
-
-
+        /*  ------  USER CONFIGURABLE  ----------  */
 
         // USER CONFIGURE - which of the h2, h3, h4, h5 gets passed
-
         // Create array
         let waypointArr = [];
 
@@ -701,20 +697,19 @@ function waypoint826_run() {
 
 
             // default to height of the header element with a user configurable override
-            // 
-
             if (refToMasthead) {
                 var distanceFromTop = refToMasthead.getBoundingClientRect().height;
             }
 
             //console.log('Height of menu ' + distanceFromTop + 'px');
-
             mainContainer.style.top = ('0px');
 
             var box = document.getElementById('waypoint826-primary-container'),
             top = box.offsetTop;
 
-            //box.classList.add('stick');
+
+            /*  ----------- SCROLL FUNCTION ----------  */
+
 
             window.addEventListener('scroll', function(event) {
                 
@@ -733,10 +728,11 @@ function waypoint826_run() {
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
 
-                // If (distance of document from top of page via scroll) - menu height is GREATER THAN distance of waypoint-main from viewport top
-                //console.log('y ' + y);
-                //console.log('distance from top ' + distanceFromTop);
-                //console.log('top ' + top);
+                // If (distance of document from top of page via scroll)
+                // menu height is GREATER THAN distance of waypoint-main from viewport top
+                // console.log('y ' + y);
+                // console.log('distance from top ' + distanceFromTop);
+                // console.log('top ' + top);
 
                 if ( (y - distanceFromTop) >= top) { 
 
@@ -749,7 +745,7 @@ function waypoint826_run() {
                     box.classList.remove('stick');
                 }
 
-            });
+            }); // End scroll function
 
             /*  ----------- WINDOW RESIZE & HORZ. ALIGNMENT ----------  */
 
@@ -806,13 +802,18 @@ function waypoint826_run() {
                     var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
 
                     if (rightPosition == '0') {
-                        console.log('right position is zero');
+                        
                         mainContainer.style.display = 'none';
+
+                        // TESTING
+                        // console.log('right position is zero');
                     }
 
                     console.log('Right position of Waypoint:', rightPosition + 'px');
+
                 } else {
-                    console.log('elementWaypoint not found');
+
+                    // console.log('elementWaypoint not found');
                 }
 
                 // For CONTENT
@@ -822,44 +823,59 @@ function waypoint826_run() {
 
 
                 if (contentArea) {
-                    console.log('contentArea is defined ' + contentArea);
+                    
                     var elemContentWidth = window.getComputedStyle(contentArea).width;
-                    console.log('Content width is' + elemContentWidth);
                     var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
+
                     // Get the left position of the main content area
                     var leftPosition = contentArea.getBoundingClientRect().left;
-                    // console.log('Left edge of the main content area: ' + leftPosition);
 
-                    //console.log('Left position: of maincontent', leftPosition + 'px');
+                    // TESTING
+                    // console.log('Content width is' + elemContentWidth);
+                    console.log('Left edge of the main content area: ' + leftPosition);
+                    // console.log('contentArea is defined ' + contentArea);
+                    // console.log('Left position: of maincontent', leftPosition + 'px');
+
                 } else {
+
+                    // TESTING
                     console.log('contentArea not found ' + contentArea);
                 }
 
                 
                 var viewportWidth = window.innerWidth;
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 150);
+                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 500);
                 console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
 
                 // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
                 if ( spaceForWaypoint < waypointSpaceNeeded ) {
 
-                    // if the width of the page is greater than 
-                    // Set mainContainer display to none
+                    // if there's not enough space for waypoint
                     mainContainer.style.display = 'none';
-                    //contentArea.style.paddingLeft = initPaddingLeft;
-                    console.log("display: none");
+                    // contentArea.style.paddingLeft = initPaddingLeft;
+
+                    // TESTING
+                    // console.log("display: none");
+
+                    //1434 screen width is where I'm having issues
 
 
-                } else {
+                } else { 
 
-                    //console.log('leftPosition is true and = ' + leftPosition);
+                    // If there's enough space for waypoint...
 
                     mainContainer.style.display = 'block';
-                    //contentArea.style.paddingLeft = `${offset}px`;
-                    //contentArea.style.transition = 'transform 0.5s ease';
-                    mainContainer.style.transition = 'transform 0.5s ease';
-                   mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+                    //mainContainer.style.transition = 'transform 0.5s ease';
+                    mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+                    
+                    contentArea.style.transition = 'transform 0.5s ease';
+                    contentArea.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+                    
+
+                   // TESTING
+                   // console.log('leftPosition is true and = ' + leftPosition);
+                   // contentArea.style.paddingLeft = `${offset}px`;
                 }
 
                 // Set left position relative to the user-defined content element
@@ -867,8 +883,9 @@ function waypoint826_run() {
                 mainContainer.style.left = (leftPosition - offset - (baseMargin * 20)) + 'px';
 
             } else {
-                //mainContainer.style.display = 'none';
-                console.log("waypointFieldAlignToElement hasn't been defined by the user");
+
+                // mainContainer.style.display = 'none';
+                // console.log("waypointFieldAlignToElement hasn't been defined by the user");
             }
 
             function fullOpacity() {
