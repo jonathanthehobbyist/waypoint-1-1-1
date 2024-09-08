@@ -922,6 +922,12 @@ function waypoint826_run() {
 
         } // end positionMainContainer
 
+
+
+        /*--------  End positionMainContainer  -----------*/
+
+
+
         // Run the function when the page loads
         window.addEventListener('load', positionMainContainer);
 
@@ -970,23 +976,7 @@ function waypoint826_run() {
         var elementsWithAutoMargin = findAutoMarginElements();
  
 
-        // Removes .active class from li 
-        window.addEventListener('scroll', function() {
-        // If scrolled to the very top
-            if (window.scrollY === 0) {
-                //console.log('at top');
-                // Find all active menu items and remove the 'active' class
-                document.querySelectorAll('.list-wrapper li.active').forEach(item => {
-                    item.classList.remove('active');
 
-                });
-
-                document.querySelectorAll('.list-wrapper li:first-child').forEach(function(element) {
-                    element.classList.add('active');
-                });
-
-            }
-        });
 
         /* 
         * 
@@ -1046,7 +1036,7 @@ function waypoint826_run() {
             // console.log('Observing section:', section.id);
             observer.observe(section);
     });
-    }
+    } // END setupIntersectionObserver
 
     window.addEventListener('load', setupIntersectionObserver);
 
