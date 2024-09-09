@@ -553,14 +553,15 @@ function waypoint826_run() {
             var element = item.element; // The DOM element
 
             // Duplicates how the h2, h3, h4 is written - 'dirty version'
+            // Currently keeps the exact formatting IE uppercase, all caps etc. 
            var innerContent = element.innerText;
-           //console.log(innerContent);
+           console.log('innerContent ' + innerContent);
 
            // Cleans up the string to make it into a usable class name / on-page anchor link
            var str = innerContent;
            str = str.replace(/^\s/g, ''); //matches any space at the beginning of an input
            str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
-           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&+%^@*]/g, '').toLowerCase(); //matches 
+           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&$+%^@*]/g, '').toLowerCase(); //matches 
            // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
 
            // First, define the list of words to exclude
@@ -591,7 +592,8 @@ function waypoint826_run() {
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.href = "#" + str;
-            link.innerHTML = innerContent;
+            // console.log(str);
+            link.innerHTML = innerContent.toLowerCase();
 
             // Add a class that says whether this came from an h2, h3, h4, or h5 elem
             listItem.classList.add(item.selector + '_selector');

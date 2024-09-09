@@ -70,6 +70,10 @@ ol.list-wrapper {
 	font-size: 16px;
 }
 
+.waypoint826-main ol.list-wrapper li a::first-letter {
+	text-transform: uppercase;
+}
+
 .waypoint826-main ol.list-wrapper li.active a {
 	color: var(--text-primary)!important;
 }
