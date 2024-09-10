@@ -706,16 +706,13 @@ function waypoint826_run() {
             //console.log('Height of menu ' + distanceFromTop + 'px');
             mainContainer.style.top = ('0px');
 
-            var box = document.getElementById('waypoint826-primary-container'),
-            top = box.offsetTop;
-
+            var box = document.getElementById('waypoint826-primary-container');
+            let top = box.offsetTop;
 
             /*  ----------- SCROLL FUNCTION ----------  */
 
-
             window.addEventListener('scroll', function(event) {
                 
-                // 
                 var y = document.documentElement.scrollTop || document.body.scrollTop;
 
                 // User assigned variable - to define...
@@ -723,24 +720,17 @@ function waypoint826_run() {
                 // Assuming there is only one element with this class
                 var element = document.querySelector('.' + waypointFieldAddTo);
 
-                //distance from top is being defined twice...
+                // ERROR distance from top is being defined twice...
 
                 if (element) {
                     var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
 
-                // If (distance of document from top of page via scroll)
-                // menu height is GREATER THAN distance of waypoint-main from viewport top
-                // console.log('y ' + y);
-                // console.log('distance from top ' + distanceFromTop);
-                // console.log('top ' + top);
-
                 if ( (y - distanceFromTop) >= top) { 
 
                     // Is at the viewport top
                     box.classList.add('stick');
-                    //mainContainer.style.top = (distanceFromTop + 'px');
                    
                 } else { 
 
@@ -831,10 +821,9 @@ function waypoint826_run() {
                 // Waypoint width as a number
                 var waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
 
-                //console.log('spaceForWaypoint: ' + spaceForWaypoint);
-
                 // TEST
                 // console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
+                // console.log('spaceForWaypoint: ' + spaceForWaypoint);
 
                 // Set style
                 mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
@@ -849,10 +838,10 @@ function waypoint826_run() {
 
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
-                    mainContainer.style.width = '200px';
+                    mainContainer.style.width = '210px';
                     var offset = ( mainContainer.offsetWidth ); // Number of pixels to offset
                     
-                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 4)) + 'px';
+                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 3)) + 'px';
 
                 } else if ( spaceForWaypoint >= 680) {
 
@@ -865,31 +854,18 @@ function waypoint826_run() {
 
                 }
 
-                // Set left position of Waypoint - not sure about the math
-                // original - mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 20)) + 'px'; // baseMargin is defined above
-                // contentLeftEdge is leftPos of content area defined by user
-                // offset is X the width of Waypoint
-
-                // TEST
-                // console.log('contentLeftEdge of content' + contentLeftEdge);
-                // console.log('waypointLeftEdge of waypoint' + waypointLeftEdge);
-
-                // How do I want to set the left of 
-                // a 3*baseMargin 
-                // This just radically simplified calculating waypoints left position - could be user configurable with this as the default
-                
-
-                // console.log('set waypoint left edge to: ' + (contentLeftEdge - offset));
-
             } else {
 
             } // END if ( waypointFieldAlignToElement ) {
 
-            function fullOpacity() {
-                mainContainer.style.opacity = '1';
-            }
+            // Start the pulse for 5 seconds
+            startPulse(3000);
 
-            // Pulse effect with JavaScript
+        } // end positionMainContainer
+
+        /*--------  End positionMainContainer  -----------*/
+
+        // Pulse effect with JavaScript
             function startPulse(duration) {
                 let isFading = false;
                 let intervalId;
@@ -911,17 +887,6 @@ function waypoint826_run() {
                 }, duration);
             }
 
-            // Start the pulse for 5 seconds
-            startPulse(3000);
-
-        } // end positionMainContainer
-
-
-
-        /*--------  End positionMainContainer  -----------*/
-
-
-
         // Run the function when the page loads
         window.addEventListener('load', positionMainContainer);
 
@@ -942,34 +907,7 @@ function waypoint826_run() {
             };
         }
  
-        window.addEventListener('resize', debounce(positionMainContainer));
-
-        // Find all elements with margin 0 auto and shrink + push to the left by some px
-
-        // First, find all elems and add them to an array
-        // Experiment 8/27/24 may delete later
-        function findAutoMarginElements() {
-            const allElements = document.querySelectorAll('*');
-            var autoMarginElements = [];
-
-                allElements.forEach(element => {
-                    const computedStyle = window.getComputedStyle(element);
-                    const marginLeft = computedStyle.marginLeft;
-                    const marginRight = computedStyle.marginRight;
-                    const marginTop = computedStyle.marginTop;
-                    const marginBottom = computedStyle.marginBottom;
-
-                    if (marginLeft === 'auto' && marginRight === 'auto') {
-                        autoMarginElements.push(element);
-                    }
-                });
-
-                return autoMarginElements;
-        }
-
-        var elementsWithAutoMargin = findAutoMarginElements();
- 
-
+        // window.addEventListener('resize', debounce(positionMainContainer));
 
 
         /* 
@@ -1044,7 +982,16 @@ function waypoint826_run() {
     };
 }
 
-window.addEventListener('resize', debounce(setupIntersectionObserver));
+// Combine the functions into one debounced handler
+function handleResize() {
+    positionMainContainer();
+    setupIntersectionObserver();
+}
+
+window.addEventListener('resize', debounce(handleResize, 200));
+
+
+// window.addEventListener('resize', debounce(setupIntersectionObserver));
 
     /* window.addEventListener('resize', () => {
         setupIntersectionObserver(); // Reset the observer on resize
