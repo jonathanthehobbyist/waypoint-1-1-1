@@ -760,9 +760,6 @@ function waypoint826_run() {
                 // Remove spaces and add a dot '.' from the class or ID data passed from the user
                 var alignElement = waypointFieldAlignToElement.replace(/ /g, '.');
 
-
-                /*--------------  NOT USING AREA  ---------------------------*/
-
                 // DOM element of class or ID 
                 // .main-container .row-container
                 const contentElement = document.querySelector('.' + alignElement);
@@ -780,50 +777,31 @@ function waypoint826_run() {
                 const marginLeftValue = parseFloat(computedStyle.marginLeft);
                 var marginTopValue = parseFloat(computedStyle.marginTop);
 
-
-                /*--------------  END -- NOT USING AREA  ---------------------------*/
-
-                // For TABLE OF CONTENTS
-                // Select the first element with the class "waypoint826-main"
-
-                // Add padding to element
-
-                //  - this moves the main content area over by using padding (if it's margin 0 auto)
-                
-                //contentArea.style.paddingLeft = `${offset}px`;
                 
 
-
-                /*  -----------  Main positioning workflow, has a REPEATABLE bug around 1434 screen size ----------  */
-
-
+                // Starts with a width of 250px defined in the style sheet
                 var elementWaypoint = document.querySelector('.waypoint826-main');
 
-                // Calculate widths
                 // Get the right position of the elementWaypoint
-                var rightPosition = elementWaypoint.getBoundingClientRect().right;
+                var waypointLeftEdge = elementWaypoint.getBoundingClientRect().right;
+
+                // 
                 var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+
+                // Remove 'px' REGEX
                 var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
 
-                if (rightPosition == '0') {
+                if (waypointLeftEdge == '0') {
                     
                     mainContainer.style.display = 'none';
 
                     // TESTING
-                    console.log('right position is zero via IF statement');
+                    // console.log('right position is zero via IF statement');
                 }
 
-                console.log('Right position of Waypoint:', rightPosition + 'px');
+                // console.log('Right position of Waypoint:', waypointLeftEdge + 'px');
 
                 // For CONTENT
-
-                 // var elementContent = document.querySelector('.uncell.boomapps_vccolumn');  // old callout
-                 // contentArea is the var that has been defined by the user as the element that represents the main content width
-
-
-                // contentArea is user-defined for measuring width of main content
-
-                // What do I really want to do if this doesn't work? 
 
                 if (contentArea) {
                     
@@ -831,13 +809,13 @@ function waypoint826_run() {
                     var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
 
                     // Get the left position of the main content area
-                    var leftPosition = contentArea.getBoundingClientRect().left;
+                    var contentLeftEdge = contentArea.getBoundingClientRect().left;
 
                     // TESTING
                     // console.log('Content width is' + elemContentWidth);
-                    console.log('Left edge of the main content area: ' + leftPosition);
+                    // console.log('Left edge of the main content area: ' + contentLeftEdge);
                     // console.log('contentArea is defined ' + contentArea);
-                    // console.log('Left position: of maincontent', leftPosition + 'px');
+                    // console.log('Left position: of maincontent', contentLeftEdge + 'px');
 
                 } else {
 
@@ -845,51 +823,65 @@ function waypoint826_run() {
                     console.log('contentArea not found ' + contentArea);
                 }
 
-                
                 var viewportWidth = window.innerWidth;
+
+                // Calculating space on the margins around the content
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth) + 500);
-                console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
 
-                // If viewport - content width is less than ( cleanElemWaypointWidth +100 ) then don't display
-                if ( spaceForWaypoint < waypointSpaceNeeded ) {
+                // Waypoint width as a number
+                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
 
-                    // if there's not enough space for waypoint
+                //console.log('spaceForWaypoint: ' + spaceForWaypoint);
+
+                // TEST
+                // console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
+
+                // Set style
+                mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+
+                // Needed space: Waypoint is 250px wide (could be 200px) so 250 on each side, plus 20px margins x 4 (another 80px)
+                if ( spaceForWaypoint < 580) {
+
+                    // Waypoint displays NONE
                     mainContainer.style.display = 'none';
-                    // contentArea.style.paddingLeft = initPaddingLeft;
 
-                    // TESTING
-                    // console.log("display: none");
+                } else if ( spaceForWaypoint > 580 && spaceForWaypoint < 680 ) {
 
-                    //1434 screen width is where I'm having issues
-
-
-                } else { 
-
-                    // If there's enough space for waypoint...
-
+                    // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
-                    var offset = ( mainContainer.offsetWidth / 2); // Number of pixels to offset
-                    //mainContainer.style.transition = 'transform 0.5s ease';
-                    mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
+                    mainContainer.style.width = '200px';
+                    var offset = ( mainContainer.offsetWidth ); // Number of pixels to offset
                     
-                    // contentArea.style.transition = 'transform 0.5s ease';
-                    // contentArea.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
-                    
+                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 4)) + 'px';
 
-                   // TESTING
-                   // console.log('leftPosition is true and = ' + leftPosition);
-                   // contentArea.style.paddingLeft = `${offset}px`;
+                } else if ( spaceForWaypoint >= 680) {
+
+                    // Waypoint displays BLOCK, 250 width
+                    mainContainer.style.display = 'block';
+                    mainContainer.style.width = '250px';
+                    var offset = ( mainContainer.offsetWidth); // Number of pixels to offset
+
+                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 6)) + 'px';
+
                 }
 
-                // Set left position relative to the user-defined content element
-                //mainContainer.style.left = '0px';
-                mainContainer.style.left = (leftPosition - offset - (baseMargin * 20)) + 'px';
+                // Set left position of Waypoint - not sure about the math
+                // original - mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 20)) + 'px'; // baseMargin is defined above
+                // contentLeftEdge is leftPos of content area defined by user
+                // offset is X the width of Waypoint
+
+                // TEST
+                // console.log('contentLeftEdge of content' + contentLeftEdge);
+                // console.log('waypointLeftEdge of waypoint' + waypointLeftEdge);
+
+                // How do I want to set the left of 
+                // a 3*baseMargin 
+                // This just radically simplified calculating waypoints left position - could be user configurable with this as the default
+                
+
+                // console.log('set waypoint left edge to: ' + (contentLeftEdge - offset));
 
             } else {
-
-                // mainContainer.style.display = 'none';
-                // console.log("waypointFieldAlignToElement hasn't been defined by the user");
 
             } // END if ( waypointFieldAlignToElement ) {
 
