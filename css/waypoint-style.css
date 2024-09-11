@@ -87,7 +87,6 @@ ol.list-wrapper {
 #waypoint826-primary-container.stick {
 	position: fixed;
 	/* right: calc(100% - 10px); /* Adjusting the left position by 10px */
-	width: 250px;
 	top: 0!important;
 }
 

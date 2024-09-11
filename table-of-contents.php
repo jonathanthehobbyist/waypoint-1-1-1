@@ -351,16 +351,18 @@ function waypoint826_run() {
                     ?>
 
                     <script type="text/javascript">
+
+                        // may not need this, I think it's just a verification / test function
+
                         function run_state () {
                         
                             var postId = <?php echo json_encode($post_id); ?>;
                             var checkboxState = <?php echo json_encode($checkbox_state); ?>;
 
                             if (checkboxState === '1') {
-                                console.log('Checkbox is checked on post ID:', postId);
                                 applyCustomFunction(postId);
                             } else {
-                                console.log('Checkbox is not checked on post ID:', postId);
+                                
                             }
 
                             function applyCustomFunction(postId) {
@@ -556,7 +558,7 @@ function waypoint826_run() {
             // Duplicates how the h2, h3, h4 is written - 'dirty version'
             // Currently keeps the exact formatting IE uppercase, all caps etc. 
            var innerContent = element.innerText;
-           console.log('innerContent ' + innerContent);
+           // console.log('innerContent ' + innerContent);
 
            // Cleans up the string to make it into a usable class name / on-page anchor link
            var str = innerContent;
@@ -666,94 +668,7 @@ function waypoint826_run() {
             mainContainer.style.opacity = '0.2';
 
         
-            /*  ----------- POSITION TO TOP ----------  */
 
-            // waypointMasthead
-            // Eventually will need to push this into an array, check for # or ., and then manage multiple spaces / words etc.
-
-            // searches for # or .
-            const elementHasID = /#/g;
-            const elementHasClassEs = /\./g; 
-
-            // Test, find, replace and create var menuHeight
-            if (elementHasID.test(waypointMasthead)) {
-               
-               //console.log("true");
-               var elementIDName = String(waypointMasthead.replace('#', ''));
-               var refToMasthead = document.getElementById(elementIDName);
-               // console.log('refToMasthead' + refToMasthead);
-
-            } else if (document.getElementById('masthead')) {
-
-                // Test to see if there's a masthead
-                var refToMasthead = document.getElementById('masthead'); //outputs an HTMLCollection
-            }
-
-
-            // default to height of the header element with a user configurable override
-            if (refToMasthead) {
-                var distanceFromTop = refToMasthead.getBoundingClientRect().height;
-            }
-
-            //console.log('Height of menu ' + distanceFromTop + 'px');
-            mainContainer.style.top = ('0px');
-
-            var box = document.getElementById('waypoint826-primary-container');
-            let top = box.offsetTop;
-
-            /*  ----------- SCROLL FUNCTION ----------  */
-
-            window.addEventListener('scroll', function(event) {
-                
-                var y = document.documentElement.scrollTop || document.body.scrollTop;
-
-                // User assigned variable - to define...
-
-                // Assuming there is only one element with this class
-                var element = document.querySelector('.' + waypointFieldAddTo);
-
-                // ERROR distance from top is being defined twice...
-
-                if (element) {
-                    var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
-                    //console.log('Distance from top: ' + distanceFromTop + 'px');
-                }
-
-               
-                // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
-                if ( (y - distanceFromTop) >= top ) { 
-
-                    // Is at the viewport top
-                    if (!box.classList.contains('stick')) {
-
-                        box.classList.add('stick');
-
-                        // Solve for slight movement left and right when adding 'stick' class
-                        let currentLeft = mainContainer.getBoundingClientRect().left;
-
-                        // Make sure its a number then adjust
-                        currentLeft = parseFloat(currentLeft);
-                        mainContainer.style.left = ((currentLeft) - '3' ) + 'px';
-                    }
-                    
-                   
-                } else { 
-
-                    if (box.classList.contains('stick')) {
-
-                        box.classList.remove('stick');
-
-                        let currentLeftWithStick = mainContainer.getBoundingClientRect().left;
-
-                        // Make sure its a number, then adjust
-                        currentLeftWithStick = parseFloat(currentLeftWithStick);
-                        mainContainer.style.left = ((currentLeftWithStick) + 6 ) + 'px';
-                        
-                    }
-                    // mainContainer.style.left = ((currentLeft) + 20 ) + 'px';
-                }
-
-            }); // End scroll function
 
             /*  ----------- WINDOW RESIZE & HORZ. ALIGNMENT ----------  */
 
@@ -848,25 +763,29 @@ function waypoint826_run() {
                     // Waypoint displays NONE
                     mainContainer.style.display = 'none';
 
-                } else if ( spaceForWaypoint > 580 && spaceForWaypoint < 680 ) {
+                } else if ( spaceForWaypoint > 580 && spaceForWaypoint < 720 ) {
 
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
                     mainContainer.style.width = '210px';
-                    var offset = ( mainContainer.offsetWidth ); // Number of pixels to offset
+                    var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
                     
-                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 3)) + 'px';
+                    mainContainer.style.left = Math.abs(contentLeftEdge - offset - (baseMargin * 3)) + 'px';
 
-                } else if ( spaceForWaypoint >= 680) {
+                } else if ( spaceForWaypoint >= 720) {
 
                     // Waypoint displays BLOCK, 250 width
                     mainContainer.style.display = 'block';
                     mainContainer.style.width = '250px';
-                    var offset = ( mainContainer.offsetWidth); // Number of pixels to offset
+                    var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
 
-                    mainContainer.style.left = (contentLeftEdge - offset - (baseMargin * 6)) + 'px';
+                    mainContainer.style.left = Math.abs(contentLeftEdge - offset - (baseMargin * 6)) + 'px';
 
                 }
+
+                // TEST 
+                var newWidth = window.getComputedStyle(mainContainer).width;
+                console.log('Width of the main container' + newWidth);
 
             } else {
 
@@ -874,6 +793,163 @@ function waypoint826_run() {
 
             // Start the pulse for 5 seconds
             startPulse(1500);
+
+
+                        /*  ----------- POSITION TO TOP ----------  */
+
+            // waypointMasthead
+            // Eventually will need to push this into an array, check for # or ., and then manage multiple spaces / words etc.
+
+            // searches for # or .
+            const elementHasID = /#/g;
+            const elementHasClassEs = /\./g; 
+
+            // Test, find, replace and create var menuHeight
+            if (elementHasID.test(waypointMasthead)) {
+               
+               //console.log("true");
+               var elementIDName = String(waypointMasthead.replace('#', ''));
+               var refToMasthead = document.getElementById(elementIDName);
+               // console.log('refToMasthead' + refToMasthead);
+
+            } else if (document.getElementById('masthead')) {
+
+                // Test to see if there's a masthead
+                var refToMasthead = document.getElementById('masthead'); //outputs an HTMLCollection
+            }
+
+
+            // default to height of the header element with a user configurable override
+            if (refToMasthead) {
+                var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+            }
+
+            //console.log('Height of menu ' + distanceFromTop + 'px');
+            mainContainer.style.top = ('0px');
+
+            var box = document.getElementById('waypoint826-primary-container');
+            let top = box.offsetTop;
+
+            var widthOfWaypoint = window.getComputedStyle(mainContainer).width;
+            var widthOfWaypoint = parseFloat(widthOfWaypoint);
+            // may not need
+            
+
+            // Main container left edge
+            var wp826LeftPos = mainContainer.getBoundingClientRect().left;
+            var wp826LeftPos = parseFloat(wp826LeftPos);
+            console.log('Waypoint left edge' + wp826LeftPos);
+
+            // console.log('by the IF statement: width of main container' + widthOfWaypoint);
+
+            // console.log('Adjust Margin: ' + adjustMargin);
+
+            // At 210 width, adjustMargin = 5 works...at 250, 0 works
+
+            /*  ----------- SCROLL FUNCTION ----------  */
+
+            function findPositionedParent(element) {
+                // Start with the parent of the element
+                let parent = mainContainer.parentElement;
+
+                // Traverse up the DOM tree
+                while (parent) {
+                    // Get the computed style of the parent
+                    const style = window.getComputedStyle(parent);
+
+                    // Check if the parent has a position other than 'static'
+                    if (style.position !== 'static') {
+                        return parent; // This is the nearest positioned parent
+                    }
+
+                    // Move to the next parent element
+                    parent = parent.parentElement;
+                }
+
+                // If no positioned parent is found, return null
+                return null;
+            }
+
+            // Example usage
+            const absoluteElement = document.querySelector('.waypoint826-main'); // Replace with your element
+            const positionedParent = findPositionedParent(absoluteElement);
+
+            if (positionedParent) {
+                //console.log('Positioned parent found:', positionedParent);
+
+                var parentLeft = positionedParent.getBoundingClientRect().left;
+
+                console.log('Positioned Paretn left ' + parentLeft);
+            } else {
+                console.log('No positioned parent found, using the body/document.');
+            }
+
+            if (parentLeft){
+
+                var adjustMargin = Math.abs(parseFloat(parentLeft));
+            }
+
+            if (widthOfWaypoint == 250) {
+                
+                var adjustMarginRemove = (adjustMargin);
+
+            } else if (widthOfWaypoint == 210) {
+
+                var adjustMarginRemove = (adjustMargin);
+
+            }
+            
+            window.addEventListener('scroll', function(event) {
+                
+                var y = document.documentElement.scrollTop || document.body.scrollTop;
+
+                // Assuming there is only one element with this class
+                var element = document.querySelector('.' + waypointFieldAddTo);
+
+                if (element) {
+                    var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
+                    //console.log('Distance from top: ' + distanceFromTop + 'px');
+                }
+
+                // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
+                if ( (y - distanceFromTop) >= top ) { 
+
+                    // Is at the viewport top
+                    if (!box.classList.contains('stick')) {
+
+                        box.classList.add('stick');
+
+                        // Make sure its a number then adjust
+                        
+                        mainContainer.style.left = (wp826LeftPos) + 'px';
+
+                        let currentLeft = mainContainer.getBoundingClientRect().left;
+                        currentLeft = parseFloat(currentLeft);
+                        console.log('current left' + currentLeft);
+                    }
+                    
+                   
+                } else { 
+
+                    if (box.classList.contains('stick')) {
+
+                         let currentLeftWithStick = mainContainer.getBoundingClientRect().left;
+
+                        // Make sure its a number, then adjust
+                        currentLeftWithStick = parseFloat(currentLeftWithStick);
+                        console.log("left with stick: " + currentLeftWithStick);
+
+                        box.classList.remove('stick');
+
+
+                        mainContainer.style.left = ( wp826LeftPos + adjustMarginRemove) + 'px';
+                       // mainContainer.style.left = ((currentLeftWithStick) + (adjustMarginRemove)) + 'px';
+                        
+                    }
+                    // mainContainer.style.left = ((currentLeft) + 20 ) + 'px';
+                }
+
+            }); // End scroll function
 
         } // end positionMainContainer
 
