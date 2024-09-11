@@ -3,6 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
+ * Version: 1.0.0
  */
 
 // Activation functions
@@ -582,9 +583,6 @@ function waypoint826_run() {
             return;
            }
 
-
-           //console.log(str);
-
            // Assign a unique ID to the h2, h3, h4 tag based on its position
             element.id = str;
             
@@ -598,9 +596,6 @@ function waypoint826_run() {
             // Add a class that says whether this came from an h2, h3, h4, or h5 elem
             listItem.classList.add(item.selector + '_selector');
             //console.log(numberOfHeadings);
-
-            // WTF am I trying to do? 
-            // The problem: selector has an H in it (for example, h2) - and I need to compare it to a number.
 
             var breakDownSelector = parseInt(selector.replace('h', ''),10);
 
@@ -632,9 +627,6 @@ function waypoint826_run() {
                         break;
 
                     case 4:
-                        // TopLevel - 1 gets a base*1 margin
-                        // TopLevel - 2 gets a base*2 margin
-                        // TopLevel - 3 gets a base*3 margin
                         //console.log('item selector: ' + selector + ' valuesOfH: ' + valuesOfHeadings[1]);
                         if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
                             //console.log('item selector:' + selector + 'valuesOfH' + valuesOfHeadings);
@@ -727,14 +719,38 @@ function waypoint826_run() {
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
 
-                if ( (y - distanceFromTop) >= top) { 
+               
+                // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
+                if ( (y - distanceFromTop) >= top ) { 
 
                     // Is at the viewport top
-                    box.classList.add('stick');
+                    if (!box.classList.contains('stick')) {
+
+                        box.classList.add('stick');
+
+                        // Solve for slight movement left and right when adding 'stick' class
+                        let currentLeft = mainContainer.getBoundingClientRect().left;
+
+                        // Make sure its a number then adjust
+                        currentLeft = parseFloat(currentLeft);
+                        mainContainer.style.left = ((currentLeft) - '3' ) + 'px';
+                    }
+                    
                    
                 } else { 
 
-                    box.classList.remove('stick');
+                    if (box.classList.contains('stick')) {
+
+                        box.classList.remove('stick');
+
+                        let currentLeftWithStick = mainContainer.getBoundingClientRect().left;
+
+                        // Make sure its a number, then adjust
+                        currentLeftWithStick = parseFloat(currentLeftWithStick);
+                        mainContainer.style.left = ((currentLeftWithStick) + 6 ) + 'px';
+                        
+                    }
+                    // mainContainer.style.left = ((currentLeft) + 20 ) + 'px';
                 }
 
             }); // End scroll function
@@ -766,8 +782,6 @@ function waypoint826_run() {
 
                 const marginLeftValue = parseFloat(computedStyle.marginLeft);
                 var marginTopValue = parseFloat(computedStyle.marginTop);
-
-                
 
                 // Starts with a width of 250px defined in the style sheet
                 var elementWaypoint = document.querySelector('.waypoint826-main');
@@ -859,7 +873,7 @@ function waypoint826_run() {
             } // END if ( waypointFieldAlignToElement ) {
 
             // Start the pulse for 5 seconds
-            startPulse(3000);
+            startPulse(1500);
 
         } // end positionMainContainer
 
@@ -878,7 +892,7 @@ function waypoint826_run() {
                         mainContainer.style.opacity = '0.3'; // Semi-transparent
                     }
                     isFading = !isFading;
-                }, 500); // Change opacity every 500ms
+                }, 250); // Change opacity every 500ms
 
                 // Stop the pulse effect after the specified duration
                 setTimeout(() => {
