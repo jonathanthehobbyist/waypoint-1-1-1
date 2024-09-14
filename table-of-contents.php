@@ -436,15 +436,7 @@ function waypoint826_run() {
         var entirePage = document.querySelector('.' + waypointFieldAddTo);
         entirePage.appendChild(mainContainer);
 
-        /*  ----------- USER CONFIGURABLE ----------  */
-
-        waypointFieldAlignToElement = waypointFieldAlignToElement.trim();
-        // console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
-
-        // Because waypointFieldAlignToElement might have more than one class so...
-        const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
-
-        var contentArea = document.querySelector(checkAndCombineField);
+        
         //console.log('this is contentArea: ' + contentArea);
 
         /*  ------  USER CONFIGURABLE  ----------  */
@@ -652,6 +644,80 @@ function waypoint826_run() {
 
         var initPaddingLeft = window.getComputedStyle(mainContainer).paddingLeft;
 
+        function findPositionedParent(element) {
+            // Start with the parent of the element
+            let parent = mainContainer.parentElement;
+
+            // Traverse up the DOM tree
+            while (parent) {
+                // Get the computed style of the parent
+                const style = window.getComputedStyle(parent);
+
+                // Check if the parent has a position other than 'static'
+                if (style.position !== 'static') {
+                    return parent; // This is the nearest positioned parent
+                }
+
+                // Move to the next parent element
+                parent = parent.parentElement;
+            }
+
+            // If no positioned parent is found, return null
+            return null;
+        } // END FINDPOSITIONEDPARENT()
+
+        // Get actual value for waypoint
+        var absoluteElement = document.querySelector('.waypoint826-main'); 
+        var positionedParent = findPositionedParent(absoluteElement);
+
+        if (positionedParent) {
+            // True distance from the left viewport edge
+            var parentLeft = positionedParent.getBoundingClientRect().left;
+        }
+
+        if (parentLeft){
+            //
+            var adjustMargin = (parseFloat(parentLeft));
+        } else {
+            // 
+            var adjustMargin = 0;
+        }
+
+        /*  ----------- USER CONFIGURABLE ----------  */
+        // Remove whitespace from both ends of
+        waypointFieldAlignToElement = waypointFieldAlignToElement.trim();
+        // console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
+
+        // Because waypointFieldAlignToElement might have more than one class so...
+        const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
+        //
+        var contentArea = document.querySelector(checkAndCombineField);
+
+        // get the left position of the user-defined content block - may need to do this inside positionMainContainer
+        if (contentArea) {
+            // get the width
+            var elemContentWidth = window.getComputedStyle(contentArea).width;
+            // replace px
+            var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
+            // get the contentLeft left.pos
+            var contentLeftEdge = contentArea.getBoundingClientRect().left;
+    
+        }
+
+        var viewportWidth = window.innerWidth;
+        //
+        var elementWaypoint = document.querySelector('.waypoint826-main');
+        // 
+        var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+        // Remove 'px' REGEX
+        var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
+        // Calculating space on the margins around the content
+        // What if used hasn't defined contentArea? 
+        var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
+        // Waypoint width as a number
+        var waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
+        // contentArea is a user configurable area 
+
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
 
@@ -675,77 +741,7 @@ function waypoint826_run() {
                 // Get the computed styles for the contentElement
                 const computedStyle = window.getComputedStyle(contentElement);
 
-                // Access the left margin
-                const marginLeft = computedStyle.marginLeft;
-                //console.log(marginLeft);
-                const marginTop = computedStyle.marginTop;
-                //console.log(marginTop);
-                // Computer style returns a string not a number
-
-                const marginLeftValue = parseFloat(computedStyle.marginLeft);
-                var marginTopValue = parseFloat(computedStyle.marginTop);
-
                 // Starts with a width of 250px defined in the style sheet
-                var elementWaypoint = document.querySelector('.waypoint826-main');
-
-                // Get the right position of the elementWaypoint 
-                // AM I USING THIS? IF not, delete
-                var waypointLeftEdge = elementWaypoint.getBoundingClientRect().right;
-
-                // 
-                var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
-
-                // Remove 'px' REGEX
-                var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
-
-                if (waypointLeftEdge == '0') {
-                    
-                    mainContainer.style.display = 'none';
-
-                    // TESTING
-                    // console.log('right position is zero via IF statement');
-                }
-
-                // console.log('Right position of Waypoint:', waypointLeftEdge + 'px');
-                // For CONTENT
-
-                // If user has defined a content area
-                if (contentArea) {
-                    
-                    var elemContentWidth = window.getComputedStyle(contentArea).width;
-                    var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
-
-                    // Get the left position of the main content area - we should probably check to see if this is absolutely positioned
-                    var contentLeftEdge = contentArea.getBoundingClientRect().left;
-                    console.log('Left edge of content contentLeftEdge' + contentLeftEdge);
-
-                    // TESTING
-                    // console.log('Content width is' + elemContentWidth);
-                    // console.log('Left edge of the main content area: ' + contentLeftEdge);
-                    // console.log('contentArea is defined ' + contentArea);
-                    // console.log('Left position: of maincontent', contentLeftEdge + 'px');
-
-                } else {
-
-                    // TESTING
-                    // console.log('contentArea not found ' + contentArea);
-                }
-
-                /*  ----------- ONE-TIME LEFT POSITIONING ----------  */
-
-                // Viewport width
-                var viewportWidth = window.innerWidth;
-
-                // Calculating space on the margins around the content
-                // What if used hasn't defined contentArea? 
-                var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-
-                // Waypoint width as a number
-                var waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
-
-                // TEST
-                // console.log('View port width ' + viewportWidth + ' Main content width ' + cleanElemContentWidth);
-                // console.log('spaceForWaypoint: ' + spaceForWaypoint);
 
                 // Set style
                 mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
@@ -753,31 +749,7 @@ function waypoint826_run() {
                 // Needed space: Waypoint is 250px wide (could be 200px) so 250 on each side, plus 20px margins x 4 (another 80px)
 
                 // Since mainConatiner starts as pos:absolute, find the static positioned partent to find the true distance from waypoint to the left part of the screen
-                function findPositionedParent(element) {
-                    // Start with the parent of the element
-                    let parent = mainContainer.parentElement;
-
-                    // Traverse up the DOM tree
-                    while (parent) {
-                        // Get the computed style of the parent
-                        const style = window.getComputedStyle(parent);
-
-                        // Check if the parent has a position other than 'static'
-                        if (style.position !== 'static') {
-                            return parent; // This is the nearest positioned parent
-                        }
-
-                        // Move to the next parent element
-                        parent = parent.parentElement;
-                    }
-
-                    // If no positioned parent is found, return null
-                    return null;
-                } // END FINDPOSITIONEDPARENT()
-
-                // Get actual value for waypoint
-                const absoluteElement = document.querySelector('.waypoint826-main'); 
-                const positionedParent = findPositionedParent(absoluteElement);
+                
 
                 // Get the computed style of the content element
                 let computedStyleContent = window.getComputedStyle(contentElement);
@@ -791,25 +763,6 @@ function waypoint826_run() {
                     // Make sure content isn't absolutely positioned
                     //console.log('not absolute');
                 }
-
-
-
-                if (positionedParent) {
-
-                    // True distance from the left viewport edge
-                    var parentLeft = positionedParent.getBoundingClientRect().left;
-
-                    //console.log('Positioned Parent left ' + parentLeft);
-                } else {
-                    //console.log('No positioned parent found, using the body/document.');
-                }
-
-                if (parentLeft){
-                    var adjustMargin = (parseFloat(parentLeft));
-                } else {
-                    var adjustMargin = 0;
-                }
-
                 // Test waypoint's display
                 // Get the computed style of the content element
                 let computedStyleWaypoint = window.getComputedStyle(mainContainer);
@@ -819,6 +772,8 @@ function waypoint826_run() {
                 // console.log('Waypoint is position: ' + displayValueWaypoint);
                 console.log('spaceForWaypppoint: ' + spaceForWaypoint);
 
+
+                /*  ----------- INITIAL LEFT POSITIONING ----------  */
 
                 if ( spaceForWaypoint < 580) {
 
@@ -830,36 +785,12 @@ function waypoint826_run() {
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
                     mainContainer.style.width = '230px';
-
                     // Width of Waypoint, as a number
                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-
-                    // Waypoint positioning
-                    if (displayValueWaypoint == 'absolute') {
-
-                        // waypoint is ABSOLUTE and if adjustMargin exists
-                        if (adjustMargin) {
-
-                            // Account for parent's distance to viewport edge
-                            var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
-
-                        } else { }
-
-                    } else { // waypoint is FIXED
-                        var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5)) + 'px';
-                        // console.log('FIXED - calculated left adjustment in ELSE: ' + leftAdjustCalc);
-                    }
-
+                    console.log('setting maincontainer left position - at INIT LEFT POSITIONING');
+                    var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
                     mainContainer.style.left = leftAdjustCalc;
-                    
-
                 } // Cut an else if and put it into notes
-
-                // TEST 
-                var newWidth = window.getComputedStyle(mainContainer).width;
-                // console.log('Width of the main container' + newWidth);
-
-            } else {
 
             } // END if ( waypointFieldAlignToElement ) {
 
@@ -904,10 +835,21 @@ function waypoint826_run() {
             let calcLeftFixed = (parseFloat(leftAdjustCalc) + parseFloat(adjustMargin));
             let calcLeftAbsolute = (parseFloat(leftAdjustCalc));
 
-
             /*  ----------- SCROLL FUNCTION ----------  */
 
             var positionVar;
+
+            
+
+            // Function to calculate and apply the position
+            
+
+          // Initial position update
+          updatePosition();
+
+          // Update position on window resize or scroll, to maintain the behavior
+          //window.addEventListener('resize', updatePosition);
+         // window.addEventListener('scroll', updatePosition);
 
             window.addEventListener('scroll', function(event) {
                 
@@ -916,51 +858,46 @@ function waypoint826_run() {
                 // Assuming there is only one element with this class
                 var element = document.querySelector('.' + waypointFieldAddTo);
 
-                // Already doing some calculations around the element that Waypoint is added to ...
-
-                
-
-
-
-
-
                 if (element) {
                     var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
-
                 // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
 
-                if ( (y - distanceFromTop) >= top ) {  // Is at the viewport top
-
-                    /*  ----------- LEFT POSITIONING ON SCROLL EVENT ----------  */
-                    
-                    if (!box.classList.contains('stick')) { // doesn't contain stick = ABSOLUTE positioning
-
-                        // Add class
-                        box.classList.add('stick'); // Now its FIXED
-
-                        // Apply adjustment
-                        mainContainer.style.left = (calcLeftFixed) + 'px';
-
-                    }  
-                   
-                } else { 
-
-                    if (box.classList.contains('stick')) { // FIXED positioning
-
-                        // Remove class
-                        box.classList.remove('stick'); // Now its ABSOLUTE, position relative to a STATIC parent
-
-                        // Apply adjustment
-                        mainContainer.style.left = leftAdjustCalc;
-                       
-                    }
+                if ( (y - distanceFromTop) >= top ) {  // element is at the viewport top
+                        
+                } else  {
+                    //mainContainer.style.top = `${parentRect.top + 0}px`;
+                    updatePosition();
                 }
-
             }); // End scroll function
-
         } // end positionMainContainer
+
+        function updatePosition() {
+            // Get the bounding rectangle of the parent
+            const parentRect = positionedParent.getBoundingClientRect();
+
+            // Apply fixed positioning but adjust based on parent's position in the viewport
+            mainContainer.style.top = `${parentRect.top + 0}px`;  // 50px from top of parent
+            console.log('setting maincontainer left position - at updatePosition');
+            var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
+
+            // Making sure everything is kosher
+            /* 
+            console.log('contentLeftEdge: ' + contentLeftEdge);
+            console.log('offset: ' + offset);
+            console.log('baseMargin: ' + baseMargin);
+            console.log('adjustMargin: ' + adjustMargin); 
+            */
+
+            var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+            mainContainer.style.left = leftAdjustCalc;
+
+
+            // mainContainer.style.left = `${parentRect.left + 100}px`; // 100px from left of parent
+        }
+
+        //window.addEventListener('scroll', updatePosition);
 
         /*--------  End positionMainContainer  -----------*/
 
@@ -1076,9 +1013,10 @@ function waypoint826_run() {
 function handleResize() {
     positionMainContainer();
     setupIntersectionObserver();
+    updatePosition();
 }
 
-window.addEventListener('resize', debounce(handleResize, 100));
+window.addEventListener('resize', debounce(handleResize, 50));
 
         /* ADMIN  */
 

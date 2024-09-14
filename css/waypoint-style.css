@@ -27,7 +27,8 @@ html {
 	width: 250px;
 	background-color:none;
 	border-right: 1px solid #ccc;
-	position: absolute;
+	position: fixed; 
+	
 	/* right: 80%; */
 	opacity: .2;
 	padding: 60px 20px 80px 20px;
