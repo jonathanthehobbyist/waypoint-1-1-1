@@ -47,7 +47,11 @@ function wporg_custom_box_html( $post ) {
         - DONE: need to adjust the center DIV right if margin: 0 auto;
         - DONE: peg to top element
         - DONE: Additional right margin for mainContainer
-        - Accommodate sticky headers
+        - What happens in the case of sticky headers?
+
+        SETTINGS PAGE
+        - Masthead
+        - Background color
 
         STYLE
 
@@ -65,7 +69,7 @@ function wporg_custom_box_html( $post ) {
         - Probably needs to be scrollable in case it goes off the page
 
         DEBUG
-        - There's a bug when you zoom to the top of the page, might be around my implementation of the header. Might need to save that value as a unchangeable variatble rarther than recalculating each time 
+        - DONE: There's a bug when you zoom to the top of the page, might be around my implementation of the header. Might need to save that value as a unchangeable variatble rarther than recalculating each time 
 
     */
 
@@ -112,9 +116,6 @@ function wporg_custom_box_html( $post ) {
         <hr>
         <input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
         <label for="waypoint_intro_enable">H5</label><br>
-
-
-
     </div>
 
     <hr>
@@ -321,14 +322,6 @@ function wporg_save_postdata( $post_id ) {
 
 add_action( 'save_post', 'wporg_save_postdata' );
 
-/*
-*
-*
-*   NOTE - admin pages are not post or page types and so running an admin vs. a user-facing page yields different results
-*
-*
-*/
-
 function waypoint826_run() {
             //error_log("inside waypoitn826_run");
             
@@ -418,8 +411,6 @@ function waypoint826_run() {
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
 
-        
-
         /*  ------  USER CONFIGURABLE  ----------  */
         // Enable intro at top of list
         var waypointIntroEnable = <?php echo json_encode($checkbox_value_intro); ?>;
@@ -455,7 +446,6 @@ function waypoint826_run() {
 
         var contentArea = document.querySelector(checkAndCombineField);
         //console.log('this is contentArea: ' + contentArea);
-
 
         /*  ------  USER CONFIGURABLE  ----------  */
 
@@ -667,9 +657,6 @@ function waypoint826_run() {
 
             mainContainer.style.opacity = '0.2';
 
-        
-
-
             /*  ----------- WINDOW RESIZE & HORZ. ALIGNMENT ----------  */
 
             /*  -----------  USER CONFIGURABLE  ----------  */
@@ -701,7 +688,8 @@ function waypoint826_run() {
                 // Starts with a width of 250px defined in the style sheet
                 var elementWaypoint = document.querySelector('.waypoint826-main');
 
-                // Get the right position of the elementWaypoint
+                // Get the right position of the elementWaypoint 
+                // AM I USING THIS? IF not, delete
                 var waypointLeftEdge = elementWaypoint.getBoundingClientRect().right;
 
                 // 
@@ -719,16 +707,17 @@ function waypoint826_run() {
                 }
 
                 // console.log('Right position of Waypoint:', waypointLeftEdge + 'px');
-
                 // For CONTENT
 
+                // If user has defined a content area
                 if (contentArea) {
                     
                     var elemContentWidth = window.getComputedStyle(contentArea).width;
                     var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
 
-                    // Get the left position of the main content area
+                    // Get the left position of the main content area - we should probably check to see if this is absolutely positioned
                     var contentLeftEdge = contentArea.getBoundingClientRect().left;
+                    console.log('Left edge of content contentLeftEdge' + contentLeftEdge);
 
                     // TESTING
                     // console.log('Content width is' + elemContentWidth);
@@ -739,12 +728,16 @@ function waypoint826_run() {
                 } else {
 
                     // TESTING
-                    console.log('contentArea not found ' + contentArea);
+                    // console.log('contentArea not found ' + contentArea);
                 }
 
+                /*  ----------- ONE-TIME LEFT POSITIONING ----------  */
+
+                // Viewport width
                 var viewportWidth = window.innerWidth;
 
                 // Calculating space on the margins around the content
+                // What if used hasn't defined contentArea? 
                 var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
 
                 // Waypoint width as a number
@@ -758,34 +751,113 @@ function waypoint826_run() {
                 mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
 
                 // Needed space: Waypoint is 250px wide (could be 200px) so 250 on each side, plus 20px margins x 4 (another 80px)
+
+                // Since mainConatiner starts as pos:absolute, find the static positioned partent to find the true distance from waypoint to the left part of the screen
+                function findPositionedParent(element) {
+                    // Start with the parent of the element
+                    let parent = mainContainer.parentElement;
+
+                    // Traverse up the DOM tree
+                    while (parent) {
+                        // Get the computed style of the parent
+                        const style = window.getComputedStyle(parent);
+
+                        // Check if the parent has a position other than 'static'
+                        if (style.position !== 'static') {
+                            return parent; // This is the nearest positioned parent
+                        }
+
+                        // Move to the next parent element
+                        parent = parent.parentElement;
+                    }
+
+                    // If no positioned parent is found, return null
+                    return null;
+                } // END FINDPOSITIONEDPARENT()
+
+                // Get actual value for waypoint
+                const absoluteElement = document.querySelector('.waypoint826-main'); 
+                const positionedParent = findPositionedParent(absoluteElement);
+
+                // Get the computed style of the content element
+                let computedStyleContent = window.getComputedStyle(contentElement);
+
+                // Get the display value
+                let displayValue = computedStyleContent.position;
+
+                // console.log('Display value:', displayValue);
+
+                if ( displayValue != 'absolute') {
+                    // Make sure content isn't absolutely positioned
+                    //console.log('not absolute');
+                }
+
+
+
+                if (positionedParent) {
+
+                    // True distance from the left viewport edge
+                    var parentLeft = positionedParent.getBoundingClientRect().left;
+
+                    //console.log('Positioned Parent left ' + parentLeft);
+                } else {
+                    //console.log('No positioned parent found, using the body/document.');
+                }
+
+                if (parentLeft){
+                    var adjustMargin = (parseFloat(parentLeft));
+                } else {
+                    var adjustMargin = 0;
+                }
+
+                // Test waypoint's display
+                // Get the computed style of the content element
+                let computedStyleWaypoint = window.getComputedStyle(mainContainer);
+                // Get the display value
+                var displayValueWaypoint = computedStyleWaypoint.position;
+
+                // console.log('Waypoint is position: ' + displayValueWaypoint);
+                console.log('spaceForWaypppoint: ' + spaceForWaypoint);
+
+
                 if ( spaceForWaypoint < 580) {
 
                     // Waypoint displays NONE
                     mainContainer.style.display = 'none';
 
-                } else if ( spaceForWaypoint > 580 && spaceForWaypoint < 720 ) {
+                } else if ( spaceForWaypoint > 620) {
 
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
-                    mainContainer.style.width = '210px';
+                    mainContainer.style.width = '230px';
+
+                    // Width of Waypoint, as a number
                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
+
+                    // Waypoint positioning
+                    if (displayValueWaypoint == 'absolute') {
+
+                        // waypoint is ABSOLUTE and if adjustMargin exists
+                        if (adjustMargin) {
+
+                            // Account for parent's distance to viewport edge
+                            var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+
+                        } else { }
+
+                    } else { // waypoint is FIXED
+                        var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5)) + 'px';
+                        // console.log('FIXED - calculated left adjustment in ELSE: ' + leftAdjustCalc);
+                    }
+
+                    mainContainer.style.left = leftAdjustCalc;
                     
-                    mainContainer.style.left = Math.abs(contentLeftEdge - offset - (baseMargin * 3)) + 'px';
 
-                } else if ( spaceForWaypoint >= 720) {
-
-                    // Waypoint displays BLOCK, 250 width
-                    mainContainer.style.display = 'block';
-                    mainContainer.style.width = '250px';
-                    var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-
-                    mainContainer.style.left = Math.abs(contentLeftEdge - offset - (baseMargin * 6)) + 'px';
-
-                }
+                } // Cut an else if and put it into notes
 
                 // TEST 
                 var newWidth = window.getComputedStyle(mainContainer).width;
-                console.log('Width of the main container' + newWidth);
+                // console.log('Width of the main container' + newWidth);
 
             } else {
 
@@ -794,11 +866,7 @@ function waypoint826_run() {
             // Start the pulse for 5 seconds
             startPulse(1500);
 
-
-                        /*  ----------- POSITION TO TOP ----------  */
-
-            // waypointMasthead
-            // Eventually will need to push this into an array, check for # or ., and then manage multiple spaces / words etc.
+            /*  ----------- POSITION TO TOP ----------  */
 
             // searches for # or .
             const elementHasID = /#/g;
@@ -818,7 +886,6 @@ function waypoint826_run() {
                 var refToMasthead = document.getElementById('masthead'); //outputs an HTMLCollection
             }
 
-
             // default to height of the header element with a user configurable override
             if (refToMasthead) {
                 var distanceFromTop = refToMasthead.getBoundingClientRect().height;
@@ -833,72 +900,15 @@ function waypoint826_run() {
             var widthOfWaypoint = window.getComputedStyle(mainContainer).width;
             var widthOfWaypoint = parseFloat(widthOfWaypoint);
             // may not need
-            
 
-            // Main container left edge
-            var wp826LeftPos = mainContainer.getBoundingClientRect().left;
-            var wp826LeftPos = parseFloat(wp826LeftPos);
-            console.log('Waypoint left edge' + wp826LeftPos);
+            let calcLeftFixed = (parseFloat(leftAdjustCalc) + parseFloat(adjustMargin));
+            let calcLeftAbsolute = (parseFloat(leftAdjustCalc));
 
-            // console.log('by the IF statement: width of main container' + widthOfWaypoint);
-
-            // console.log('Adjust Margin: ' + adjustMargin);
-
-            // At 210 width, adjustMargin = 5 works...at 250, 0 works
 
             /*  ----------- SCROLL FUNCTION ----------  */
 
-            function findPositionedParent(element) {
-                // Start with the parent of the element
-                let parent = mainContainer.parentElement;
+            var positionVar;
 
-                // Traverse up the DOM tree
-                while (parent) {
-                    // Get the computed style of the parent
-                    const style = window.getComputedStyle(parent);
-
-                    // Check if the parent has a position other than 'static'
-                    if (style.position !== 'static') {
-                        return parent; // This is the nearest positioned parent
-                    }
-
-                    // Move to the next parent element
-                    parent = parent.parentElement;
-                }
-
-                // If no positioned parent is found, return null
-                return null;
-            }
-
-            // Example usage
-            const absoluteElement = document.querySelector('.waypoint826-main'); // Replace with your element
-            const positionedParent = findPositionedParent(absoluteElement);
-
-            if (positionedParent) {
-                //console.log('Positioned parent found:', positionedParent);
-
-                var parentLeft = positionedParent.getBoundingClientRect().left;
-
-                console.log('Positioned Paretn left ' + parentLeft);
-            } else {
-                console.log('No positioned parent found, using the body/document.');
-            }
-
-            if (parentLeft){
-
-                var adjustMargin = Math.abs(parseFloat(parentLeft));
-            }
-
-            if (widthOfWaypoint == 250) {
-                
-                var adjustMarginRemove = (adjustMargin);
-
-            } else if (widthOfWaypoint == 210) {
-
-                var adjustMarginRemove = (adjustMargin);
-
-            }
-            
             window.addEventListener('scroll', function(event) {
                 
                 var y = document.documentElement.scrollTop || document.body.scrollTop;
@@ -906,47 +916,46 @@ function waypoint826_run() {
                 // Assuming there is only one element with this class
                 var element = document.querySelector('.' + waypointFieldAddTo);
 
+                // Already doing some calculations around the element that Waypoint is added to ...
+
+                
+
+
+
+
+
                 if (element) {
                     var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
                     //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
 
                 // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
-                if ( (y - distanceFromTop) >= top ) { 
 
-                    // Is at the viewport top
-                    if (!box.classList.contains('stick')) {
+                if ( (y - distanceFromTop) >= top ) {  // Is at the viewport top
 
-                        box.classList.add('stick');
-
-                        // Make sure its a number then adjust
-                        
-                        mainContainer.style.left = (wp826LeftPos) + 'px';
-
-                        let currentLeft = mainContainer.getBoundingClientRect().left;
-                        currentLeft = parseFloat(currentLeft);
-                        console.log('current left' + currentLeft);
-                    }
+                    /*  ----------- LEFT POSITIONING ON SCROLL EVENT ----------  */
                     
+                    if (!box.classList.contains('stick')) { // doesn't contain stick = ABSOLUTE positioning
+
+                        // Add class
+                        box.classList.add('stick'); // Now its FIXED
+
+                        // Apply adjustment
+                        mainContainer.style.left = (calcLeftFixed) + 'px';
+
+                    }  
                    
                 } else { 
 
-                    if (box.classList.contains('stick')) {
+                    if (box.classList.contains('stick')) { // FIXED positioning
 
-                         let currentLeftWithStick = mainContainer.getBoundingClientRect().left;
+                        // Remove class
+                        box.classList.remove('stick'); // Now its ABSOLUTE, position relative to a STATIC parent
 
-                        // Make sure its a number, then adjust
-                        currentLeftWithStick = parseFloat(currentLeftWithStick);
-                        console.log("left with stick: " + currentLeftWithStick);
-
-                        box.classList.remove('stick');
-
-
-                        mainContainer.style.left = ( wp826LeftPos + adjustMarginRemove) + 'px';
-                       // mainContainer.style.left = ((currentLeftWithStick) + (adjustMarginRemove)) + 'px';
-                        
+                        // Apply adjustment
+                        mainContainer.style.left = leftAdjustCalc;
+                       
                     }
-                    // mainContainer.style.left = ((currentLeft) + 20 ) + 'px';
                 }
 
             }); // End scroll function
@@ -996,15 +1005,6 @@ function waypoint826_run() {
                 if (callNow) func.apply(context, args);
             };
         }
- 
-        // window.addEventListener('resize', debounce(positionMainContainer));
-
-
-        /* 
-        * 
-        *   PROGRAMMATIC - Clean this up, and pass in offset from top (.row-menu) is bespoke
-        * 
-        */ 
 
 
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
@@ -1060,7 +1060,7 @@ function waypoint826_run() {
     });
     } // END setupIntersectionObserver
 
-    window.addEventListener('load', setupIntersectionObserver);
+    window.addEventListener('load', handleResize);
 
 
     function debounce(func, wait = 100) {
@@ -1078,33 +1078,7 @@ function handleResize() {
     setupIntersectionObserver();
 }
 
-window.addEventListener('resize', debounce(handleResize, 200));
-
-
-// window.addEventListener('resize', debounce(setupIntersectionObserver));
-
-    /* window.addEventListener('resize', () => {
-        setupIntersectionObserver(); // Reset the observer on resize
-    }); */
-
-
-        /* MOBILE EXPERIENCE sigh */
-
-        /*  PUSHING ITEMS TO AN ARRAY   */
-
-        // Assuming you have an array of <li> elements
-        // let listItems = Array.from(document.querySelectorAll('#myList li'));
-
-        // Create a new <li> element
-        // const newListItem = document.createElement('li');
-        // newListItem.textContent = 'New Item';
-
-        // Add (push) the new <li> to the array
-        // listItems.push(newListItem);
-
-        // Now listItems includes the new <li> element
-        // console.log(listItems); // The array now contains the new <li> element at the end
-
+window.addEventListener('resize', debounce(handleResize, 100));
 
         /* ADMIN  */
 
