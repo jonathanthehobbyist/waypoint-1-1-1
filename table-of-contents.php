@@ -853,18 +853,9 @@ function waypoint826_run() {
             /*  ----------- SCROLL FUNCTION ----------  */
 
             var positionVar;
-
             
-
-            // Function to calculate and apply the position
-            
-
-          // Initial position update
-          updatePosition();
-
-          // Update position on window resize or scroll, to maintain the behavior
-          //window.addEventListener('resize', updatePosition);
-         // window.addEventListener('scroll', updatePosition);
+            // Initial position update
+            updatePosition();
 
             window.addEventListener('scroll', function(event) {
                 
@@ -881,39 +872,31 @@ function waypoint826_run() {
 
                 if ( (y - distanceFromTop) >= top ) {  // if (which element?) is at the viewport top
 
-                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-
-                    // Making sure everything is kosher
-                    /* 
-                    console.log('contentLeftEdge: ' + contentLeftEdge);
-                    console.log('offset: ' + offset);
-                    console.log('baseMargin: ' + baseMargin);
-                    console.log('adjustMargin: ' + adjustMargin); 
-                    */
-
-                    //var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
-                    //mainContainer.style.left = leftAdjustCalc;
+                    // scrolling and masthead has disappeared, mainContainer should be aligned at the top IE FIXED
+                     mainContainer.style.top = `0px`;
 
                 } else  {
-                    //mainContainer.style.top = `${parentRect.top + 0}px`;
+                    // for pos:ABSOLUTE behavior
                     updatePosition();
                 }
             }); // End scroll function
         } // end positionMainContainer
 
+        /*  ----------- FOR POS:ABSOLUTE BEHAVIOR ----------  */
+
         function updatePosition() {
 
+            // Call earlier function that calculates 1) spaceforwaypoint and 2) contentleftedge
             const {value1, value2} = calcWaypointSpaceNeeded();
+            // Define variables
             spaceForWaypoint = value1;
             contentLeftEdge = value2;
 
-            console.log('spaceForWaypoint in updatePosition' + spaceForWaypoint);
             // Get the bounding rectangle of the parent
             const parentRect = positionedParent.getBoundingClientRect();
 
             // Apply fixed positioning but adjust based on parent's position in the viewport
             mainContainer.style.top = `${parentRect.top + 0}px`;  // 50px from top of parent
-            console.log('setting maincontainer left position - at updatePosition');
             var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
 
             if ( spaceForWaypoint < 580) {
@@ -921,15 +904,15 @@ function waypoint826_run() {
                     // Waypoint displays NONE
                     mainContainer.style.display = 'none';
 
-                } else if ( spaceForWaypoint > 620) {
+                } else if ( spaceForWaypoint > 650) {
 
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
                     mainContainer.style.width = '230px';
-                    // Width of Waypoint, as a number
 
+                    // Calc the left offset to give to 
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
-            mainContainer.style.left = leftAdjustCalc;
+                    mainContainer.style.left = leftAdjustCalc;
            
                 } // Cut an else if and put it into notes
 
