@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 
 // Activation functions
@@ -52,6 +52,7 @@ function wporg_custom_box_html( $post ) {
         SETTINGS PAGE
         - Masthead
         - Background color
+        - Background selected color
 
         STYLE
 
@@ -67,6 +68,7 @@ function wporg_custom_box_html( $post ) {
         CLEAN UP
         - DONE: Nicer animation of Waypoint moving around after a window resize
         - Probably needs to be scrollable in case it goes off the page
+        - Release log
 
         DEBUG
         - DONE: There's a bug when you zoom to the top of the page, might be around my implementation of the header. Might need to save that value as a unchangeable variatble rarther than recalculating each time 
@@ -92,7 +94,8 @@ function wporg_custom_box_html( $post ) {
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
-    // Configuration
+    // Configuration (probably will correspond with a settings page)
+    // May not need this:
     // $field_value_a_bg_select_color = get_post_meta( $post->ID, '_waypoint_a_bg_select_color', true );
 
     // Add a nonce field for security
@@ -161,6 +164,169 @@ function wporg_custom_box_html( $post ) {
 
     <?php
 } 
+
+/*  ----------- SETTINGS PAGE ----------  */
+
+/**
+ * @internal never define functions inside callbacks.
+ * these functions could be run multiple times; this would result in a fatal error.
+ */
+
+/**
+ * custom option and settings
+ */
+function wporg_settings_init() {
+    // Register a new setting for "wporg" page.
+    register_setting( 'wporg', 'wporg_options' );
+
+    // Register a new section in the "wporg" page.
+    add_settings_section(
+        'wporg_section_developers', // ID
+        __( 'The Matrix has you.', 'wporg' ), // Title
+        'wporg_section_developers_callback', // Callback function
+        'wporg' // Page slug
+    );
+
+    // Register a new field in the "wporg_section_developers" section, inside the "wporg" page.
+    add_settings_field(
+        'wporg_bg_color', // As of WP 4.6 this value is used only internally.
+                                // Use $args' label_for to populate the id inside the callback.
+            __( 'Pill', 'wporg' ),
+        'wporg_bg_color_cb',
+        'wporg',
+        'wporg_section_developers',
+        array(
+            'label_for'         => 'wporg_bg_color',
+            'class'             => 'wporg_row',
+            'wporg_custom_data' => 'custom',
+        )
+    );
+}
+
+/**
+ * Register our wporg_settings_init to the admin_init action hook.
+ */
+add_action( 'admin_init', 'wporg_settings_init' );
+
+
+/**
+ * Custom option and settings:
+ *  - callback functions
+ */
+
+
+/**
+ * Developers section callback function.
+ *
+ * @param array $args  The settings array, defining title, id, callback.
+ */
+function wporg_section_developers_callback( $args ) {
+    ?>
+    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'wporg' ); ?></p>
+    <?php
+}
+
+/**
+ * Pill field callbakc function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
+function wporg_bg_color_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'wporg_options' );
+    $bg_color_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="wporg_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $bg_color_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['wporg_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Add a HEX color to be used as the background of the current / selected li:a section in the waypoint side menu', 'wporg' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'wporg' ); ?>
+    </p>
+
+    <?php
+    // Pass the value to JavaScript
+    ?>
+    <script type="text/javascript">
+        window.bgColorValue = <?php echo json_encode( $bg_color_value ); ?>;
+        console.log('Background Color Value:', bgColorValue); // Now the value is available in JS
+    </script>
+    <?php
+}
+
+
+/**
+ * Add the top level menu page.
+ */
+function wporg_options_page() {
+    add_menu_page(
+        'WPOrg',
+        'WPOrg Options',
+        'manage_options',
+        'wporg',
+        'wporg_options_page_html'
+    );
+}
+
+/**
+ * Register our wporg_options_page to the admin_menu action hook.
+ */
+add_action( 'admin_menu', 'wporg_options_page' );
+
+
+/**
+ * Top level menu callback function
+ */
+function wporg_options_page_html() {
+    // check user capabilities
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    // add error/update messages
+
+    // check if the user have submitted the settings
+    // WordPress will add the "settings-updated" $_GET parameter to the url
+    if ( isset( $_GET['settings-updated'] ) ) {
+        // add settings saved message with the class of "updated"
+        add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );
+    }
+
+    // show error/update messages
+    settings_errors( 'wporg_messages' );
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+        <form action="options.php" method="post">
+            <?php
+            // output security fields for the registered setting "wporg"
+            settings_fields( 'wporg' );
+            // output setting sections and their fields
+            // (sections are registered for "wporg", each field is registered to a specific section)
+            do_settings_sections( 'wporg' );
+            // output save settings button
+            submit_button( 'Save Settings' );
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+
+/*  ----------- SETTINGS FOR INDIVIDUAL POSTS ----------  */
+
 
  function my_custom_plugin_add_meta_box() {
     add_meta_box(
@@ -329,7 +495,6 @@ function wporg_save_postdata( $post_id ) {
 add_action( 'save_post', 'wporg_save_postdata' );
 
 function waypoint826_run() {
-            //error_log("inside waypoitn826_run");
             
             // Output the JavaScript in the footer of the page
             function custom_checkbox_js() {
@@ -406,6 +571,8 @@ function waypoint826_run() {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
 
+        /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
+
         // Transfer php var into js var
         // Change into a number
         let waypointH2 = <?php echo json_encode($checkbox_value_H2); ?>;
@@ -417,19 +584,28 @@ function waypoint826_run() {
         var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
         let wph5 = parseFloat(waypointH5);
 
-        /*  ------  USER CONFIGURABLE  ----------  */
         // Enable intro at top of list
         var waypointIntroEnable = <?php echo json_encode($checkbox_value_intro); ?>;
 
         // a class (for now) or ID (later) to add waypoint826-main to 
-       let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
-       // console.log(waypointFieldAddTo);
+        let waypointFieldAddTo = <?php echo json_encode($field_value_add_to); ?>;
+        // console.log(waypointFieldAddTo);
 
-       // Horizontal alignment to an element
-       let waypointFieldAlignToElement = <?php echo json_encode($field_value_align_to_element); ?>;
+        // Horizontal alignment to an element
+        let waypointFieldAlignToElement = <?php echo json_encode($field_value_align_to_element); ?>;
 
-       // Define a masthead or menu
-       let waypointMasthead = <?php echo json_encode($field_value_masthead_define); ?>;
+        // Define a masthead or menu
+        let waypointMasthead = <?php echo json_encode($field_value_masthead_define); ?>;
+
+        /*  ------  USER CONFIGURABLE, FROM GLOBAL SETTINGS  ----------  */
+
+        // console.log('Background Color Value:', window.bgColorValue); // Now the value is available globally in JS
+    
+
+
+      
+
+
 
        /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
 
@@ -1019,6 +1195,8 @@ window.addEventListener('resize', debounce(handleResize, 200));
 }
 
 add_action('wp', 'waypoint826_run');
+
+
 
 
 
