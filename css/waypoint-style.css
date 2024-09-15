@@ -28,7 +28,7 @@ html {
 	background-color:none;
 	border-right: 1px solid #ccc;
 	position: fixed; 
-	
+
 	/* right: 80%; */
 	opacity: .2;
 	padding: 60px 20px 80px 20px;
@@ -87,9 +87,8 @@ ol.list-wrapper {
 }
 
 #waypoint826-primary-container.stick {
-	position: fixed;
-	/* right: calc(100% - 10px); /* Adjusting the left position by 10px */
-	top: 0!important;
+	/* position: fixed; */
+	/* top: 0!important; */
 }
 
 .limit-width {

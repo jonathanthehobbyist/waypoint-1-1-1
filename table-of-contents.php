@@ -70,6 +70,7 @@ function wporg_custom_box_html( $post ) {
 
         DEBUG
         - DONE: There's a bug when you zoom to the top of the page, might be around my implementation of the header. Might need to save that value as a unchangeable variatble rarther than recalculating each time 
+        - Class or ID input on waypoint_add_to_page - need logic to handle this
 
     */
 
@@ -90,6 +91,9 @@ function wporg_custom_box_html( $post ) {
 
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
+
+    // Configuration
+    // $field_value_a_bg_select_color = get_post_meta( $post->ID, '_waypoint_a_bg_select_color', true );
 
     // Add a nonce field for security
     wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
@@ -121,8 +125,8 @@ function wporg_custom_box_html( $post ) {
     <hr>
 
     <div class="">
-        <p></p>
-        <label for="waypoint_add_to_page">Specify a class or ID - we will append waypoint as a child to this element</label><br>
+        <p>DOM element to attach table of contents to</p>
+        <label for="waypoint_add_to_page">Specify a class, no dot - we will append waypoint as a child to this element</label><br>
         <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="<?php echo esc_attr( $field_value_add_to ); ?>">
         <!-- no dot necessary for class name -->
         <!-- .post-content for example -->
@@ -137,7 +141,8 @@ function wporg_custom_box_html( $post ) {
             <option value="id">ID</option>
           </select>
         </form-->
-        <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content</label><br>
+        <p>DOM element to calculate main content width</p>
+        <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content (no dot)</label><br>
         <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
 
         <!-- this one needs a viewport width backup -->
@@ -148,7 +153,8 @@ function wporg_custom_box_html( $post ) {
 
         <p></p>
         <br />
-            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><br>
+            <p>Does your website have a header or masthead?</p>
+            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header - hastag or dot ok</label><br>
                 <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
         
     </div>
@@ -436,9 +442,6 @@ function waypoint826_run() {
         var entirePage = document.querySelector('.' + waypointFieldAddTo);
         entirePage.appendChild(mainContainer);
 
-        
-        //console.log('this is contentArea: ' + contentArea);
-
         /*  ------  USER CONFIGURABLE  ----------  */
 
         // USER CONFIGURE - which of the h2, h3, h4, h5 gets passed
@@ -451,7 +454,7 @@ function waypoint826_run() {
         if (wph4 == '1') waypointArr.push("h4");
         if (wph5 == '1') waypointArr.push("h5");
 
-        // Create the list h2,h3,h4,h5 based on values passed from the page or post admin
+        // Create the list h2,h3,h4,h5 based on user preference
         var headings = document.querySelectorAll(waypointArr.join(", "));
 
         // Iterate over waypointArr instead of headings
@@ -459,9 +462,7 @@ function waypoint826_run() {
             var heading = document.querySelector(selector); // Get the first matching element for this selector
             if (heading) {
                 var newValue = 'newValue_' + index; // Example new value
-                //console.log('Original Selector:', selector, 'New Value:', newValue);
             } else {
-                // console.log('No heading found for selector:', selector);
             }
         });
 
@@ -478,7 +479,6 @@ function waypoint826_run() {
                         selector: selector,
                         element: heading
                     });
-                    //console.log('Selector:', selector, 'Element:', heading);
                 }
             });
         });
@@ -491,7 +491,8 @@ function waypoint826_run() {
         var contentParagraph = document.createElement('p');
         contentParagraph.className = "content";
         contentParagraph.innerHTML = "Contents";
-        // use this .appendChild(contentParagraph);
+        
+        // NOT currently used but keep
 
         // the map method creates a new array populated with the results of calling a provided function on every element in the calling array
         // 
@@ -499,21 +500,18 @@ function waypoint826_run() {
             return parseInt(heading.replace('h', ''), 10);
         });
 
-        /*  ----------- SECTION: LEFT MARGIN FOR h2, h3, h4, h5 ----------  */
+        /*  ----------- SORT H2 etc FROM SMALLEST TO LARGEST ----------  */
 
         // Find the arraylength
         var numberOfHeadings = valuesOfHeadings.length;
-        //console.log(numberOfHeadings);
 
         // Find the highest level H number (smallest number)
         var topLevel = Math.min(...valuesOfHeadings);
-        //console.log(topLevel);
 
         // Find the loest level H number (highest number)
         var bottomLevel = Math.max(...valuesOfHeadings);
-        //console.log(topLevel);
 
-        // if every H is selected, h2, h3, h4, h5
+        // SORT H2, H3 etc. if every H is selected, h2, h3, h4, h5
         if (numberOfHeadings == 4) {
             valuesOfHeadings.sort(function(a, b) {
                 return a - b;
@@ -544,8 +542,8 @@ function waypoint826_run() {
 
            // Cleans up the string to make it into a usable class name / on-page anchor link
            var str = innerContent;
-           str = str.replace(/^\s/g, ''); //matches any space at the beginning of an input
-           str = str.replace(/\s+/g, '-'); //matches 1 or more spaces and converts to a dash
+           str = str.replace(/^\s/g, ''); //removes any space at the beginning of an input
+           str = str.replace(/\s+/g, '-'); //converts 1 or more spaces to a dash
            str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&$+%^@*]/g, '').toLowerCase(); //matches 
            // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
 
@@ -560,7 +558,6 @@ function waypoint826_run() {
            const parentOneClass = parentLevelOne.className;
            const parentTwoClass = parentLevelTwo.className;
            const parentThreeClass = parentLevelThree.className;
-           //console.log('Parent class 1: ' + parentOneClass + 'Parent class 2: ' + parentTwoClass + 'Parent class 3: ' + parentThreeClass  );
 
            // now exclude 
            if ( excludeWords.test(parentOneClass) || excludeWords.test(parentTwoClass) || excludeWords.test(parentThreeClass) ) {
@@ -573,14 +570,15 @@ function waypoint826_run() {
             // Create a list item and link for each h2, h3, h4
             const listItem = document.createElement('li');
             const link = document.createElement('a');
+
+            // defining the waypoint a links
             link.href = "#" + str;
-            // console.log(str);
             link.innerHTML = innerContent.toLowerCase();
 
             // Add a class that says whether this came from an h2, h3, h4, or h5 elem
             listItem.classList.add(item.selector + '_selector');
-            //console.log(numberOfHeadings);
 
+            // getting rid of the 'h' in 'h2' so we can do math comparisons on them
             var breakDownSelector = parseInt(selector.replace('h', ''),10);
 
 
@@ -592,15 +590,12 @@ function waypoint826_run() {
                         break;
 
                     case 2:
-                        // console.log('2');
                         // Highest number IE bottomLevel gets a margin of 8px assigned
                         // Logic to if: when breakdownselector equals bottomlevle, set the leftmargin of the li to baseMargin (8)
                         if(breakDownSelector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        //console.log('bottomLevel: ' + bottomLevel + '  breakDownSelector: ' + breakDownSelector);
                         break;
                         
                     case 3:
-                        //console.log('3');
                         // The topLevel - 1 (middle level) gets a base*1 margin
                         if(breakDownSelector != bottomLevel && breakDownSelector != topLevel) { 
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
@@ -611,10 +606,8 @@ function waypoint826_run() {
                         break;
 
                     case 4:
-                        //console.log('item selector: ' + selector + ' valuesOfH: ' + valuesOfHeadings[1]);
+
                         if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
-                            //console.log('item selector:' + selector + 'valuesOfH' + valuesOfHeadings);
-                            //console.log("topLevel - 1");
                             listItem.style.marginLeft = (baseMargin * 1) + "px";
                         } else if (breakDownSelector == valuesOfHeadings[2]) { //topLevel -2
                             listItem.style.marginLeft = (baseMargin * 2) + "px";
@@ -630,8 +623,7 @@ function waypoint826_run() {
 
         }); //end for loop
 
-        /*   Placing Waypoint826 table of contents into the structure of the page    */
-        
+        /*   append Waypoint826 table of contents into the structure of the page    */
         if (mainContainer) {
              // If parent div has first child, insert mainContainer before first child
             if (mainContainer.firstChild) {
@@ -641,8 +633,6 @@ function waypoint826_run() {
                 mainContainer.appendChild(list);
             }
         }
-
-        var initPaddingLeft = window.getComputedStyle(mainContainer).paddingLeft;
 
         function findPositionedParent(element) {
             // Start with the parent of the element
@@ -675,6 +665,7 @@ function waypoint826_run() {
             var parentLeft = positionedParent.getBoundingClientRect().left;
         }
 
+        // 
         if (parentLeft){
             //
             var adjustMargin = (parseFloat(parentLeft));
@@ -684,22 +675,20 @@ function waypoint826_run() {
         }
 
         /*  ----------- USER CONFIGURABLE ----------  */
+
         // Remove whitespace from both ends of
         waypointFieldAlignToElement = waypointFieldAlignToElement.trim();
-        // console.log('waypointFieldAlignToElement: ' + waypointFieldAlignToElement);
-
-        // Could be its own function? 
 
         var spaceForWaypoint;
 
         function calcWaypointSpaceNeeded() {
 
-            // Because waypointFieldAlignToElement might have more than one class so...
+            // waypointFieldAlignToElement might have more than one class so, replace spaces with dots
             const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
             //
             var contentArea = document.querySelector(checkAndCombineField);
 
-            // get the left position of the user-defined content block - may need to do this inside positionMainContainer
+            // get the left position of the user-defined content block
             if (contentArea) {
                 // get the width
                 var elemContentWidth = window.getComputedStyle(contentArea).width;
@@ -707,13 +696,12 @@ function waypoint826_run() {
                 var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
                 // get the contentLeft left.pos
                 var contentLeftEdge = contentArea.getBoundingClientRect().left;
-        
             }
 
             var viewportWidth = window.innerWidth;
-            //
+            // Get waypoint
             var elementWaypoint = document.querySelector('.waypoint826-main');
-            // 
+            // Get width
             var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
             // Remove 'px' REGEX
             var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
@@ -722,12 +710,11 @@ function waypoint826_run() {
             var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
             // Waypoint width as a number
             let waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
+            // Send the calc'd values back to the function
             return { value1: spaceForWaypoint, value2: contentLeftEdge }
             // contentArea is a user configurable area 
 
         }
-
-        
 
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
@@ -756,54 +743,24 @@ function waypoint826_run() {
                 // Get the computed styles for the contentElement
                 const computedStyle = window.getComputedStyle(contentElement);
 
-                // Starts with a width of 250px defined in the style sheet
-
-                // Set style
+                // Set transition style
                 mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';
-
-                // Needed space: Waypoint is 250px wide (could be 200px) so 250 on each side, plus 20px margins x 4 (another 80px)
-
-                // Since mainConatiner starts as pos:absolute, find the static positioned partent to find the true distance from waypoint to the left part of the screen
-                
-
-                // Get the computed style of the content element
-                let computedStyleContent = window.getComputedStyle(contentElement);
-
-                // Get the display value
-                let displayValue = computedStyleContent.position;
-
-                // console.log('Display value:', displayValue);
-
-                if ( displayValue != 'absolute') {
-                    // Make sure content isn't absolutely positioned
-                    //console.log('not absolute');
-                }
-                // Test waypoint's display
-                // Get the computed style of the content element
-                let computedStyleWaypoint = window.getComputedStyle(mainContainer);
-                // Get the display value
-                var displayValueWaypoint = computedStyleWaypoint.position;
-
-                // console.log('Waypoint is position: ' + displayValueWaypoint);
-                console.log('spaceForWaypppoint: ' + spaceForWaypoint);
-
 
                 /*  ----------- INITIAL LEFT POSITIONING ----------  */
 
                 if ( spaceForWaypoint < 580) {
 
-                    // Waypoint displays NONE
                     mainContainer.style.display = 'none';
 
                 } else if ( spaceForWaypoint > 620) {
 
-                    // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
                     mainContainer.style.width = '230px';
                     // Width of Waypoint, as a number
                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-                    console.log('setting maincontainer left position - at INIT LEFT POSITIONING');
+                    // Calc init left offset for waypoint
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+                    // Apply left offset
                     mainContainer.style.left = leftAdjustCalc;
                 } // Cut an else if and put it into notes
 
@@ -843,13 +800,6 @@ function waypoint826_run() {
             var box = document.getElementById('waypoint826-primary-container');
             let top = box.offsetTop;
 
-            var widthOfWaypoint = window.getComputedStyle(mainContainer).width;
-            var widthOfWaypoint = parseFloat(widthOfWaypoint);
-            // may not need
-
-            let calcLeftFixed = (parseFloat(leftAdjustCalc) + parseFloat(adjustMargin));
-            let calcLeftAbsolute = (parseFloat(leftAdjustCalc));
-
             /*  ----------- SCROLL FUNCTION ----------  */
 
             var positionVar;
@@ -865,8 +815,12 @@ function waypoint826_run() {
                 var element = document.querySelector('.' + waypointFieldAddTo);
 
                 if (element) {
+
+
+                    // Which distanceFromTop should I use?
+
+
                     var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
-                    //console.log('Distance from top: ' + distanceFromTop + 'px');
                 }
                 // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
 
@@ -899,25 +853,36 @@ function waypoint826_run() {
             mainContainer.style.top = `${parentRect.top + 0}px`;  // 50px from top of parent
             var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
 
-            if ( spaceForWaypoint < 580) {
+            // Check how much screen real estate is left for waypoint to inhabit
+            if ( spaceForWaypoint < 640) {
 
                     // Waypoint displays NONE
                     mainContainer.style.display = 'none';
 
-                } else if ( spaceForWaypoint > 650) {
+                } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
                     // Waypoint displays BLOCK, 200 width
                     mainContainer.style.display = 'block';
-                    mainContainer.style.width = '230px';
+                    mainContainer.style.width = '210px';
+
+                    // Calc the left offset to give to 
+                    var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 3) + adjustMargin) + 'px';
+                    // Set left to calc
+                    mainContainer.style.left = leftAdjustCalc;
+           
+                } else if ( spaceForWaypoint >= 700 ) {
+
+                    // Waypoint displays BLOCK, 200 width
+                    mainContainer.style.display = 'block';
+                    mainContainer.style.width = '250px';
 
                     // Calc the left offset to give to 
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+                    // Set left to calc
                     mainContainer.style.left = leftAdjustCalc;
-           
-                } // Cut an else if and put it into notes
 
+                }// Cut an else if and put it into notes
 
-            // mainContainer.style.left = `${parentRect.left + 100}px`; // 100px from left of parent
         }
 
         //window.addEventListener('scroll', updatePosition);
