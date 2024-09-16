@@ -24,7 +24,7 @@ function waypoint826_enqueue_styles() {
 add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 
-function wporg_custom_box_html( $post ) {
+function waypoint826_custom_box_html( $post ) {
 
     /*  
             
@@ -86,16 +86,15 @@ function wporg_custom_box_html( $post ) {
     $checkbox_value_H2 = get_post_meta( $post->ID, '_waypoint_H2_enable', true );
     $checkbox_value_H3 = get_post_meta( $post->ID, '_waypoint_H3_enable', true );
     $checkbox_value_H4 = get_post_meta( $post->ID, '_waypoint_H4_enable', true );
-
-
-
     $checkbox_value_H5 = get_post_meta( $post->ID, '_waypoint_H5_enable', true );
 
-    // Intro li at top
+    // Intro li at top (IE content or other title)
     $checkbox_value_intro = get_post_meta( $post->ID, '_waypoint_intro_enable', true );
 
+    // Define the masthead
     $field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
 
+    // Which element to add waypoint, which element to align waypoint to
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
@@ -104,7 +103,7 @@ function wporg_custom_box_html( $post ) {
     // $field_value_a_bg_select_color = get_post_meta( $post->ID, '_waypoint_a_bg_select_color', true );
 
     // Add a nonce field for security
-    wp_nonce_field( 'wporg_save_postdata', 'wporg_nonce' );
+    wp_nonce_field( 'waypoint826_save_postdata', 'wporg_nonce' );
 
     ?>
 
@@ -180,7 +179,7 @@ function wporg_custom_box_html( $post ) {
 /**
  * custom option and settings
  */
-function wporg_settings_init() {
+function waypoint826_settings_init() {
     // Register a new setting for "wporg" page.
     register_setting( 'wporg', 'wporg_options' );
 
@@ -188,7 +187,7 @@ function wporg_settings_init() {
     add_settings_section(
         'wporg_section_developers', // ID
         __( 'The Matrix has you.', 'wporg' ), // Title
-        'wporg_section_developers_callback', // Callback function
+        'waypoint826_section_developers_callback', // Callback function
         'wporg' // Page slug
     );
 
@@ -209,9 +208,9 @@ function wporg_settings_init() {
 }
 
 /**
- * Register our wporg_settings_init to the admin_init action hook.
+ * Register our waypoint826_settings_init to the admin_init action hook.
  */
-add_action( 'admin_init', 'wporg_settings_init' );
+add_action( 'admin_init', 'waypoint826_settings_init' );
 
 
 /**
@@ -225,7 +224,7 @@ add_action( 'admin_init', 'wporg_settings_init' );
  *
  * @param array $args  The settings array, defining title, id, callback.
  */
-function wporg_section_developers_callback( $args ) {
+function waypoint826_section_developers_callback( $args ) {
     ?>
     <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'wporg' ); ?></p>
     <?php
@@ -275,26 +274,26 @@ function wporg_bg_color_cb( $args ) {
 /**
  * Add the top level menu page.
  */
-function wporg_options_page() {
+function waypoint826_options_page() {
     add_menu_page(
         'WPOrg',
         'WPOrg Options',
         'manage_options',
         'wporg',
-        'wporg_options_page_html'
+        'waypoint826_options_page_html'
     );
 }
 
 /**
- * Register our wporg_options_page to the admin_menu action hook.
+ * Register our waypoint826_options_page to the admin_menu action hook.
  */
-add_action( 'admin_menu', 'wporg_options_page' );
+add_action( 'admin_menu', 'waypoint826_options_page' );
 
 
 /**
  * Top level menu callback function
  */
-function wporg_options_page_html() {
+function waypoint826_options_page_html() {
     // check user capabilities
     if ( ! current_user_can( 'manage_options' ) ) {
         return;
@@ -333,27 +332,27 @@ function wporg_options_page_html() {
 /*  ----------- SETTINGS FOR INDIVIDUAL POSTS ----------  */
 
 
- function my_custom_plugin_add_meta_box() {
+ function waypoint826_plugin_add_meta_box() {
     add_meta_box(
         'my_custom_plugin_meta_box',          // Unique ID
         'Post settings for Waypoint table of contents',                   // Box title
-        'wporg_custom_box_html', // Content callback, must be of type callable
+        'waypoint826_custom_box_html', // Content callback, must be of type callable
         ['post', 'page', 'portfolio'],        // Post types where the meta box should appear
         'normal',                             // Context (normal, side, advanced)
         'high'                                // Priority (default, high, low)
     );
 }
 
-add_action('add_meta_boxes', 'my_custom_plugin_add_meta_box');
+add_action('add_meta_boxes', 'waypoint826_plugin_add_meta_box');
 
 
-function wporg_save_postdata( $post_id ) {
+function waypoint826_save_postdata( $waypoint826_post_id ) {
     // Log the POST data for debugging
     //error_log("POST data: " . print_r($_POST, true));
-    error_log("Save function triggered for post ID: $post_id");
+    error_log("Save function triggered for post ID: $waypoint826_post_id");
 
     // Security checks
-    if ( ! isset( $_POST['wporg_nonce'] ) || ! wp_verify_nonce( $_POST['wporg_nonce'], 'wporg_save_postdata' ) ) {
+    if ( ! isset( $_POST['wporg_nonce'] ) || ! wp_verify_nonce( $_POST['wporg_nonce'], 'waypoint826_save_postdata' ) ) {
         error_log("Nonce verification failed.");
         return;
     }
@@ -363,13 +362,13 @@ function wporg_save_postdata( $post_id ) {
         return;
     }
 
-    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    if ( ! current_user_can( 'edit_post', $waypoint826_post_id ) ) {
         error_log("User does not have permission to edit this post.");
         return;
     }
 
   // Define an array of fields to save
-    $fields = [
+    $waypoint826_fields = [
         'waypoint_enable_for_post',
         'waypoint_H2_enable',
         'waypoint_H3_enable',
@@ -383,121 +382,121 @@ function wporg_save_postdata( $post_id ) {
         // Add more fields as needed
     ];
 
-    foreach ( $fields as $field ) {
-           if ( $field === 'waypoint_enable_for_post' ) {
+    foreach ( $waypoint826_fields as $waypoint8field ) {
+           if ( $waypoint8field === 'waypoint_enable_for_post' ) {
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_enable_for_post'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_enable_for_post',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
-        } else if ( $field === 'waypoint_H2_enable' ) { //H2
+        } else if ( $waypoint8field === 'waypoint_H2_enable' ) { //H2
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_H2_enable'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_H2_enable',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_H3_enable' ) { //H3
+        } else if ( $waypoint8field === 'waypoint_H3_enable' ) { //H3
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_H3_enable'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_H3_enable',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_H4_enable' ) { //H4
+        } else if ( $waypoint8field === 'waypoint_H4_enable' ) { //H4
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_H4_enable'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_H4_enable',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_H5_enable' ) { //H5
+        } else if ( $waypoint8field === 'waypoint_H5_enable' ) { //H5
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_H5_enable'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_H5_enable',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_intro_enable' ) { // Intro enable
+        } else if ( $waypoint8field === 'waypoint_intro_enable' ) { // Intro enable
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_intro_enable'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_intro_enable',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_masthead_define' ) { // Masthead field
+        } else if ( $waypoint8field === 'waypoint_masthead_define' ) { // Masthead field
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_masthead_define'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_masthead_define',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $field === 'waypoint_add_to_page' ) { // Add to page
+        } else if ( $waypoint8field === 'waypoint_add_to_page' ) { // Add to page
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_add_to_page',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
-        } else if ( $field === 'waypoint_align_to_element' ) { // Align to element
+        } else if ( $waypoint8field === 'waypoint_align_to_element' ) { // Align to element
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_align_to_element'] ) ? '1' : '0';
             update_post_meta(
-                $post_id,
+                $waypoint826_post_id,
                 '_waypoint_align_to_element',
                 $checkbox_value
             );
-            error_log("$field saved with value: $checkbox_value");
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
         }
             // Handle regular text fields
-            if ( array_key_exists( $field, $_POST ) ) {
-                $sanitized_value = sanitize_text_field( $_POST[$field] );
+            if ( array_key_exists( $waypoint8field, $_POST ) ) {
+                $sanitized_value = sanitize_text_field( $_POST[$waypoint8field] );
                 update_post_meta(
-                    $post_id,
-                    '_' . $field,  // Use the field name as the meta key
+                    $waypoint826_post_id,
+                    '_' . $waypoint8field,  // Use the field name as the meta key
                     $sanitized_value
                 );
-                error_log("$field saved with sanitized value: $sanitized_value");
+                error_log("$waypoint8field saved with sanitized value: $sanitized_value");
 
             } else {
-                error_log("$field not found in POST data.");
+                error_log("$waypoint8field not found in POST data.");
             }
         }
     }
 
-add_action( 'save_post', 'wporg_save_postdata' );
+add_action( 'save_post', 'waypoint826_save_postdata' );
 
 function waypoint826_run() {
             
@@ -506,15 +505,15 @@ function waypoint826_run() {
 
                 if (is_singular('post') || is_singular('page') || is_singular('portfolio')) {
                     
-                    $post_id = get_the_ID(); 
+                    $waypoint826_post_id = get_the_ID(); 
 
-                    // To get values, go get function wporg_custom_box_html()
-                    $checkbox_state = get_post_meta($post_id, '_waypoint_enable_for_post', true);
-                    $field_state = get_post_meta($post_id, '_wporg_field', true);
+                    // To get values, go get function waypoint826_custom_box_html()
+                    $checkbox_state = get_post_meta($waypoint826_post_id, '_waypoint_enable_for_post', true);
+                    $field_state = get_post_meta($waypoint826_post_id, '_wporg_field', true);
 
                     if ($checkbox_state === '1') {
                         error_log("checkbox state php $checkbox_state");
-                        $post = $post_id;
+                        $post = $waypoint826_post_id;
                     }
                
                     ?>
@@ -525,7 +524,7 @@ function waypoint826_run() {
 
                         function run_state () {
                         
-                            var postId = <?php echo json_encode($post_id); ?>;
+                            var postId = <?php echo json_encode($waypoint826_post_id); ?>;
                             var checkboxState = <?php echo json_encode($checkbox_state); ?>;
 
                             if (checkboxState === '1') {
@@ -548,38 +547,38 @@ function waypoint826_run() {
         add_action('wp_footer', 'custom_checkbox_js');
 
     // In your theme's functions.php or custom plugin
-    function enqueue_my_custom_scripts() {
+    function waypoint826_enqueue_my_custom_scripts() {
 
         /*  ----------- VARIABLES, USER CONFIGURATION ----------  */
 
-        global $post;
+        // global $post;
 
          if (is_page() || is_single()) {
 
-            $post_id = get_the_ID(); 
+            $waypoint826_post_id = get_the_ID(); 
 
-            // To get values, go get function wporg_custom_box_html()
+            // To get values, go get function waypoint826_custom_box_html()
             // Is the page waypoint enabled?
-            $checkbox_state = get_post_meta($post_id, '_waypoint_enable_for_post', true);
+            $checkbox_state = get_post_meta($waypoint826_post_id, '_waypoint_enable_for_post', true);
 
-            // To get values, go get function wporg_custom_box_html()
+            // To get values, go get function waypoint826_custom_box_html()
             // Individual page settings for H2 etc.
-            $checkbox_value_H2 = get_post_meta( $post_id, '_waypoint_H2_enable', true );
-            $checkbox_value_H3 = get_post_meta( $post_id, '_waypoint_H3_enable', true );
-            $checkbox_value_H4 = get_post_meta( $post_id, '_waypoint_H4_enable', true );
-            $checkbox_value_H5 = get_post_meta( $post_id, '_waypoint_H5_enable', true );
+            $checkbox_value_H2 = get_post_meta( $waypoint826_post_id, '_waypoint_H2_enable', true );
+            $checkbox_value_H3 = get_post_meta( $waypoint826_post_id, '_waypoint_H3_enable', true );
+            $checkbox_value_H4 = get_post_meta( $waypoint826_post_id, '_waypoint_H4_enable', true );
+            $checkbox_value_H5 = get_post_meta( $waypoint826_post_id, '_waypoint_H5_enable', true );
 
             // TEST
             // echo $checkbox_value_H3;
             // Shows at top left, right now the 
 
             // Indiv. page settings for masthead, add to page, align to element
-            $field_value_masthead_define = get_post_meta( $post_id, '_waypoint_masthead_define', true );
-            $field_value_add_to = get_post_meta( $post_id, '_waypoint_add_to_page', true );
-            $field_value_align_to_element = get_post_meta( $post_id, '_waypoint_align_to_element', true );
+            $field_value_masthead_define = get_post_meta( $waypoint826_post_id, '_waypoint_masthead_define', true );
+            $field_value_add_to = get_post_meta( $waypoint826_post_id, '_waypoint_add_to_page', true );
+            $field_value_align_to_element = get_post_meta( $waypoint826_post_id, '_waypoint_align_to_element', true );
 
             // Not sure what this variable is or is used for, investigate
-            $checkbox_value_intro = get_post_meta( $post_id, '_waypoint_intro_enable', true );
+            $checkbox_value_intro = get_post_meta( $waypoint826_post_id, '_waypoint_intro_enable', true );
 
             if ($checkbox_state === '1') {
 
@@ -588,8 +587,8 @@ function waypoint826_run() {
                     'my-custom-js', 
                     plugins_url('js/waypoint-custom.js', __FILE__ ),
                     array(),
-                    null,
-                    false // Loads scripts...where?
+                    '1.0.0',
+                    true // Loads scripts...where?
                 );
 
                 // Retrieve the option from the (global) settings
@@ -628,7 +627,7 @@ function waypoint826_run() {
             } // end if
         }
     }
-    add_action( 'wp_enqueue_scripts', 'enqueue_my_custom_scripts' );
+    add_action( 'wp_enqueue_scripts', 'waypoint826_enqueue_my_custom_scripts' );
 
 } // end ...
 

@@ -264,14 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
         /*  -------------------- USER CONFIGURABLE --------------------  */
 
         // Remove whitespace from both ends of
-        waypointFieldAlignToElement = myScriptData.waypointFieldAlignToElement.trim();
+        alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
         var spaceForWaypoint;
 
         function calcWaypointSpaceNeeded() {
 
             // waypointFieldAlignToElement might have more than one class so, replace spaces with dots
-            const checkAndCombineField = "." + waypointFieldAlignToElement.replace(/ /g, '.'); // replaces spaces with dots
+            const checkAndCombineField = "." + alignToElement.replace(/ /g, '.'); // replaces spaces with dots
             //
             var contentArea = document.querySelector(checkAndCombineField);
 
@@ -317,11 +317,11 @@ document.addEventListener('DOMContentLoaded', function() {
             /*  -----------  USER CONFIGURABLE  ----------  */
 
             // User can choose an element to align Waypoint to horizontally
-            if ( waypointFieldAlignToElement ) {
+            if ( alignToElement ) {
 
                 // Class or ID
                 // Remove spaces and add a dot '.' from the class or ID data passed from the user
-                var alignElement = waypointFieldAlignToElement.replace(/ /g, '.');
+                var alignElement = alignToElement.replace(/ /g, '.');
 
                 // DOM element of class or ID 
                 // .main-container .row-container
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     mainContainer.style.left = leftAdjustCalc;
                 } // Cut an else if and put it into notes
 
-            } // END if ( waypointFieldAlignToElement ) {
+            } // END if ( alignToElement ) {
 
             // Start the pulse for 5 seconds
             startPulse(1500);
@@ -359,69 +359,79 @@ document.addEventListener('DOMContentLoaded', function() {
             /*  ----------- POSITION TO TOP ----------  */
 
             // searches for # or .
-            const elementHasID = /#/g;
-            const elementHasClassEs = /\./g; 
+            const elementHasID = /#/;
+            const elementHasClassEs = /\./;
+
+            // TEST: Left in console.log testing cases
 
             // Test, find, replace and create var menuHeight
             if (elementHasID.test(myScriptData.waypointMasthead)) {
-               
-               //console.log("true");
-               var elementIDName = String(myScriptData.waypointMasthead.replace('#', ''));
-               var refToMasthead = document.getElementById(elementIDName);
-               // console.log('refToMasthead' + refToMasthead);
+                // Log if it matches the ID pattern
+                // console.log("Masthead has an ID: ", myScriptData.waypointMasthead);
+
+                var elementIDName = String(myScriptData.waypointMasthead.replace('#', ''));
+                var refToMasthead = document.getElementById(elementIDName);
+
+                // console.log('Found masthead by ID: ', refToMasthead);
 
             } else if (document.getElementById('masthead')) {
-
-                // Test to see if there's a masthead
-                var refToMasthead = document.getElementById('masthead'); //outputs an HTMLCollection
+                // Fallback to 'masthead' ID
+                // console.log('Fallback to #masthead');
+                var refToMasthead = document.getElementById('masthead');
+            } else {
+                // console.error('Masthead element not found');
             }
 
-            // default to height of the header element with a user configurable override
+            // Default to height of the header element
             if (refToMasthead) {
                 var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+                // console.log('Height of masthead: ', distanceFromTop);
+            } else {
+                // console.error('refToMasthead is null or undefined');
             }
 
-            //console.log('Height of menu ' + distanceFromTop + 'px');
-            mainContainer.style.top = ('0px');
+            mainContainer.style.top = '0px';
 
-            var box = document.getElementById('waypoint826-primary-container');
-            let top = box.offsetTop;
+            var waypointBox = document.getElementById('waypoint826-primary-container');
+            let waypointTop = waypointBox.offsetTop;
+
+            if (!waypointBox) {
+                // console.error('Waypoint box element not found');
+            }
 
             /*  ----------- SCROLL FUNCTION ----------  */
 
-            var positionVar;
-            
             // Initial position update
             updatePosition();
 
             window.addEventListener('scroll', function(event) {
-                
                 var y = document.documentElement.scrollTop || document.body.scrollTop;
 
-                // Assuming there is only one element with this class
-                // Test
+                // Check if myScriptData.waypointFieldAddTo exists
                 if (myScriptData.waypointFieldAddTo) {
-                    var element = document.querySelector('.' + myScriptData.waypointFieldAddTo);
+                    var waypointAddToElement = document.querySelector('.' + myScriptData.waypointFieldAddTo);
+                    // console.log('waypointFieldAddTo: ', myScriptData.waypointFieldAddTo, ' Element: ', waypointAddToElement);
                 } else {
-
+                   // console.error('myScriptData.waypointFieldAddTo is missing or invalid');
                 }
 
-                if (element) {
-
-                    // Which distanceFromTop should I use?
-                    var distanceFromTop = element.getBoundingClientRect().top + window.scrollY;
+                if (waypointAddToElement) {
+                    var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
+                   // console.log('Distance from top: ', distanceFromTop);
+                } else {
+                   // console.error('waypointAddToElement is null or undefined');
                 }
-                // (y) how far page scrolled minus how far elem is from top of page, great than offset of box from containing elem
-                if ( (y - distanceFromTop) >= top ) {  // if (which element?) is at the viewport top
 
-                    // scrolling and masthead has disappeared, mainContainer should be aligned at the top IE FIXED
-                     mainContainer.style.top = `0px`;
-
-                } else  {
-                    // for pos:ABSOLUTE behavior
+                // Scrolling logic
+                if ((y - distanceFromTop) >= waypointTop) {
+                    mainContainer.style.top = '0px';
+                   // console.log('Main container aligned at top');
+                } else {
                     updatePosition();
+                   // console.log('Updating position');
                 }
-            }); // End scroll function
+            });
+
         } // end positionMainContainer
 
         /*  ----------- FOR POS:ABSOLUTE BEHAVIOR ----------  */

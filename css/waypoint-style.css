@@ -1,23 +1,9 @@
-/*
-*
-*		COLORS
-*
-*/
-
-
-/*
-*
-*		ELEMENTS
-*
-*/
-
 :root {
 	--primary: #2366E5; /*#4280f7;*/
 	--text-primary: #222;
 	--text-secondary: #777777;
 	--base-unit: 8px;
 }
-
 
 html {
     scroll-behavior: smooth;
@@ -31,7 +17,7 @@ html {
 
 	/* right: 80%; */
 	opacity: .2;
-	padding: 60px 20px 80px 20px;
+	padding: 40px 20px 60px 0px;
 	transition: left 0.5s ease;
 	transition: opacity 0.5s ease, visibility 0.5s ease;
 	display: none;
@@ -52,11 +38,11 @@ ol.list-wrapper {
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
-	margin-bottom: calc(var(--base-unit) * 2.25);
+	margin-bottom: calc(var(--base-unit) * 1.25);
 	line-height: 1.15;
-	padding-top: calc(var(--base-unit) * .5);
+	padding-top: calc(var(--base-unit) * .75);
 	padding-right: calc(var(--base-unit) * 1.25);
-	padding-bottom: calc(var(--base-unit) * .5);
+	padding-bottom: calc(var(--base-unit) * .75);
 	padding-left: calc(var(--base-unit) * 1.25);
 	border-radius: calc(var(--base-unit) * .5);
 	transition: background-color 1s ease-out;
