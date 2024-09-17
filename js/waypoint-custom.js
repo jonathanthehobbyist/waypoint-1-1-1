@@ -358,6 +358,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             /*  ----------- POSITION TO TOP ----------  */
 
+            /*     Duplicated code, put into a function...later      */
+
             // searches for # or .
             const elementHasID = /#/;
             const elementHasClassEs = /\./;
@@ -404,16 +406,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // Initial position update
             updatePosition();
 
-            window.addEventListener('scroll', function(event) {
-                var y = document.documentElement.scrollTop || document.body.scrollTop;
+            // Check if myScriptData.waypointFieldAddTo exists
+            if (myScriptData.waypointFieldAddTo) {
+                var waypointAddToElement = document.querySelector('.' + myScriptData.waypointFieldAddTo);
+                //console.log('waypointFieldAddTo: ', myScriptData.waypointFieldAddTo, ' Element: ', waypointAddToElement);
+            } else {
+               // console.error('myScriptData.waypointFieldAddTo is missing or invalid');
+            }
 
-                // Check if myScriptData.waypointFieldAddTo exists
-                if (myScriptData.waypointFieldAddTo) {
-                    var waypointAddToElement = document.querySelector('.' + myScriptData.waypointFieldAddTo);
-                    // console.log('waypointFieldAddTo: ', myScriptData.waypointFieldAddTo, ' Element: ', waypointAddToElement);
-                } else {
-                   // console.error('myScriptData.waypointFieldAddTo is missing or invalid');
-                }
+            // In case this is needed without a scroll being called
+            /* var waypointX = document.documentElement.scrollTop || document.body.scrollTop;
+            if ((waypointX - distanceFromTop) >= waypointTop) { // sets the point of the scroll where mainContainer becomes fixed
+
+                mainContainer.style.top = '0px';
+            } else { // mainContainer need to act like a POS: ABSOL element, scrolling...
+                mainContainer.style.top = '0px';
+            }*/
+
+            window.addEventListener('scroll', function(event) {
+
+                var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
 
                 if (waypointAddToElement) {
                     var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
@@ -422,11 +434,21 @@ document.addEventListener('DOMContentLoaded', function() {
                    // console.error('waypointAddToElement is null or undefined');
                 }
 
+               /* console.log('y', y);
+                console.log('distanceFromTop', distanceFromTop);
+                console.log('waypointTop', waypointTop);*/
+
                 // Scrolling logic
-                if ((y - distanceFromTop) >= waypointTop) {
+                // Distance from top is ~78
+                // y is 0 at top and 1000+ mid page
+                // waypoint top always seems to be 0
+                if ((waypointY - distanceFromTop) >= waypointTop) { // sets the point of the scroll where mainContainer becomes fixed
+
+                    // stick mainContainer to the top of the viewport
                     mainContainer.style.top = '0px';
-                   // console.log('Main container aligned at top');
-                } else {
+                   
+                } else { // mainContainer need to act like a POS: ABSOL element, scrolling...
+
                     updatePosition();
                    // console.log('Updating position');
                 }
@@ -445,11 +467,58 @@ document.addEventListener('DOMContentLoaded', function() {
             contentLeftEdge = value2;
 
             // Get the bounding rectangle of the parent
-            const parentRect = positionedParent.getBoundingClientRect();
+            const parentRect = positionedParent.getBoundingClientRect().top;
 
-            // Apply fixed positioning but adjust based on parent's position in the viewport
-            mainContainer.style.top = `${parentRect.top + 0}px`;  // 50px from top of parent
+
+
+            /*     Duplicated code, put into a function...later      */
+
+
+            // searches for # or .
+            const elementHasID = /#/;
+            const elementHasClassEs = /\./;
+
+            // TEST: Left in console.log testing cases
+
+            // Test, find, replace and create var menuHeight
+            if (elementHasID.test(myScriptData.waypointMasthead)) {
+                // Log if it matches the ID pattern
+                // console.log("Masthead has an ID: ", myScriptData.waypointMasthead);
+
+                var elementIDName = String(myScriptData.waypointMasthead.replace('#', ''));
+                var refToMasthead = document.getElementById(elementIDName);
+
+                // console.log('Found masthead by ID: ', refToMasthead);
+
+            } else if (document.getElementById('masthead')) {
+                // Fallback to 'masthead' ID
+                // console.log('Fallback to #masthead');
+                var refToMasthead = document.getElementById('masthead');
+            } else {
+                // console.error('Masthead element not found');
+            }
+
+            // Default to height of the header element
+            if (refToMasthead) {
+                var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+                // console.log('Height of masthead: ', distanceFromTop);
+            } else {
+                // console.error('refToMasthead is null or undefined');
+            }
+        
+            console.log('distanceFromTop', distanceFromTop);
+
+            if ( window.scrollY < distanceFromTop ){
+                mainContainer.style.top = parentRect + 'px';
+            } else if ( window.scrollY > distanceFromTop ) {
+                //mainContainer.style.top = parentRect + 'px';
+            }
+
+            // console.log(parentRect.top);
+
             var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
+
+            // console.log('spaceForWaypoint', spaceForWaypoint);
 
             // Check how much screen real estate is left for waypoint to inhabit
             if ( spaceForWaypoint < 640) {
@@ -480,9 +549,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     mainContainer.style.left = leftAdjustCalc;
 
                 }// Cut an else if and put it into notes
-        }
 
-        /*--------  End positionMainContainer  -----------*/
+                checkForBlackout();
+
+        } // end updatePosition
+
+        function checkForBlackout() {
+            const parentRect = positionedParent.getBoundingClientRect().top;
+            console.log('window scroll Y: ', window.scrollY); 
+            console.log('parentRect', parentRect);
+
+            console.log('called during blackout');
+        }
 
         // Pulse effect with JavaScript
             function startPulse(duration) {
@@ -613,9 +691,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the active class, put it into an array
         var activeSelection = document.querySelectorAll('.waypoint826-main li.active');
 
-        // Apply the passed var
-        var activeColor = '#' + myScriptData.bgColorValue;
-        activeSelection[0].style.backgroundColor = activeColor;
+        if (activeSelection.length > 0) {
+            // Apply the passed var
+            var activeColor = '#' + myScriptData.bgColorValue;
+            activeSelection[0].style.backgroundColor = activeColor;
+        }
+        
     }
 
     window.addEventListener('resize', debounce(handleResize, 200));

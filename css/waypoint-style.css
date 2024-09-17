@@ -45,7 +45,7 @@ ol.list-wrapper {
 	padding-bottom: calc(var(--base-unit) * .75);
 	padding-left: calc(var(--base-unit) * 1.25);
 	border-radius: calc(var(--base-unit) * .5);
-	transition: background-color 1s ease-out;
+	transition: background-color .5s ease-out;
 }
 
 
