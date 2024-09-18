@@ -106,14 +106,14 @@ function waypoint826_custom_box_html( $post ) {
     wp_nonce_field( 'waypoint826_save_postdata', 'wporg_nonce' );
 
     ?>
-
+    <h4>Enable Waypoint for: <?php the_title (); ?></h4>
     <input type="checkbox" id="waypoint_enable_for_post" name="waypoint_enable_for_post" value="1" <?php checked( $checkbox_value, '1' ); ?>>
     <label for="waypoint_enable_for_post">Enable Waypoint => Table of Contents</label><br>
-
+    <br />
     <hr>
 
     <div class="">
-        <p>Include in table of contents</p>
+        <h4>Choose which HTML headings to include in Waypoint</h4>
         <input type="checkbox" id="waypoint_H2_enable" name="waypoint_H2_enable" value="1" <?php checked( $checkbox_value_H2, '1' ); ?>>
         <label for="waypoint_H2_enable">H2</label><br>
 
@@ -124,22 +124,25 @@ function waypoint826_custom_box_html( $post ) {
         <input type="checkbox" id="waypoint_H5_enable" name="waypoint_H5_enable" value="1" <?php checked( $checkbox_value_H5, '1' ); ?>>
         <label for="waypoint_H5_enable">H5</label><br>
         <br>
-        <hr>
-        <input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
-        <label for="waypoint_intro_enable">H5</label><br>
+        
+        <!--input type="checkbox" id="waypoint_intro_enable" name="waypoint_intro_enable" value="1" <?php checked( $checkbox_value_intro, '1' ); ?>>
+        <label for="waypoint_intro_enable">H5</label><br-->
     </div>
 
     <hr>
 
-    <div class="">
-        <p>DOM element to attach table of contents to</p>
-        <label for="waypoint_add_to_page">Specify a class, no dot - we will append waypoint as a child to this element</label><br>
+    <div class="other-options">
+        <h4 style="margin-bottom: .15em;">Choose where to place Waypoint</h4>
+        <label for="waypoint_add_to_page">Enter a classname(s) to append waypoint as a child</label>
+        <br /><!-- no dot --><br />
         <input type="text" id="waypoint_add_to_page" name="waypoint_add_to_page" value="<?php echo esc_attr( $field_value_add_to ); ?>">
         <!-- no dot necessary for class name -->
         <!-- .post-content for example -->
         <p></p>
         
         <br />
+        <hr>
+   
 
         <!--form>
           <label for="selection">Choose an option:</label>
@@ -148,9 +151,14 @@ function waypoint826_custom_box_html( $post ) {
             <option value="id">ID</option>
           </select>
         </form-->
-        <p>DOM element to calculate main content width</p>
-        <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content (no dot)</label><br>
+        <h4 style="margin-bottom: .15em;">Float Waypoint next to content</h4>
+        <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content</label>
+        <br /><br /><!-- no dot -->
         <input type="text" id="waypoint_align_to_element" name="waypoint_align_to_element" value="<?php echo esc_attr( $field_value_align_to_element ); ?>">
+        <p></p>
+
+        <br />
+        <hr>
 
         <!-- this one needs a viewport width backup -->
 
@@ -158,11 +166,13 @@ function waypoint826_custom_box_html( $post ) {
         <!-- This actually moves Waypoint closer to the attached element rather than doing anything with vertical position -->
         <!-- it also can accept multiple classes separated by a space -->
 
-        <p></p>
-        <br />
-            <p>Does your website have a header or masthead?</p>
-            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header - hastag or dot ok</label><br>
-                <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
+   
+            <h4 style="margin-bottom: .15em;">Define a header or masthead</h4>
+            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><!-- hastag or dot ok -->
+            <br /><br />
+            <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
+            <p></p>
+            <br />
         
     </div>
 

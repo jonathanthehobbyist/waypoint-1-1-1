@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
 
-      function setupIntersectionObserver() {
+        function setupIntersectionObserver() {
         // Keep
         // console.log('IntersectionObserver called');
         // Disconnect existing observer if it exists
@@ -618,7 +618,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Array of links
         const tocLinks = document.querySelectorAll('.list-wrapper li a');
-        // Mapping links to sections
+
+        // Create SECTIONS, Map links from ENTRIES to SECTIONS
         const sections = Array.from(tocLinks)
             .map(link => document.querySelector(link.getAttribute('href')))
             .filter(Boolean); // Ensure sections exist
