@@ -11,11 +11,10 @@
 ## Draft
 This is a plugin which uses a special template to display a sidebar, and that sidebar is an programmatic list of the h2, h3, h4s on the page, displayed with internal links, and which animates based on user's scroll position
 
-- First, initiate the plugin
-- Second, add the special template to Wp instancek 
-- Next, page in quesiton will need to be set to particular template
-- Next, special css will be called to arrange sidebar so it floats / for mobile 
-- Next, 
+There's a settings area in the main Wordpress menu on the left
 
-## Notes
-- I'll need a way for users to delete the added files on removal
+There are page and post settings as well, to select the H2, H3 etc.
+
+## Release Notes
+1.1.0 - Allows a user to select the left or right side of the screen for display
+

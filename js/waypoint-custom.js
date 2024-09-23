@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph4 = parseFloat(myScriptData.waypointH4);
     //var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
     let wph5 = parseFloat(myScriptData.waypointH5);
+
+    console.log('Left or Right2', myScriptData.waypointLeftOrRight);
       
 
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -111,7 +113,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set the base margin, this could be user CONFIGURABLE eventually (ask if they want nesting)
     // Cascades to other settings
 
+    // define with user selection
+
     var baseMargin = 8;
+
+    // 1 = Right 0 = Left
+    if (myScriptData.waypointLeftOrRight == 'Right') {
+
+        var waypointPosLeftOrRight = '1';
+    } else {
+        // Defaults to Left
+        var waypointPosLeftOrRight = '0';
+    }
+    
 
 
 
@@ -221,6 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+
+
         function findPositionedParent(element) {
             // Start with the parent of the element
             let parent = mainContainer.parentElement;
@@ -247,15 +263,27 @@ document.addEventListener('DOMContentLoaded', function() {
         var absoluteElement = document.querySelector('.waypoint826-main'); 
         var positionedParent = findPositionedParent(absoluteElement);
 
+   
+
         if (positionedParent) {
             // True distance from the left viewport edge
-            var parentLeft = positionedParent.getBoundingClientRect().left;
+
+            if ( waypointPosLeftOrRight == 1) {
+
+                // Distance from the viewport's left edge to the element's right edge
+                var WaypointParentPos = positionedParent.getBoundingClientRect().right;
+            } else {
+
+                // Original
+                // Distance from viewport left edge to element left edge
+                var WaypointParentPos = positionedParent.getBoundingClientRect().left;
+            }
         }
 
         // 
-        if (parentLeft){
+        if (WaypointParentPos){
             //
-            var adjustMargin = (parseFloat(parentLeft));
+            var adjustMargin = (parseFloat(WaypointParentPos));
         } else {
             // 
             var adjustMargin = 0;
@@ -283,6 +311,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
                 // get the contentLeft left.pos
                 var contentLeftEdge = contentArea.getBoundingClientRect().left;
+                var contentRightEdge = contentArea.getBoundingClientRect().right;
+                //console.log('contentLeftEdge', contentLeftEdge);
+                //console.log('contentRightEdge', contentRightEdge);
+            }
+
+            if ( waypointPosLeftOrRight == 1) {
+                console.log('right');
+            } else {
+                console.log('left');
             }
 
             var viewportWidth = window.innerWidth;
@@ -298,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Waypoint width as a number
             let waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
             // Send the calc'd values back to the function
-            return { value1: spaceForWaypoint, value2: contentLeftEdge }
+            return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge  }
             // contentArea is a user configurable area 
 
         }
@@ -306,9 +343,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
 
-            const {value1, value2} = calcWaypointSpaceNeeded();
+            const {value1, value2, value3} = calcWaypointSpaceNeeded();
+
             spaceForWaypoint = value1;
+            // Left edge of content to left edge of viewport
             contentLeftEdge = value2;
+            // Right edge of content to left edge of viewport
+            contentRightEdge = value3;
 
             mainContainer.style.opacity = '0.2';
 
@@ -347,8 +388,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
                     // Calc init left offset for waypoint
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
-                    // Apply left offset
-                    mainContainer.style.left = leftAdjustCalc;
+                    //Experimental
+                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+                    //console.log('leftAdjustCalc', leftAdjustCalc);
+                    //console.log('rightAdjustCalc', rightAdjustCalc);
+
+                    // Experimental
+                    if ( waypointPosLeftOrRight == 1) {
+                        // right of elem to right of container
+                        mainContainer.style.right = rightAdjustCalc;
+                    } else {
+                        // left of elem to left of container
+                        mainContainer.style.left = leftAdjustCalc;
+                    }
+
                 } // Cut an else if and put it into notes
 
             } // END if ( alignToElement ) {
@@ -408,20 +461,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Check if myScriptData.waypointFieldAddTo exists
             if (myScriptData.waypointFieldAddTo) {
+
                 var waypointAddToElement = document.querySelector('.' + myScriptData.waypointFieldAddTo);
-                //console.log('waypointFieldAddTo: ', myScriptData.waypointFieldAddTo, ' Element: ', waypointAddToElement);
             } else {
-               // console.error('myScriptData.waypointFieldAddTo is missing or invalid');
+               
             }
-
-            // In case this is needed without a scroll being called
-            /* var waypointX = document.documentElement.scrollTop || document.body.scrollTop;
-            if ((waypointX - distanceFromTop) >= waypointTop) { // sets the point of the scroll where mainContainer becomes fixed
-
-                mainContainer.style.top = '0px';
-            } else { // mainContainer need to act like a POS: ABSOL element, scrolling...
-                mainContainer.style.top = '0px';
-            }*/
 
             window.addEventListener('scroll', function(event) {
 
@@ -434,14 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
                    // console.error('waypointAddToElement is null or undefined');
                 }
 
-               /* console.log('y', y);
-                console.log('distanceFromTop', distanceFromTop);
-                console.log('waypointTop', waypointTop);*/
-
-                // Scrolling logic
-                // Distance from top is ~78
-                // y is 0 at top and 1000+ mid page
-                // waypoint top always seems to be 0
                 if ((waypointY - distanceFromTop) >= waypointTop) { // sets the point of the scroll where mainContainer becomes fixed
 
                     // stick mainContainer to the top of the viewport
@@ -450,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else { // mainContainer need to act like a POS: ABSOL element, scrolling...
 
                     updatePosition();
-                   // console.log('Updating position');
+    
                 }
             });
 
@@ -461,18 +497,13 @@ document.addEventListener('DOMContentLoaded', function() {
         function updatePosition() {
 
             // Call earlier function that calculates 1) spaceforwaypoint and 2) contentleftedge
-            const {value1, value2} = calcWaypointSpaceNeeded();
-            // Define variables
+            const {value1, value2, value3} = calcWaypointSpaceNeeded();
             spaceForWaypoint = value1;
             contentLeftEdge = value2;
+            contentRightEdge = value3;
 
             // Get the bounding rectangle of the parent
             const parentRect = positionedParent.getBoundingClientRect().top;
-
-
-
-            /*     Duplicated code, put into a function...later      */
-
 
             // searches for # or .
             const elementHasID = /#/;
@@ -506,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // console.error('refToMasthead is null or undefined');
             }
         
-            console.log('distanceFromTop', distanceFromTop);
+            // console.log('distanceFromTop', distanceFromTop);
 
             if ( window.scrollY < distanceFromTop ){
                 mainContainer.style.top = parentRect + 'px';
@@ -534,8 +565,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Calc the left offset to give to 
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 3) + adjustMargin) + 'px';
-                    // Set left to calc
-                    mainContainer.style.left = leftAdjustCalc;
+
+                    //Experimental
+                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+                    
+                    // Experimental
+                    if ( waypointPosLeftOrRight == 1) {
+                        mainContainer.style.right = rightAdjustCalc;
+                    } else {
+                        mainContainer.style.left = leftAdjustCalc;
+                    }
            
                 } else if ( spaceForWaypoint >= 700 ) {
 
@@ -545,8 +584,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Calc the left offset to give to 
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+
+                    //Experimental
+                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+
                     // Set left to calc
-                    mainContainer.style.left = leftAdjustCalc;
+                    
+                    // Experimental
+                    if ( waypointPosLeftOrRight == 1) {
+                        mainContainer.style.right = rightAdjustCalc;
+                    } else {
+                        mainContainer.style.left = leftAdjustCalc;
+                    }
 
                 }// Cut an else if and put it into notes
 
@@ -556,10 +605,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function checkForBlackout() {
             const parentRect = positionedParent.getBoundingClientRect().top;
-            console.log('window scroll Y: ', window.scrollY); 
-            console.log('parentRect', parentRect);
+            // console.log('window scroll Y: ', window.scrollY); 
+            // console.log('parentRect', parentRect);
 
-            console.log('called during blackout');
+            // console.log('called during blackout');
         }
 
         // Pulse effect with JavaScript
@@ -697,7 +746,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var activeColor = '#' + myScriptData.bgColorValue;
             activeSelection[0].style.backgroundColor = activeColor;
         }
+
+        /*  Other settings  */
         
+        // Border color + width
+        // Border exists, Y/N -  on L or R
+        // Menu title, what it says
+
     }
 
     window.addEventListener('resize', debounce(handleResize, 200));

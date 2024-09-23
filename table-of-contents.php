@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.0.1
+ * Version: 1.1.0
  */
 
 // Activation functions
@@ -34,7 +34,7 @@ function waypoint826_custom_box_html( $post ) {
         • Add to - Add input field
         • Add to - Retreive value for the admin field
         • Add to - Define the field in $fields
-        • Add to - it in the forEach loop in wporg_post_savedata()
+        • Add to - it in the forEach loop in waypoint_post_savedata()
         • Add to - it just before the DOMContentLoaded function to transition from php to js variables
 
     */
@@ -54,7 +54,7 @@ function waypoint826_custom_box_html( $post ) {
         SETTINGS PAGE
         - Masthead
         - Background color
-        - Background selected color
+        - DONE: Background selected color
 
         STYLE
 
@@ -103,7 +103,7 @@ function waypoint826_custom_box_html( $post ) {
     // $field_value_a_bg_select_color = get_post_meta( $post->ID, '_waypoint_a_bg_select_color', true );
 
     // Add a nonce field for security
-    wp_nonce_field( 'waypoint826_save_postdata', 'wporg_nonce' );
+    wp_nonce_field( 'waypoint826_save_postdata', 'waypoint_nonce' );
 
     ?>
     <h4>Enable Waypoint for: <?php the_title (); ?></h4>
@@ -190,29 +190,44 @@ function waypoint826_custom_box_html( $post ) {
  * custom option and settings
  */
 function waypoint826_settings_init() {
-    // Register a new setting for "wporg" page.
-    register_setting( 'wporg', 'wporg_options' );
+    // Register a new setting for "waypoint" page.
+    register_setting( 'waypoint', 'waypoint_options' );
 
-    // Register a new section in the "wporg" page.
+    // Register a new section in the "waypoint" page.
     add_settings_section(
-        'wporg_section_developers', // ID
-        __( 'The Matrix has you.', 'wporg' ), // Title
+        'waypoint_section_developers', // ID
+        __( 'The Matrix has you.', 'waypoint' ), // Title
         'waypoint826_section_developers_callback', // Callback function
-        'wporg' // Page slug
+        'waypoint' // Page slug
     );
 
-    // Register a new field in the "wporg_section_developers" section, inside the "wporg" page.
+    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
     add_settings_field(
-        'wporg_bg_color', // As of WP 4.6 this value is used only internally.
+        'waypoint_bg_color', // Field ID - As of WP 4.6 this value is used only internally.
                                 // Use $args' label_for to populate the id inside the callback.
-            __( 'Pill', 'wporg' ),
-        'wporg_bg_color_cb',
-        'wporg',
-        'wporg_section_developers',
+            __( 'Background color of selected section', 'waypoint' ), // Label
+        'waypoint_bg_color_cb', // callback function to display input field
+        'waypoint', //page slug
+        'waypoint_section_developers', // section slug
         array(
-            'label_for'         => 'wporg_bg_color',
-            'class'             => 'wporg_row',
-            'wporg_custom_data' => 'custom',
+            'label_for'         => 'waypoint_bg_color', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
+    add_settings_field(
+        'waypoint_left_or_right',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Waypoint placement', 'waypoint' ),     // Label
+        'waypoint_left_or_right_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_left_or_right', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
         )
     );
 }
@@ -236,7 +251,7 @@ add_action( 'admin_init', 'waypoint826_settings_init' );
  */
 function waypoint826_section_developers_callback( $args ) {
     ?>
-    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'wporg' ); ?></p>
+    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'waypoint' ); ?></p>
     <?php
 }
 
@@ -250,25 +265,28 @@ function waypoint826_section_developers_callback( $args ) {
  *
  * @param array $args
  */
-function wporg_bg_color_cb( $args ) {
+function waypoint_bg_color_cb( $args ) {
     // Get the value of the setting we've registered with register_setting()
-    $options = get_option( 'wporg_options' );
+    $options = get_option( 'waypoint_options' );
     $bg_color_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
     ?>
 
     <input 
         type="text" 
         id="<?php echo esc_attr( $args['label_for'] ); ?>" 
-        name="wporg_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
         value="<?php echo esc_attr( $bg_color_value ); ?>" 
-        data-custom="<?php echo esc_attr( $args['wporg_custom_data'] ); ?>">
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
 
     <p class="description">
-        <?php esc_html_e( 'Add a HEX color to be used as the background of the current / selected li:a section in the waypoint side menu', 'wporg' ); ?>
+        <?php esc_html_e( 'Add a HEX color to be used as the background of the current / selected li:a section in the waypoint side menu', 'waypoint' ); ?>
     </p>
     <p class="description">
-        <?php esc_html_e( 'No hashtag necessary', 'wporg' ); ?>
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
     </p>
+    <br /><br />
+
+
 
     <?php
     // Pass the value to JavaScript
@@ -280,16 +298,46 @@ function wporg_bg_color_cb( $args ) {
     <?php
 }
 
+function waypoint_left_or_right_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_left_right = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <select 
+            id="<?php echo esc_attr( $args['label_for'] ); ?>"
+            data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>"
+            name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]">
+        <option value="Left" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'Left', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( 'Left', 'waypoint' ); ?>
+        </option>
+        <option value="Right" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'Right', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( 'Right', 'waypoint' ); ?>
+        </option> 
+    </select>
+
+      <p class="description">
+        <?php esc_html_e( 'Which side of the screen should waypoint appear', 'waypoint' ); ?>
+    </p>
+    <?php
+
+    ?>
+    <script type="text/javascript">
+       // window.leftOrRight = <?php echo json_encode( $waypoint_left_right ); ?>;
+       // console.log('Left or Right:', leftOrRight); // Now the value is available in JS
+    </script>
+    <?php
+}
 
 /**
  * Add the top level menu page.
  */
 function waypoint826_options_page() {
     add_menu_page(
-        'WPOrg',
-        'WPOrg Options',
+        'Waypoint table of contents', // on settings page: title
+        'Waypoint Options', // Title on left menu
         'manage_options',
-        'wporg',
+        'waypoint',
         'waypoint826_options_page_html'
     );
 }
@@ -315,21 +363,21 @@ function waypoint826_options_page_html() {
     // WordPress will add the "settings-updated" $_GET parameter to the url
     if ( isset( $_GET['settings-updated'] ) ) {
         // add settings saved message with the class of "updated"
-        add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );
+        add_settings_error( 'waypoint_messages', 'waypoint_message', __( 'Settings Saved', 'waypoint' ), 'updated' );
     }
 
     // show error/update messages
-    settings_errors( 'wporg_messages' );
+    settings_errors( 'waypoint_messages' );
     ?>
     <div class="wrap">
         <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
         <form action="options.php" method="post">
             <?php
-            // output security fields for the registered setting "wporg"
-            settings_fields( 'wporg' );
+            // output security fields for the registered setting "waypoint"
+            settings_fields( 'waypoint' );
             // output setting sections and their fields
-            // (sections are registered for "wporg", each field is registered to a specific section)
-            do_settings_sections( 'wporg' );
+            // (sections are registered for "waypoint", each field is registered to a specific section)
+            do_settings_sections( 'waypoint' );
             // output save settings button
             submit_button( 'Save Settings' );
             ?>
@@ -362,7 +410,7 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
     error_log("Save function triggered for post ID: $waypoint826_post_id");
 
     // Security checks
-    if ( ! isset( $_POST['wporg_nonce'] ) || ! wp_verify_nonce( $_POST['wporg_nonce'], 'waypoint826_save_postdata' ) ) {
+    if ( ! isset( $_POST['waypoint_nonce'] ) || ! wp_verify_nonce( $_POST['waypoint_nonce'], 'waypoint826_save_postdata' ) ) {
         error_log("Nonce verification failed.");
         return;
     }
@@ -388,7 +436,7 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
         'waypoint_masthead_define',
         'waypoint_add_to_page',
         'waypoint_align_to_element',
-        //'wporg_field_three',
+        //'waypoint_field_three',
         // Add more fields as needed
     ];
 
@@ -519,7 +567,7 @@ function waypoint826_run() {
 
                     // To get values, go get function waypoint826_custom_box_html()
                     $checkbox_state = get_post_meta($waypoint826_post_id, '_waypoint_enable_for_post', true);
-                    $field_state = get_post_meta($waypoint826_post_id, '_wporg_field', true);
+                    $field_state = get_post_meta($waypoint826_post_id, '_waypoint_field', true);
 
                     if ($checkbox_state === '1') {
                         error_log("checkbox state php $checkbox_state");
@@ -602,8 +650,9 @@ function waypoint826_run() {
                 );
 
                 // Retrieve the option from the (global) settings
-                $options = get_option( 'wporg_options' );
-                $bg_color_value = isset( $options['wporg_bg_color'] ) ? $options['wporg_bg_color'] : '';
+                $options = get_option( 'waypoint_options' );
+                $bg_color_value = isset( $options['waypoint_bg_color'] ) ? $options['waypoint_bg_color'] : '';
+                $waypoint_left_right = isset( $options['waypoint_left_or_right'] ) ? $options['waypoint_left_or_right'] : '';
 
                 // Make sure variables are defined
                 $checkbox_value_H2 = isset( $checkbox_value_H2 ) ? $checkbox_value_H2 : '';
@@ -617,6 +666,7 @@ function waypoint826_run() {
 
              
                 /* if ( isset($bg_color_value, $checkbox_value_H2, $checkbox_value_H3, $checkbox_value_H4, $checkbox_value_H5, $checkbox_value_intro, $field_value_add_to, $field_value_align_to_element, $field_value_masthead_define) ) { */
+                    
                     // Pass the PHP variable to the JavaScript file using wp_localize_script
                     wp_localize_script( 'my-custom-js', 'myScriptData', array(
                         'bgColorValue' => $bg_color_value,
@@ -628,6 +678,7 @@ function waypoint826_run() {
                         'waypointFieldAddTo' => $field_value_add_to,
                         'waypointFieldAlignToElement' => $field_value_align_to_element,
                         'waypointMasthead' => $field_value_masthead_define,
+                        'waypointLeftOrRight' => $waypoint_left_right,
 
                     ));
                 /* } else {
