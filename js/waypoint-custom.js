@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph4 = parseFloat(myScriptData.waypointH4);
     //var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
     let wph5 = parseFloat(myScriptData.waypointH5);
+
+    //
+    console.log('waypointMenuTitleOnOff', myScriptData.waypointMenuTitleOnOff);
       
 
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -125,8 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 
-
-
         /*  ----------- BUILDING THE LIST CONTENT ----------  */
 
         associatedElements.forEach(function(item) {
@@ -222,14 +223,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }); //end for loop
 
-        /*   append Waypoint826 table of contents into the structure of the page    */
+        // Append Waypoint826 
+        // Append title area is user selects to
         if (mainContainer) {
              // If parent div has first child, insert mainContainer before first child
             if (mainContainer.firstChild) {
                  mainContainer.insertBefore(list, mainContainer.firstChild);
+
             } else {
                 // If mainContainer has 0 children, append
                 mainContainer.appendChild(list);
+            }
+
+            if (myScriptData.waypointMenuTitleOnOff == 'visible') {
+
+                // If user sets title area to visible, insert title area
+                mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
             }
         }
 

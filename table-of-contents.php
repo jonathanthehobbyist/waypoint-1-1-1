@@ -216,7 +216,7 @@ function waypoint826_settings_init() {
         )
     );
 
-    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
+    // Register a new field
     add_settings_field(
         'waypoint_left_or_right',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
@@ -231,8 +231,8 @@ function waypoint826_settings_init() {
         )
     );
 
-    // waypoint_border_color_cb
-    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
+
+    // Register a new field
     add_settings_field(
         'waypoint_border_color',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
@@ -242,6 +242,21 @@ function waypoint826_settings_init() {
         'waypoint_section_developers',                  // section slug
         array(
             'label_for'         => 'waypoint_border_color', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    // Register a new field
+    add_settings_field(
+        'waypoint_menu_title',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Waypoint menu title', 'waypoint' ),     // Label
+        'waypoint_menu_title_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_menu_title', 
             'class'             => 'waypoint_row',
             'waypoint_custom_data' => 'custom',
         )
@@ -372,6 +387,37 @@ function waypoint_left_or_right_cb( $args ) {
     <script type="text/javascript">
        // window.leftOrRight = <?php echo json_encode( $waypoint_left_right ); ?>;
        // console.log('Left or Right:', leftOrRight); // Now the value is available in JS
+    </script>
+    <?php
+}
+
+function waypoint_menu_title_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_menu_title_val = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <select 
+            id="<?php echo esc_attr( $args['label_for'] ); ?>"
+            data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>"
+            name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]">
+        <option value="visible" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'visible', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( 'Visible title', 'waypoint' ); ?>
+        </option>
+        <option value="invisible" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'invisible', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( 'No title', 'waypoint' ); ?>
+        </option> 
+    </select>
+
+      <p class="description">
+        <?php esc_html_e( 'A title reading Page Contents will appear above the waypoint table of contents', 'waypoint' ); ?>
+    </p>
+    <?php
+
+    ?>
+    <script type="text/javascript">
+       window.titleVal = <?php echo json_encode( $waypoint_menu_title_val ); ?>;
+       console.log('Title Val:', titleVal); // Now the value is available in JS
     </script>
     <?php
 }
@@ -703,6 +749,7 @@ function waypoint826_run() {
                 $bg_color_value = isset( $options['waypoint_bg_color'] ) ? $options['waypoint_bg_color'] : '';
                 $waypoint_left_right = isset( $options['waypoint_left_or_right'] ) ? $options['waypoint_left_or_right'] : '';
                 $waypoint_border_color_val = isset( $options['waypoint_border_color'] ) ? $options['waypoint_border_color'] : '';
+                 $waypoint_menu_title_val = isset( $options['waypoint_menu_title'] ) ? $options['waypoint_menu_title'] : '';
 
                 // Make sure variables are defined
                 $checkbox_value_H2 = isset( $checkbox_value_H2 ) ? $checkbox_value_H2 : '';
@@ -730,6 +777,7 @@ function waypoint826_run() {
                         'waypointMasthead' => $field_value_masthead_define,
                         'waypointLeftOrRight' => $waypoint_left_right,
                         'waypointBorderColor' => $waypoint_border_color_val,
+                        'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
 
                     ));
                 /* } else {
