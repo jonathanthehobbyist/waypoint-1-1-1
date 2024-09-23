@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph4 = parseFloat(myScriptData.waypointH4);
     //var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
     let wph5 = parseFloat(myScriptData.waypointH5);
-
-    console.log('Left or Right2', myScriptData.waypointLeftOrRight);
       
 
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -316,12 +314,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 //console.log('contentRightEdge', contentRightEdge);
             }
 
-            if ( waypointPosLeftOrRight == 1) {
-                console.log('right');
-            } else {
-                console.log('left');
-            }
-
             var viewportWidth = window.innerWidth;
             // Get waypoint
             var elementWaypoint = document.querySelector('.waypoint826-main');
@@ -338,6 +330,19 @@ document.addEventListener('DOMContentLoaded', function() {
             return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge  }
             // contentArea is a user configurable area 
 
+        }
+
+        const elementHasID = /#/;
+        const elementHasClassEs = /\./;
+
+        if (elementHasID.test(myScriptData.waypointBorderColor)) {
+
+            // Cleans up
+            var waypointBorderColorClean = String(myScriptData.waypointBorderColor.replace('#', ''));
+        } else {
+
+            // Passes it through
+            var waypointBorderColorClean = myScriptData.waypointBorderColor;
         }
 
         // Set the right-hand position of the waypoint826 plugin
@@ -413,11 +418,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
             /*     Duplicated code, put into a function...later      */
 
+            // Could use a function to remove the #
+            // myScriptData.waypointBorderColor
+
+
+            // # Cleanup
+
             // searches for # or .
             const elementHasID = /#/;
             const elementHasClassEs = /\./;
 
-            // TEST: Left in console.log testing cases
+            if (elementHasID.test(myScriptData.waypointBorderColor)) {
+
+                // Cleans up
+                var waypointBorderColorClean = String(myScriptData.waypointBorderColor.replace('#', ''));
+
+            } else {
+
+                // Passes it through
+                var waypointBorderColorClean = myScriptData.waypointBorderColor;
+
+            }
 
             // Test, find, replace and create var menuHeight
             if (elementHasID.test(myScriptData.waypointMasthead)) {
@@ -748,6 +769,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         /*  Other settings  */
+
+        //mainContainer.style.borderStyle = '#' + waypointBorderColorClean;
+       // console.log('waypointBorderColorClean', waypointBorderColorClean);
+        waypointBorderColorClean = '#' + waypointBorderColorClean;
+
+        // Adjust border on R or L
+        if ( waypointPosLeftOrRight == 1) { // Right
+
+            // Border goes on left
+            mainContainer.style.borderRight = 'none';
+            mainContainer.style.borderLeft = '1px solid {$waypointBorderColorClean}';
+
+            // or mainContainer.style.borderLeft = '1px solid' + waypointBorderColorClean';
+
+        } else { // Left
+
+            mainContainer.style.borderRight = '1px solid {$waypointBorderColorClean}';
+            mainContainer.style.borderLeft = 'none';
+        }
         
         // Border color + width
         // Border exists, Y/N -  on L or R
