@@ -205,7 +205,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_bg_color', // Field ID - As of WP 4.6 this value is used only internally.
                                 // Use $args' label_for to populate the id inside the callback.
-            __( 'Background color of selected section', 'waypoint' ), // Label
+            __( 'Selected color', 'waypoint' ), // Label
         'waypoint_bg_color_cb', // callback function to display input field
         'waypoint', //page slug
         'waypoint_section_developers', // section slug
@@ -220,7 +220,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_left_or_right',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Waypoint placement', 'waypoint' ),     // Label
+            __( 'Placement', 'waypoint' ),     // Label
         'waypoint_left_or_right_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
@@ -236,7 +236,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_border_color',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Waypoint border colors', 'waypoint' ),     // Label
+            __( 'Border colors', 'waypoint' ),     // Label
         'waypoint_border_color_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
@@ -251,7 +251,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_menu_title',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Waypoint menu title', 'waypoint' ),     // Label
+            __( 'Show menu title', 'waypoint' ),     // Label
         'waypoint_menu_title_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
@@ -315,7 +315,6 @@ function waypoint_bg_color_cb( $args ) {
     <p class="description">
         <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
     </p>
-    <br /><br />
 
 
 
@@ -346,7 +345,7 @@ function waypoint_border_color_cb( $args ) {
     <p class="description">
         <?php esc_html_e( 'Add a HEX color for waypoint borders', 'waypoint' ); ?>
     </p>
-    <br /><br />
+
 
     <?php
     // Pass the value to JavaScript

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph5 = parseFloat(myScriptData.waypointH5);
 
     //
-    console.log('waypointMenuTitleOnOff', myScriptData.waypointMenuTitleOnOff);
+    //console.log('waypointMenuTitleOnOff', myScriptData.waypointMenuTitleOnOff);
       
 
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -118,6 +118,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var baseMargin = 8;
 
+
+
+
+
     // 1 = Right 0 = Left
     if (myScriptData.waypointLeftOrRight == 'Right') {
 
@@ -127,219 +131,216 @@ document.addEventListener('DOMContentLoaded', function() {
         var waypointPosLeftOrRight = '0';
     }
     
+    /*  ----------- BUILDING THE LIST CONTENT ----------  */
 
-        /*  ----------- BUILDING THE LIST CONTENT ----------  */
+    associatedElements.forEach(function(item) {
 
-        associatedElements.forEach(function(item) {
+        var selector = item.selector; // The selector (h2, h3, etc)
+        var element = item.element; // The DOM element
 
-            var selector = item.selector; // The selector (h2, h3, etc)
-            var element = item.element; // The DOM element
+        // Duplicates how the h2, h3, h4 is written - 'dirty version'
+        // Currently keeps the exact formatting IE uppercase, all caps etc. 
+       var innerContent = element.innerText;
+       // console.log('innerContent ' + innerContent);
 
-            // Duplicates how the h2, h3, h4 is written - 'dirty version'
-            // Currently keeps the exact formatting IE uppercase, all caps etc. 
-           var innerContent = element.innerText;
-           // console.log('innerContent ' + innerContent);
+       // Cleans up the string to make it into a usable class name / on-page anchor link
+       var str = innerContent;
+       str = str.replace(/^\s/g, ''); //removes any space at the beginning of an input
+       str = str.replace(/\s+/g, '-'); //converts 1 or more spaces to a dash
+       str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&$+%^@*]/g, '').toLowerCase(); //matches 
+       // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
 
-           // Cleans up the string to make it into a usable class name / on-page anchor link
-           var str = innerContent;
-           str = str.replace(/^\s/g, ''); //removes any space at the beginning of an input
-           str = str.replace(/\s+/g, '-'); //converts 1 or more spaces to a dash
-           str = str.replace(/[1234567890?\u201c\u201d.!\#',’>\:\;\=<_~`/"\(\)&$+%^@*]/g, '').toLowerCase(); //matches 
-           // Takes h2 innerHTML, replaces spaces (1) with dashes, (2) replaces all other banned digitals with nothing, and (3)makes it lowercase
+       // First, define the list of words to exclude
+       const excludeWords = /(privacy|security|gdpr)/i; // i makes it case-insensitive
 
-           // First, define the list of words to exclude
-           const excludeWords = /(privacy|security|gdpr)/i; // i makes it case-insensitive
+       // Next, look at the parents to see if its a GDPR or privacy notice
+       const parentLevelOne = element.parentElement
+       const parentLevelTwo = parentLevelOne.parentElement;
+       const parentLevelThree = parentLevelTwo.parentElement;
 
-           // Next, look at the parents to see if its a GDPR or privacy notice
-           const parentLevelOne = element.parentElement
-           const parentLevelTwo = parentLevelOne.parentElement;
-           const parentLevelThree = parentLevelTwo.parentElement;
+       const parentOneClass = parentLevelOne.className;
+       const parentTwoClass = parentLevelTwo.className;
+       const parentThreeClass = parentLevelThree.className;
 
-           const parentOneClass = parentLevelOne.className;
-           const parentTwoClass = parentLevelTwo.className;
-           const parentThreeClass = parentLevelThree.className;
+       // now exclude 
+       if ( excludeWords.test(parentOneClass) || excludeWords.test(parentTwoClass) || excludeWords.test(parentThreeClass) ) {
+        return;
+       }
 
-           // now exclude 
-           if ( excludeWords.test(parentOneClass) || excludeWords.test(parentTwoClass) || excludeWords.test(parentThreeClass) ) {
-            return;
-           }
+       // Assign a unique ID to the h2, h3, h4 tag based on its position
+        element.id = str;
+        
+        // Create a list item and link for each h2, h3, h4
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
 
-           // Assign a unique ID to the h2, h3, h4 tag based on its position
-            element.id = str;
-            
-            // Create a list item and link for each h2, h3, h4
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
+        // defining the waypoint a links
+        link.href = "#" + str;
+        link.innerHTML = innerContent.toLowerCase();
 
-            // defining the waypoint a links
-            link.href = "#" + str;
-            link.innerHTML = innerContent.toLowerCase();
+        // Add a class that says whether this came from an h2, h3, h4, or h5 elem
+        listItem.classList.add(item.selector + '_selector');
 
-            // Add a class that says whether this came from an h2, h3, h4, or h5 elem
-            listItem.classList.add(item.selector + '_selector');
-
-            // getting rid of the 'h' in 'h2' so we can do math comparisons on them
-            var breakDownSelector = parseInt(selector.replace('h', ''),10);
+        // getting rid of the 'h' in 'h2' so we can do math comparisons on them
+        var breakDownSelector = parseInt(selector.replace('h', ''),10);
 
 
-            /*  ----------- LOGIC FOR LEFT MARGIN FOR h2, h3, h4, h5 ----------  */
+        /*  ----------- LOGIC FOR LEFT MARGIN FOR h2, h3, h4, h5 ----------  */
 
-            switch (numberOfHeadings) {
+        switch (numberOfHeadings) {
 
-                    case 1:
-                        break;
+                case 1:
+                    break;
 
-                    case 2:
-                        // Highest number IE bottomLevel gets a margin of 8px assigned
-                        // Logic to if: when breakdownselector equals bottomlevle, set the leftmargin of the li to baseMargin (8)
-                        if(breakDownSelector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        break;
-                        
-                    case 3:
-                        // The topLevel - 1 (middle level) gets a base*1 margin
-                        if(breakDownSelector != bottomLevel && breakDownSelector != topLevel) { 
-                            listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        } else if (selector == bottomLevel) {
-                        // The topLevel - 2 gets a base*2 margin 
-                         listItem.style.marginLeft = (baseMargin * 2) + "px";
-                        }
-                        break;
+                case 2:
+                    // Highest number IE bottomLevel gets a margin of 8px assigned
+                    // Logic to if: when breakdownselector equals bottomlevle, set the leftmargin of the li to baseMargin (8)
+                    if(breakDownSelector == bottomLevel) listItem.style.marginLeft = (baseMargin * 1) + "px";
+                    break;
+                    
+                case 3:
+                    // The topLevel - 1 (middle level) gets a base*1 margin
+                    if(breakDownSelector != bottomLevel && breakDownSelector != topLevel) { 
+                        listItem.style.marginLeft = (baseMargin * 1) + "px";
+                    } else if (selector == bottomLevel) {
+                    // The topLevel - 2 gets a base*2 margin 
+                     listItem.style.marginLeft = (baseMargin * 2) + "px";
+                    }
+                    break;
 
-                    case 4:
+                case 4:
 
-                        if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
-                            listItem.style.marginLeft = (baseMargin * 1) + "px";
-                        } else if (breakDownSelector == valuesOfHeadings[2]) { //topLevel -2
-                            listItem.style.marginLeft = (baseMargin * 2) + "px";
-                        } else if (breakDownSelector == bottomLevel) { //topLeft -3
-                         listItem.style.marginLeft = (baseMargin * 3) + "px";
-                        }
-                        break;
-            }
-
-            // append
-            listItem.appendChild(link);
-            list.appendChild(listItem);
-
-        }); //end for loop
-
-        // Append Waypoint826 
-        // Append title area is user selects to
-        if (mainContainer) {
-             // If parent div has first child, insert mainContainer before first child
-            if (mainContainer.firstChild) {
-                 mainContainer.insertBefore(list, mainContainer.firstChild);
-
-            } else {
-                // If mainContainer has 0 children, append
-                mainContainer.appendChild(list);
-            }
-
-            if (myScriptData.waypointMenuTitleOnOff == 'visible') {
-
-                // If user sets title area to visible, insert title area
-                mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
-            }
+                    if(breakDownSelector == valuesOfHeadings[1]) { //topLevel -1
+                        listItem.style.marginLeft = (baseMargin * 1) + "px";
+                    } else if (breakDownSelector == valuesOfHeadings[2]) { //topLevel -2
+                        listItem.style.marginLeft = (baseMargin * 2) + "px";
+                    } else if (breakDownSelector == bottomLevel) { //topLeft -3
+                     listItem.style.marginLeft = (baseMargin * 3) + "px";
+                    }
+                    break;
         }
 
+        // append
+        listItem.appendChild(link);
+        list.appendChild(listItem);
 
+    }); //end for loop
 
-        function findPositionedParent(element) {
-            // Start with the parent of the element
-            let parent = mainContainer.parentElement;
+    // Append Waypoint826 
+    // Append title area is user selects to
+    if (mainContainer) {
+         // If parent div has first child, insert mainContainer before first child
+        if (mainContainer.firstChild) {
+             mainContainer.insertBefore(list, mainContainer.firstChild);
 
-            // Traverse up the DOM tree
-            while (parent) {
-                // Get the computed style of the parent
-                const style = window.getComputedStyle(parent);
-
-                // Check if the parent has a position other than 'static'
-                if (style.position !== 'static') {
-                    return parent; // This is the nearest positioned parent
-                }
-
-                // Move to the next parent element
-                parent = parent.parentElement;
-            }
-
-            // If no positioned parent is found, return null
-            return null;
-        } // END FINDPOSITIONEDPARENT()
-
-        // Get actual value for waypoint
-        var absoluteElement = document.querySelector('.waypoint826-main'); 
-        var positionedParent = findPositionedParent(absoluteElement);
-
-   
-
-        if (positionedParent) {
-            // True distance from the left viewport edge
-
-            if ( waypointPosLeftOrRight == 1) {
-
-                // Distance from the viewport's left edge to the element's right edge
-                var WaypointParentPos = positionedParent.getBoundingClientRect().right;
-            } else {
-
-                // Original
-                // Distance from viewport left edge to element left edge
-                var WaypointParentPos = positionedParent.getBoundingClientRect().left;
-            }
-        }
-
-        // 
-        if (WaypointParentPos){
-            //
-            var adjustMargin = (parseFloat(WaypointParentPos));
         } else {
-            // 
-            var adjustMargin = 0;
+            // If mainContainer has 0 children, append
+            mainContainer.appendChild(list);
         }
 
-        /*  -------------------- USER CONFIGURABLE --------------------  */
+        if (myScriptData.waypointMenuTitleOnOff == 'visible') {
 
-        // Remove whitespace from both ends of
-        alignToElement = myScriptData.waypointFieldAlignToElement.trim();
+            // If user sets title area to visible, insert title area
+            mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
+        }
+    }
 
-        var spaceForWaypoint;
 
-        function calcWaypointSpaceNeeded() {
 
-            // waypointFieldAlignToElement might have more than one class so, replace spaces with dots
-            const checkAndCombineField = "." + alignToElement.replace(/ /g, '.'); // replaces spaces with dots
-            //
-            var contentArea = document.querySelector(checkAndCombineField);
+    function findPositionedParent(element) {
+        // Start with the parent of the element
+        let parent = mainContainer.parentElement;
 
-            // get the left position of the user-defined content block
-            if (contentArea) {
-                // get the width
-                var elemContentWidth = window.getComputedStyle(contentArea).width;
-                // replace px
-                var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
-                // get the contentLeft left.pos
-                var contentLeftEdge = contentArea.getBoundingClientRect().left;
-                var contentRightEdge = contentArea.getBoundingClientRect().right;
-                //console.log('contentLeftEdge', contentLeftEdge);
-                //console.log('contentRightEdge', contentRightEdge);
+        // Traverse up the DOM tree
+        while (parent) {
+            // Get the computed style of the parent
+            const style = window.getComputedStyle(parent);
+
+            // Check if the parent has a position other than 'static'
+            if (style.position !== 'static') {
+                return parent; // This is the nearest positioned parent
             }
 
-            var viewportWidth = window.innerWidth;
-            // Get waypoint
-            var elementWaypoint = document.querySelector('.waypoint826-main');
-            // Get width
-            var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
-            // Remove 'px' REGEX
-            var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
-            // Calculating space on the margins around the content
-            // What if used hasn't defined contentArea? 
-            var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-            // Waypoint width as a number
-            let waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
-            // Send the calc'd values back to the function
-            return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge  }
-            // contentArea is a user configurable area 
-
+            // Move to the next parent element
+            parent = parent.parentElement;
         }
+
+        // If no positioned parent is found, return null
+        return null;
+    } // END FINDPOSITIONEDPARENT()
+
+    // Get actual value for waypoint
+    var absoluteElement = document.querySelector('.waypoint826-main'); 
+    var positionedParent = findPositionedParent(absoluteElement);
+
+    if (positionedParent) {
+        // True distance from the left viewport edge
+
+        if ( waypointPosLeftOrRight == 1) {
+
+            // Distance from the viewport's left edge to the element's right edge
+            var WaypointParentPos = positionedParent.getBoundingClientRect().right;
+        } else {
+
+            // Original
+            // Distance from viewport left edge to element left edge
+            var WaypointParentPos = positionedParent.getBoundingClientRect().left;
+        }
+    }
+
+    // 
+    if (WaypointParentPos){
+        //
+        var adjustMargin = (parseFloat(WaypointParentPos));
+    } else {
+        // 
+        var adjustMargin = 0;
+    }
+
+    /*  -------------------- USER CONFIGURABLE --------------------  */
+
+    // Remove whitespace from both ends of
+    alignToElement = myScriptData.waypointFieldAlignToElement.trim();
+
+    var spaceForWaypoint;
+
+    function calcWaypointSpaceNeeded() {
+
+        // waypointFieldAlignToElement might have more than one class so, replace spaces with dots
+        const checkAndCombineField = "." + alignToElement.replace(/ /g, '.'); // replaces spaces with dots
+        //
+        var contentArea = document.querySelector(checkAndCombineField);
+
+        // get the left position of the user-defined content block
+        if (contentArea) {
+            // get the width
+            var elemContentWidth = window.getComputedStyle(contentArea).width;
+            // replace px
+            var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
+            // get the contentLeft left.pos
+            var contentLeftEdge = contentArea.getBoundingClientRect().left;
+            var contentRightEdge = contentArea.getBoundingClientRect().right;
+            //console.log('contentLeftEdge', contentLeftEdge);
+            //console.log('contentRightEdge', contentRightEdge);
+        }
+
+        var viewportWidth = window.innerWidth;
+        // Get waypoint
+        var elementWaypoint = document.querySelector('.waypoint826-main');
+        // Get width
+        var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+        // Remove 'px' REGEX
+        var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
+        // Calculating space on the margins around the content
+        // What if used hasn't defined contentArea? 
+        var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
+        // Waypoint width as a number
+        let waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
+        // Send the calc'd values back to the function
+        return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge  }
+        // contentArea is a user configurable area 
+
+    }
 
         const elementHasID = /#/;
         const elementHasClassEs = /\./;
@@ -402,10 +403,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
                     // Calc init left offset for waypoint
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
+
+
+
                     //Experimental
-                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+                    var rightAdjustCalc = 0 + 'px';
                     //console.log('leftAdjustCalc', leftAdjustCalc);
-                    //console.log('rightAdjustCalc', rightAdjustCalc);
+                    console.log('rightAdjustCalc', rightAdjustCalc);
 
                     // Experimental
                     if ( waypointPosLeftOrRight == 1) {
@@ -597,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 3) + adjustMargin) + 'px';
 
                     //Experimental
-                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+                    var rightAdjustCalc = 0 + 'px';
                     
                     // Experimental
                     if ( waypointPosLeftOrRight == 1) {
@@ -616,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
 
                     //Experimental
-                    var rightAdjustCalc = (offset - (baseMargin * 9)) + 'px';
+                    var rightAdjustCalc = 0 + 'px';
 
                     // Set left to calc
                     
@@ -779,8 +783,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         /*  Other settings  */
 
-        //mainContainer.style.borderStyle = '#' + waypointBorderColorClean;
-       // console.log('waypointBorderColorClean', waypointBorderColorClean);
+        // mainContainer.style.borderStyle = '#' + waypointBorderColorClean;
+        // console.log('waypointBorderColorClean', waypointBorderColorClean);
         waypointBorderColorClean = '#' + waypointBorderColorClean;
 
         // Adjust border on R or L
@@ -788,13 +792,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Border goes on left
             mainContainer.style.borderRight = 'none';
-            mainContainer.style.borderLeft = '1px solid {$waypointBorderColorClean}';
+            mainContainer.style.borderLeft = `1px solid ${waypointBorderColorClean}`;
 
             // or mainContainer.style.borderLeft = '1px solid' + waypointBorderColorClean';
 
         } else { // Left
 
-            mainContainer.style.borderRight = '1px solid {$waypointBorderColorClean}';
+            mainContainer.style.borderRight = `1px solid ${waypointBorderColorClean}`;
             mainContainer.style.borderLeft = 'none';
         }
         
