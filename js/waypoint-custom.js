@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     //Experimental
                     var rightAdjustCalc = 0 + 'px';
                     //console.log('leftAdjustCalc', leftAdjustCalc);
-                    console.log('rightAdjustCalc', rightAdjustCalc);
+                    //console.log('rightAdjustCalc', rightAdjustCalc);
 
                     // Experimental
                     if ( waypointPosLeftOrRight == 1) {
@@ -767,43 +767,96 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Return the sections array
     return sections;
-}
- // END setupIntersectionObserver
+} // END setupIntersectionObserver
 
-        // Set up the observer and handle section changes
-        const sections2 = setupIntersectionObserver((observedSection) => {
-            console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the section currently being observed
-        });
+    // Set up the observer and handle section changes
+    /*const sections2 = setupIntersectionObserver((observedSection) => {
+        console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the section currently being observed
+    });*/
 
-        // You can still access the sections array immediately if needed
-        console.log("Sections2:", sections2);
+    // You can still access the sections array immediately if needed
+    //console.log("Sections2:", sections2);
 
-        // 'Enter' keydown function
-        document.addEventListener('keydown', function(event) {
+    // 'Enter' keydown function
+    document.addEventListener('keydown', function(event) {
+
+        // How many times function is called 
+        var j = 0;
+
+        // Check if the key pressed is "Enter"
+        if (event.key === 'Enter' || event.keyCode === 13) {
+
+            let currentlyObserved = null; // Declare in the outer scope
+            let lastObserved = null; // Track the last observed section
 
 
-            // Check if the key pressed is "Enter"
-            if (event.key === 'Enter' || event.keyCode === 13) {
+            // whats happening? Enter gets pressed, the observedSection scrolls from 'wrok' to 'recomennd'
+            // once it hits recommend, it's saying, hey, the observed section is recommend and 
+            // and that's a match within the array
 
-                // It just needs to know what element to scroll to
+            // so it goes from work to recommend, but there's a loop that happens
 
-                const waypointCurrentScrollY = window.scrollY;
-                const waypointCurrentScrollX = window.scrollX;
-                const waypointNewPosY = waypointCurrentScrollY + 1000;
-                window.scrollTo(waypointCurrentScrollX, waypointNewPosY);
-               
-            }
-        });
 
-        window.addEventListener('load', handleResize);
+            const sections2 = setupIntersectionObserver((observedSection) => {
 
-        function debounce(func, wait = 100) {
-        let timeout;
-        return function() {
-            const context = this, args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(context, args), wait);
-        };
+                // Update the variable when a section is observed
+                currentlyObserved = observedSection.id; 
+                //console.log("Currently observed inside observer:", currentlyObserved); // Logs when a section is observed
+            
+                // Pass the var outside these brackets
+                // Only call handleSectionChange if it's a new observed section
+                if (currentlyObserved !== lastObserved) {
+
+                    // Update the last observed section
+                    lastObserved = currentlyObserved; 
+                    console.log('lastObserved', lastObserved);
+
+                    j++;
+                    handleSectionChange(currentlyObserved, j);
+                    
+                }
+
+            }); // End sections2 = 
+
+            // now we need to turn this around, at last .length have it scroll back up the page
+
+
+            
+            function handleSectionChange(sectionId, num) {
+                console.log('section change called', num);
+                //safely access currentlyObserverd as sectionId
+
+                for (let i = 0; i< sections2.length; i++) {
+                    const sectionsConv = sections2[i].toString();
+                    const observedConv = sectionId.toString();
+                    //sections2[i]
+                    if ( sectionsConv == observedConv) {
+                        // If there's a match, get the next section
+                        const nextElem = document.getElementById(sections2[i + 1]);
+                        // Scroll down
+                        if ( num == 1 && i < sections2.length - 1) {
+                            nextElem.scrollIntoView(true);
+                            num++;
+                        } else {
+                            break;
+                        }
+                        //console.log('match',nextElem);
+                        
+                    } // end if
+                } // end for
+            } // End handleSectionChange  
+        } // end eventKey if
+    }); // end eventListener
+
+    window.addEventListener('load', handleResize);
+
+    function debounce(func, wait = 100) {
+    let timeout;
+    return function() {
+        const context = this, args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
     }
 
     // Combine the functions into one debounced handler
@@ -813,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePosition();
 
         const handleSectionChange = (observedSection) => {
-            console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the observed section
+            // console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the observed section
         };
 
         // Set up the observer with the callback
