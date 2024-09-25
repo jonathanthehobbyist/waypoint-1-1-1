@@ -688,25 +688,6 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
 
-
-        // Set up an array of all Observed sections. 
-        // When there is an intersection, update a variable with the observed section
-        // On enter press, 
-        // Use scrollIntoView(), pass it any DOM element like element.scrollIntoView() - and its got some cool controls
-        // combine with document.getElementById()
-
-        // HOW TO
-        // so I had an array of observed DOM elements, and if I knew the current array # that was observed
-        // AND THEN someone presses return, I can pass the array that is the DOM elem into .scrollIntoView
-
-
-
-
-
-
-
-
-
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
         let currentSection = null; // To keep track of the currently observed section
@@ -769,61 +750,43 @@ document.addEventListener('DOMContentLoaded', function() {
     return sections;
 } // END setupIntersectionObserver
 
-    // Set up the observer and handle section changes
-    /*const sections2 = setupIntersectionObserver((observedSection) => {
-        console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the section currently being observed
-    });*/
-
-    // You can still access the sections array immediately if needed
-    //console.log("Sections2:", sections2);
-
     // 'Enter' keydown function
     document.addEventListener('keydown', function(event) {
-
-        // How many times function is called 
-        var j = 0;
 
         // Check if the key pressed is "Enter"
         if (event.key === 'Enter' || event.keyCode === 13) {
 
+            // How many times function is called 
+            var j = 0;
+
             let currentlyObserved = null; // Declare in the outer scope
             let lastObserved = null; // Track the last observed section
 
-
-            // whats happening? Enter gets pressed, the observedSection scrolls from 'wrok' to 'recomennd'
-            // once it hits recommend, it's saying, hey, the observed section is recommend and 
-            // and that's a match within the array
-
-            // so it goes from work to recommend, but there's a loop that happens
-
-
+            // Callback function for setupIntersectionObserver
             const sections2 = setupIntersectionObserver((observedSection) => {
 
                 // Update the variable when a section is observed
                 currentlyObserved = observedSection.id; 
                 //console.log("Currently observed inside observer:", currentlyObserved); // Logs when a section is observed
-            
-                // Pass the var outside these brackets
+        
                 // Only call handleSectionChange if it's a new observed section
                 if (currentlyObserved !== lastObserved) {
 
                     // Update the last observed section
                     lastObserved = currentlyObserved; 
-                    console.log('lastObserved', lastObserved);
+                    //console.log('lastObserved', lastObserved);
 
                     j++;
-                    handleSectionChange(currentlyObserved, j);
-                    
+                    if ( j === 1) {
+
+                        // Pass the var outside these brackets
+                        handleSectionChange(currentlyObserved, j);
+                    } 
                 }
-
             }); // End sections2 = 
-
-            // now we need to turn this around, at last .length have it scroll back up the page
-
-
             
-            function handleSectionChange(sectionId, num) {
-                console.log('section change called', num);
+            function handleSectionChange(sectionId) {
+                //console.log('section change called', j);
                 //safely access currentlyObserverd as sectionId
 
                 for (let i = 0; i< sections2.length; i++) {
@@ -834,10 +797,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         // If there's a match, get the next section
                         const nextElem = document.getElementById(sections2[i + 1]);
                         // Scroll down
-                        if ( num == 1 && i < sections2.length - 1) {
-                            nextElem.scrollIntoView(true);
-                            num++;
-                        } else {
+                        if (i < sections2.length - 1 && j === 1) {
+
+                            nextElem.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                            // Increment number of calls after scrolled
+                            j++;
+                        } else if ( i = sections2.length -1 ) {
+                            // Do we want the page to turn around? 
+                        } else  {
                             break;
                         }
                         //console.log('match',nextElem);
@@ -851,17 +821,23 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('load', handleResize);
 
     function debounce(func, wait = 100) {
-    let timeout;
-    return function() {
-        const context = this, args = arguments;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
+        let timeout;
+        return function() {
+            const cont
+            ext = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
     }
 
     // Combine the functions into one debounced handler
     function handleResize() {
-
+        /* document.addEventListener('load', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // This makes the scroll smooth
+            });
+        });*/
         positionMainContainer();
         updatePosition();
 
