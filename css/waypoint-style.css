@@ -28,34 +28,48 @@ html {
 	/* right: 80%; */
 	height: 100%;
 	opacity: .2;
-	padding: 40px 20px 60px 0px;
+	padding: 0px 0px 60px 0px;
 	transition: left 0.5s ease;
 	transition: opacity 0.5s ease, visibility 0.5s ease;
 	display: none;
 }
 
 
-/*   LIST STYLING   */
+/*---   PAGE TITLE   ---*/
 
+.waypoint826-main p.content {
+	display: block;
+	color: var(--text-secondary);
+	font-size: 16px;
+	padding-right: 20px; /*calc(var(--base-unit) * 1.25);*/
+	padding-left: 20px; /*calc(var(--base-unit) * 1.25);*/
+	padding-bottom: 10px;
+	border-bottom: 1px solid;
+	font-family: 'League Spartan';
+}
+
+/*---   LIST STYLING   ---*/
 
 .waypoint826-main ol {
 	list-style-type: none;
+	margin: 0!important;
 }
 
 ol.list-wrapper {
 	
 	font-family: 'League Spartan';
+	margin-left: 0!important;
 }
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
-	margin-bottom: calc(var(--base-unit) * 1.25);
+	margin-bottom: 0xp /* calc(var(--base-unit) * 1.25); */
 	line-height: 1.15;
 	padding-top: calc(var(--base-unit) * .75);
-	padding-right: calc(var(--base-unit) * 1.25);
+	padding-right: 20px; /*calc(var(--base-unit) * 1.25);*/
 	padding-bottom: calc(var(--base-unit) * .75);
-	padding-left: calc(var(--base-unit) * 1.25);
-	border-radius: calc(var(--base-unit) * .5);
+	padding-left: 20px; /* calc(var(--base-unit) * 1.25);*/
+	border-radius: 0px; /*calc(var(--base-unit) * .5);*/
 	transition: background-color .5s ease-out;
 }
 
@@ -120,7 +134,7 @@ ol li a.h5_selector { margin-left: 9px; }
 	letter-spacing: calc(var(--base-unit) * .009);
 	font-family: sans-serif;
 	 transition: background-color 0.3s ease;
-    animation: bobbing 2s ease-in-out infinite;
+    animation: bobbing 2s ease-in-out;
     position: absolute;
     display: inline-block;
 }

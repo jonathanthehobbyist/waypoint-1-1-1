@@ -750,6 +750,11 @@ document.addEventListener('DOMContentLoaded', function() {
     return sections;
 } // END setupIntersectionObserver
 
+    // BUG - scroll first, be in a middle of a section, then hit enter - sometimes it's not working
+
+
+
+
     // 'Enter' keydown function
     document.addEventListener('keydown', function(event) {
 
@@ -823,8 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function debounce(func, wait = 100) {
         let timeout;
         return function() {
-            const cont
-            ext = this, args = arguments;
+            const context = this, args = arguments;
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(context, args), wait);
         };
@@ -888,6 +892,9 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContainer.style.borderRight = `1px solid ${waypointBorderColorClean}`;
             mainContainer.style.borderLeft = 'none';
         }
+
+        // Show menu title
+        contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}` 
         
         // Border color + width
         // Border exists, Y/N -  on L or R
