@@ -17,5 +17,5 @@ There are page and post settings as well, to select the H2, H3 etc.
 
 ## Release Notes
 1.1.0 - Allows a user to select the left or right side of the screen for display
-1.1.1 - Adding border color customization and ability for the user to select to show a menu title
+1.1.1 - Adding border color customization and ability for the user to select to show a menu title, and adding a small additional 
 

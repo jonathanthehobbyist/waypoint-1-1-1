@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //
     //console.log('waypointMenuTitleOnOff', myScriptData.waypointMenuTitleOnOff);
+
       
 
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -688,63 +689,113 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
 
+        // Set up an array of all Observed sections. 
+        // When there is an intersection, update a variable with the observed section
+        // On enter press, 
+        // Use scrollIntoView(), pass it any DOM element like element.scrollIntoView() - and its got some cool controls
+        // combine with document.getElementById()
+
+        // HOW TO
+        // so I had an array of observed DOM elements, and if I knew the current array # that was observed
+        // AND THEN someone presses return, I can pass the array that is the DOM elem into .scrollIntoView
+
+
+
+
+
+
+
+
+
         // Oberserver - creates effect where nav bolds when it crosses the boundary of its related h4
         let observer;
+        let currentSection = null; // To keep track of the currently observed section
 
-        function setupIntersectionObserver() {
-        // Keep
-        // console.log('IntersectionObserver called');
-        // Disconnect existing observer if it exists
-        if (observer) {
-            observer.disconnect();
+ function setupIntersectionObserver(onSectionChange) {
+    // Disconnect existing observer if it exists
+    if (observer) {
+        observer.disconnect();
+    }
+
+    // Nodelist? of DOM elements
+    const tocLinks = document.querySelectorAll('.list-wrapper li a');
+
+    // Create an array of IDs by mapping the href attributes
+    const sections = Array.from(tocLinks)
+        .map(link => link.getAttribute('href').replace('#', '')) // Remove the '#' from href
+        .filter(Boolean); // Ensure valid IDs
+
+    // Callback function to handle the intersections
+    const handleIntersect = (entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Clear previous active list items
+                const tocListItems = document.querySelectorAll('.list-wrapper li');
+                tocListItems.forEach(li => li.classList.remove('active'));
+
+                const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
+
+                if (activeLink) {
+                    activeLink.parentElement.classList.add('active');
+                }
+
+                // Call the provided callback with the observed section
+                if (onSectionChange) {
+                    onSectionChange(entry.target); // Pass the observed section element
+                }
+            }
+        });
+        setGlobalSettings();
+    };
+
+
+
+    const options = {
+        rootMargin: '-10px 0px 0px 0px', // Adjust the top margin
+        threshold: 0.1 // Consider multiple thresholds
+    };
+
+    observer = new IntersectionObserver(handleIntersect, options);
+
+    // Observe each section by their IDs
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            observer.observe(section);
         }
+    });
 
-        // Array of links
-        const tocLinks = document.querySelectorAll('.list-wrapper li a');
+    // Return the sections array
+    return sections;
+}
+ // END setupIntersectionObserver
 
-        // Create SECTIONS, Map links from ENTRIES to SECTIONS
-        const sections = Array.from(tocLinks)
-            .map(link => document.querySelector(link.getAttribute('href')))
-            .filter(Boolean); // Ensure sections exist
+        // Set up the observer and handle section changes
+        const sections2 = setupIntersectionObserver((observedSection) => {
+            console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the section currently being observed
+        });
 
-            // Callback function to handle the intersections
-            const handleIntersect = (entries) => {
-                entries.forEach(entry => {
-                    // Keeping for troubleshooting the handleIntersect
-                    // console.log('Observing entry:', entry.target.id, 'Is intersecting:', entry.isIntersecting, 'Intersection ratio:', entry.intersectionRatio);
-                    if (entry.isIntersecting) {
-                        // Clear previous active list items
-                        const tocListItems = document.querySelectorAll('.list-wrapper li');
-                        tocListItems.forEach(li => li.classList.remove('active'));
+        // You can still access the sections array immediately if needed
+        console.log("Sections2:", sections2);
 
-                        const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
-                        if (activeLink) {
-                            // Keep
-                            // console.log('Setting active:', activeLink.parentElement);
-                            activeLink.parentElement.classList.add('active');
-                        }
-                    }
-                });
-                setGlobalSettings();
-            };
+        // 'Enter' keydown function
+        document.addEventListener('keydown', function(event) {
 
-        const options = {
-            rootMargin: '-10px 0px 0px 0px', // Adjust the top margin to handle elements near the top of the page
-            threshold: 0.1 // Consider multiple thresholds
-        };
 
-            observer = new IntersectionObserver(handleIntersect, options);
+            // Check if the key pressed is "Enter"
+            if (event.key === 'Enter' || event.keyCode === 13) {
 
-            // Observe each section
-            sections.forEach(section => { 
-                // Keep
-                // console.log('Observing section:', section.id);
-                observer.observe(section);
-            });
-        } // END setupIntersectionObserver
+                // It just needs to know what element to scroll to
+
+                const waypointCurrentScrollY = window.scrollY;
+                const waypointCurrentScrollX = window.scrollX;
+                const waypointNewPosY = waypointCurrentScrollY + 1000;
+                window.scrollTo(waypointCurrentScrollX, waypointNewPosY);
+               
+            }
+        });
 
         window.addEventListener('load', handleResize);
-
 
         function debounce(func, wait = 100) {
         let timeout;
@@ -757,9 +808,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Combine the functions into one debounced handler
     function handleResize() {
+
         positionMainContainer();
-        setupIntersectionObserver();
         updatePosition();
+
+        const handleSectionChange = (observedSection) => {
+            console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the observed section
+        };
+
+        // Set up the observer with the callback
+        const sections = setupIntersectionObserver(handleSectionChange);
     }
 
     /*  ----------- GLOBAL SETTINGS  ----------  */

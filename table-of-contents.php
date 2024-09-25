@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.1.0
+ * Version: 1.1.1
  */
 
 // Activation functions
@@ -24,6 +24,28 @@ function waypoint826_enqueue_styles() {
 add_action('wp_enqueue_scripts', 'waypoint826_enqueue_styles');
 
 
+// Shortcode content
+function waypoint_return_shortcode() {
+
+    /* 
+    * Notes
+    * 1. Need to be able to pass border color, drop-shadow color and intensity
+    * 1.1 - Have a screen Y sensor so can position towards the bottom edge of the view port if needed (?)
+    * 1.2 - Oh yeah, need the return on-press functionality
+    * 2. Eventually pass the words to write in the button and around the button
+    * 3. Really nice to have: pass an icon? Maybe not
+    */
+
+    //
+    return "<div class='waypoint-sc-scroll-down'><span>Press</span><span class='waypoint-sc-button'><span class='waypoint-sc-return'>return</span><span class='waypoint-sc-icon'></span></span><!--end button--><span>to scroll down</span></div>";
+
+}
+
+// First item is what you call in the admin IE [waypoint_shortcode], the second itme is the actual function
+add_shortcode('waypoint_shortcode', 'waypoint_return_shortcode');
+
+
+// 
 function waypoint826_custom_box_html( $post ) {
 
     /*  
@@ -41,6 +63,15 @@ function waypoint826_custom_box_html( $post ) {
 
 
     /*
+        
+        To-Do NEXT
+        - Background color for Waypoint
+
+
+
+
+
+
         ADMIN - what else is needed? 
 
         POSITION
