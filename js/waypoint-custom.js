@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph5 = parseFloat(myScriptData.waypointH5);
 
 
+    /*
+    *   Next up
+    *   - Contents / scroll to top styling
+    *   - left padding on li
+    *   - Have the interval fire every 4-7 seconds, every 3 is too much 
+    */
+
 
 
     /*  ----------- INPUT CLEANUP  ----------  */
@@ -183,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 1 = Right 0 = Left
         if (myScriptData.waypointLeftOrRight == 'Right') {
 
+            // Set for later & easier useage
             var waypointPosLeftOrRight = '1';
         } else {
             // Defaults to Left
@@ -411,9 +419,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
 
+    /*----------   SET PADDING   -------------*/
+
+        if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
+
+        let waypointLeftRightPadding = document.querySelectorAll('.waypoint826-main ol.list-wrapper li');
+        let waypointContentLRPadding = document.querySelector('.waypoint826-main .content');
+
+        if (myScriptData.waypointLeftOrRight == 'Right') {
+            waypointLeftRightPadding.forEach((item) => {
+
+                // Re-style waypoint
+                item.style.paddingLeft = (baseMargin * 5) + 'px';
+                item.style.paddingRight = (baseMargin) + 'px';
+            });
+            waypointContentLRPadding.style.paddingLeft = (baseMargin * 5) + 'px';
+            waypointContentLRPadding.style.paddingRight = (baseMargin) + 'px';
+        } else {
+
+            waypointLeftRightPadding.forEach((item) => {
+
+                // Re-style waypoint
+                item.style.paddingLeft = (baseMargin) + 'px';
+                item.style.paddingRight = (baseMargin * 5) + 'px';
+            }); 
+            aypointContentLRPadding.style.paddingLeft = (baseMargin) + 'px';
+            waypointContentLRPadding.style.paddingRight = (baseMargin * 5) + 'px';
+        }
+    }
 
 
-    /*--- USER CONFIGS ---*/
+
+    /*----------   USER CONFIGS   -------------*/
+
+
 
     // Sets border colors
     if (typeof myScriptData.waypointBorderColor !== 'undefined' && myScriptData.waypointBorderColor != null) {
@@ -1026,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
             
-    }, 3000);
+    }, 6000);
     
 
     window.addEventListener('resize', debounce(handleResize, 200));

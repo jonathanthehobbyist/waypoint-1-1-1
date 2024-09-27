@@ -2,7 +2,8 @@
 	--primary: #2366E5; /*#4280f7;*/
 	--text-primary: #222;
 	--text-secondary: #777777;
-	--base-unit: 8px;
+	--Base-Unit: 8px;
+	--multiplier: .75;
 }
 
 /* Animation for the bobbing effect */
@@ -50,18 +51,18 @@ html {
 }
 
 
-/*---   PAGE TITLE   ---*/
+/*---   MENU TITLE   ---*/
 
 .waypoint826-main p.content {
 	display: block;
 	color: var(--text-secondary);
-	font-size: 16px;
-	padding-right: 20px; /*calc(var(--base-unit) * 1.25);*/
-	padding-left: 20px; /*calc(var(--base-unit) * 1.25);*/
+	font-size: 18px;
+	padding-right: 20px; /*calc(var(--Base-Unit) * 1.25);*/
+	padding-left: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-bottom: 10px;
 	border-bottom: 1px solid;
-	font-family: 'League Spartan';
 	cursor: arrow;
+	font-weight: 400;
 }
 
 /*---   LIST STYLING   ---*/
@@ -72,21 +73,21 @@ html {
 }
 
 ol.list-wrapper {
-	
-	font-family: 'League Spartan';
+
 	margin-left: 0!important;
 }
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
-	margin-bottom: 0xp /* calc(var(--base-unit) * 1.25); */
+	margin-bottom: 0xp /* calc(var(--Base-Unit) * 1.25); */
 	line-height: 1.15;
-	padding-top: calc(var(--base-unit) * .75);
-	padding-right: 20px; /*calc(var(--base-unit) * 1.25);*/
-	padding-bottom: calc(var(--base-unit) * .75);
-	padding-left: 20px; /* calc(var(--base-unit) * 1.25);*/
-	border-radius: 0px; /*calc(var(--base-unit) * .5);*/
+	padding-top: calc(var(--Base-Unit) * var(--multiplier));
+	padding-right: 0px; /*calc(var(--Base-Unit) * 1.25);*/
+	padding-bottom: calc(var(--Base-Unit) * var(--multiplier));
+	padding-left: 0px; /* calc(var(--Base-Unit) * 1.25);*/
+	border-radius: 0px; /*calc(var(--Base-Unit) * .5);*/
 	transition: background-color .5s ease-out;
+	font-weight: 400;
 }
 
 
@@ -101,7 +102,7 @@ ol.list-wrapper {
 .waypoint826-main ol.list-wrapper li a {
 	display: inline-block;
 	color: var(--text-secondary);
-	font-size: 16px;
+	font-size: 18px;
 }
 
 .waypoint826-main ol.list-wrapper li a::first-letter {
@@ -144,8 +145,8 @@ ol li a.h5_selector { margin-left: 9px; }
 /*---   WAYPOINT SHORTCODE   ---*/
 
 .waypoint-sc-scroll-down {
-	font-size: calc(var(--base-unit) * 2.5);
-	letter-spacing: calc(var(--base-unit) * .009);
+	font-size: calc(var(--Base-Unit) * 2.5);
+	letter-spacing: calc(var(--Base-Unit) * .009);
 	font-family: sans-serif;
 	transition: background-color 0.3s ease;
     
@@ -160,11 +161,11 @@ ol li a.h5_selector { margin-left: 9px; }
 
 .waypoint-sc-scroll-down .waypoint-sc-button {
 	border: 1px solid #000000;
-	padding: calc(var(--base-unit) * .5) calc(var(--base-unit) * 1) calc(var(--base-unit) * .8) calc(var(--base-unit) * 1);
+	padding: calc(var(--Base-Unit) * .5) calc(var(--Base-Unit) * 1) calc(var(--Base-Unit) * .8) calc(var(--Base-Unit) * 1);
 	filter: drop-shadow(2px 2px 0px #555);
 	border-radius: 6px;
 	background: #ffffff;
-	margin: 0 calc(var(--base-unit) * 1.2) 0 calc(var(--base-unit) * 1.2);
+	margin: 0 calc(var(--Base-Unit) * 1.2) 0 calc(var(--Base-Unit) * 1.2);
 	cursor: pointer;
    
 	/* 
@@ -179,7 +180,7 @@ ol li a.h5_selector { margin-left: 9px; }
 
 .waypoint-sc-scroll-down .waypoint-sc-icon {
 	display: inline-block;
-	margin: 0 calc(var(--base-unit) * .6) 0 calc(var(--base-unit) * 1);
+	margin: 0 calc(var(--Base-Unit) * .6) 0 calc(var(--Base-Unit) * 1);
 	background-image: url('https://www.jonsimmons.co/wp-content/uploads/2024/09/corner-right-up.png');
 	background-size: 16px;
 	width: 16px;
@@ -193,8 +194,8 @@ ol li a.h5_selector { margin-left: 9px; }
 	width: 100%;
 	color: var(--text-secondary);
 	font-size: 16px;
-	padding-right: 20px; /*calc(var(--base-unit) * 1.25);*/
-	padding-left: 20px; /*calc(var(--base-unit) * 1.25);*/
+	padding-right: 20px; /*calc(var(--Base-Unit) * 1.25);*/
+	padding-left: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-top: 20px;
 	border-top: 1px solid;
 	font-family: 'League Spartan';
@@ -203,6 +204,7 @@ ol li a.h5_selector { margin-left: 9px; }
 	cursor: pointer;
 
 }
+
 
 
 
