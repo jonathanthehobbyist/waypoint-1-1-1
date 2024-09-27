@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph5 = parseFloat(myScriptData.waypointH5);
 
     //
-    //console.log('waypointMenuTitleOnOff', myScriptData.waypointMenuTitleOnOff);
+    //console.log('Text color', myScriptData.waypointTextColor);
+
+    // Set background color if user defined
 
       
 
@@ -83,6 +85,19 @@ document.addEventListener('DOMContentLoaded', function() {
     contentParagraph.className = "content";
     contentParagraph.innerHTML = "Contents";
 
+    // Scroll to top
+    var scrollToTopArea = document.createElement('p');
+    scrollToTopArea.className = "scroll-to-top";
+    scrollToTopArea.innerHTML = "Scroll to top";
+
+    scrollToTopArea.onclick = function () {
+        console.log('clicked');
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Smooth scroll
+        });
+    }
+
     // NOT currently used but keep
 
     // the map method creates a new array populated with the results of calling a provided function on every element in the calling array
@@ -119,9 +134,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var baseMargin = 8;
 
+    /*  ----------- GLOBAL USER CONFIG OPTIONS ----------  */
+
+    const elementHasID = /#/;
+    const elementHasClassEs = /\./;
+
+    // Cleans up HEX colors
+    function waypointHandleHexColors(color) {
+
+        const elementHasHash = /#/;
+        const elementHasDot = /\./;
+
+        // Is real
+        if ( typeof color !== 'undefined' && color.length >= 3) { // Passes first test
+
+            // Handles diff scenarios
+            if (elementHasHash.test(color)) { // has #
+                const color = String(color.replace('#', ''));
+            } else if (elementHasDot.test(color)) { // has .
+                const color = String(color.replace('.', ''));
+            } else { //neither, just return color
+                return color;
+            }
+        } else {
+            return;
+        }
+        return color;
+    }
 
 
 
+
+
+    // On left or right of the screen
 
     // 1 = Right 0 = Left
     if (myScriptData.waypointLeftOrRight == 'Right') {
@@ -244,6 +289,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // If user sets title area to visible, insert title area
             mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
         }
+
+        // This var could be user configurable
+        const hasScrollToTop = true;
+
+        if ( hasScrollToTop == true) {
+            mainContainer.appendChild(scrollToTopArea);
+        }
     }
 
 
@@ -343,18 +395,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
 
-        const elementHasID = /#/;
-        const elementHasClassEs = /\./;
+        
 
-        if (elementHasID.test(myScriptData.waypointBorderColor)) {
+    if (elementHasID.test(myScriptData.waypointBorderColor)) {
 
+        // Cleans up
+        var waypointBorderColorClean = String(myScriptData.waypointBorderColor.replace('#', ''));
+    } else {
+
+        // Passes it through
+        var waypointBorderColorClean = myScriptData.waypointBorderColor;
+    }
+
+    /*--- USER CONFIGS ---*/
+
+    // Set Background color
+
+    if (typeof myScriptData.bgValue !== 'undefined' && myScriptData.bgValue.length >= 3) {
+        
+        // defined and length is over 3
+        if (elementHasID.test(myScriptData.bgValue)) {
+        
             // Cleans up
-            var waypointBorderColorClean = String(myScriptData.waypointBorderColor.replace('#', ''));
-        } else {
+            const bgValueClean = String(myScriptData.bgValue.replace('#', ''));
+            const setColor = '#' + bgValueClean;
+            mainContainer.style.backgroundColor = setColor;
 
-            // Passes it through
-            var waypointBorderColorClean = myScriptData.waypointBorderColor;
+        } else {
+            const setColor = '#' + myScriptData.bgValue;
+            mainContainer.style.backgroundColor = setColor;
         }
+
+    }
+
+    // Set text color
+
+    // Cleaned HEX value
+    if (typeof myScriptData.waypointTextColor !== 'undefined') {
+        const waypointTxtClr = waypointHandleHexColors(myScriptData.waypointTextColor);
+        const setColor = '#' + waypointTxtClr;
+        const waypointTxtElem = document.querySelectorAll('.list-wrapper li a');
+        // waypointTxtElem.style.color = setColor;
+
+        //console.log('waypointTxtElem', waypointTxtElem);
+
+        // Iterate through list and set colors
+        waypointTxtElem.forEach(item => {
+        //console.log('running');
+            item.style.color = setColor;
+        });
+
+    }
+
 
         // Set the right-hand position of the waypoint826 plugin
         function positionMainContainer() {
@@ -428,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Start the pulse for 5 seconds
             startPulse(1500);
 
-            /*  ----------- POSITION TO TOP ----------  */
+            /*  ----------- INIT POSITION TO TOP ----------  */
 
             /*     Duplicated code, put into a function...later      */
 
@@ -454,8 +546,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             }
 
-            // Test, find, replace and create var menuHeight
-            if (elementHasID.test(myScriptData.waypointMasthead)) {
+            // if waypointMasthead blank, under 3 characters, invalid? 
+
+            // does waypointMasthead have a #
+            if (elementHasID.test(myScriptData.waypointMasthead) && myScriptData.waypointMasthead.length > 3) {
                 // Log if it matches the ID pattern
                 // console.log("Masthead has an ID: ", myScriptData.waypointMasthead);
 
@@ -464,20 +558,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // console.log('Found masthead by ID: ', refToMasthead);
 
-            } else if (document.getElementById('masthead')) {
+            } else if (myScriptData.waypointMasthead.length >= 3 && typeof myScriptData.waypointMasthead !== 'undefined') { // no #
+
+                var refToMasthead = document.getElementById(elementIDName);
+
+            } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead.length > 7) {
+
+                // it *IS* undefined OR it's less than 3 characters
+                var refToMasthead = 'undefined';
+                var waypointFindBody = document.querySelector('body');
+                waypointFindBody.appendChild(mainContainer);
+
+            }
+
+
+            /*
+            else if (document.getElementById('masthead')) {
                 // Fallback to 'masthead' ID
                 // console.log('Fallback to #masthead');
                 var refToMasthead = document.getElementById('masthead');
             } else {
                 // console.error('Masthead element not found');
             }
+            */
+
+
 
             // Default to height of the header element
-            if (refToMasthead) {
+            if (typeof refToMasthead !== 'undefined' && myScriptData.waypointMasthead.length >= 3) {
+
+                //get height of masthead object
                 var distanceFromTop = refToMasthead.getBoundingClientRect().height;
                 // console.log('Height of masthead: ', distanceFromTop);
             } else {
+                var distanceFromTop = 0;
                 // console.error('refToMasthead is null or undefined');
+                var waypointFindBody = document.querySelector('body');
+                waypointFindBody.appendChild(mainContainer);
             }
 
             mainContainer.style.top = '0px';
@@ -546,8 +663,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // TEST: Left in console.log testing cases
 
+
+            // If there's no masthead, then 
+
+
             // Test, find, replace and create var menuHeight
-            if (elementHasID.test(myScriptData.waypointMasthead)) {
+            if (typeof myScriptData.waypointMasthead !== 'undefined' && elementHasID.test(myScriptData.waypointMasthead)) {
                 // Log if it matches the ID pattern
                 // console.log("Masthead has an ID: ", myScriptData.waypointMasthead);
 
@@ -556,19 +677,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // console.log('Found masthead by ID: ', refToMasthead);
 
-            } else if (document.getElementById('masthead')) {
-                // Fallback to 'masthead' ID
-                // console.log('Fallback to #masthead');
-                var refToMasthead = document.getElementById('masthead');
             } else {
                 // console.error('Masthead element not found');
             }
 
             // Default to height of the header element
-            if (refToMasthead) {
+            if (typeof refToMasthead !== 'undefined' && myScriptData.waypointMasthead.length >= 3) {
                 var distanceFromTop = refToMasthead.getBoundingClientRect().height;
                 // console.log('Height of masthead: ', distanceFromTop);
             } else {
+
+                var distanceFromTop = 0;
+                var waypointFindBody = document.querySelector('body');
+                waypointFindBody.appendChild(mainContainer);
+
                 // console.error('refToMasthead is null or undefined');
             }
         
@@ -751,15 +873,17 @@ document.addEventListener('DOMContentLoaded', function() {
 } // END setupIntersectionObserver
 
     // BUG - scroll first, be in a middle of a section, then hit enter - sometimes it's not working
-
+    // BUG - I"m having to click before the enter press works. Focus state?
 
 
 
     // 'Enter' keydown function
-    document.addEventListener('keydown', function(event) {
+    window.addEventListener('keydown', function(event) {
 
         // Check if the key pressed is "Enter"
         if (event.key === 'Enter' || event.keyCode === 13) {
+
+            clearInterval(intervalID);
 
             // How many times function is called 
             var j = 0;
@@ -772,7 +896,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Update the variable when a section is observed
                 currentlyObserved = observedSection.id; 
-                //console.log("Currently observed inside observer:", currentlyObserved); // Logs when a section is observed
         
                 // Only call handleSectionChange if it's a new observed section
                 if (currentlyObserved !== lastObserved) {
@@ -812,6 +935,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             j++;
                         } else if ( i = sections2.length -1 ) {
                             // Do we want the page to turn around? 
+
+
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth' // Smooth scroll
+                                });
+                            
+
                         } else  {
                             break;
                         }
@@ -894,13 +1025,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Show menu title
-        contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}` 
+        contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}`;
+        scrollToTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
         
         // Border color + width
         // Border exists, Y/N -  on L or R
         // Menu title, what it says
 
+        // Call the function every 5 seconds
+        
+
     }
+
+    // NEED TO MAKE SURE THAT IF the elem doesn't exist that its not throwing an error
+
+
+    // Set interval for the bounce on the 'Press return to scroll down'
+    let intervalID = setInterval(() => {
+
+        const waypointBounce = document.querySelector('.waypoint-sc-scroll-down');
+        waypointBounce.classList.add('bounce');
+
+        // Remove the bounce class after animation ends so it can be reapplied
+        waypointBounce.addEventListener('animationend', () => {
+            waypointBounce.classList.remove('bounce');
+        });
+            
+    }, 3000);
+
+ 
+
+    
 
     window.addEventListener('resize', debounce(handleResize, 200));
 

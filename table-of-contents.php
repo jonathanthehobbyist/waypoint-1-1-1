@@ -65,7 +65,12 @@ function waypoint826_custom_box_html( $post ) {
     /*
         
         To-Do NEXT
-        - Background color for Waypoint
+        - Background color for Waypoint PASSED TO JS
+        - Text size PASSED TO JS
+        - Text color  - For all
+        - Text color - selected
+        - Text color - contents
+        - Add scroll to top - yes/no
 
 
 
@@ -191,12 +196,6 @@ function waypoint826_custom_box_html( $post ) {
         <br />
         <hr>
 
-        <!-- this one needs a viewport width backup -->
-
-        <!-- no dot necessary -->
-        <!-- This actually moves Waypoint closer to the attached element rather than doing anything with vertical position -->
-        <!-- it also can accept multiple classes separated by a space -->
-
    
             <h4 style="margin-bottom: .15em;">Define a header or masthead</h4>
             <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><!-- hastag or dot ok -->
@@ -227,27 +226,12 @@ function waypoint826_settings_init() {
     // Register a new section in the "waypoint" page.
     add_settings_section(
         'waypoint_section_developers', // ID
-        __( 'The Matrix has you.', 'waypoint' ), // Title
+        __( '', 'waypoint' ), // Title
         'waypoint826_section_developers_callback', // Callback function
         'waypoint' // Page slug
     );
 
-    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
-    add_settings_field(
-        'waypoint_bg_color', // Field ID - As of WP 4.6 this value is used only internally.
-                                // Use $args' label_for to populate the id inside the callback.
-            __( 'Selected color', 'waypoint' ), // Label
-        'waypoint_bg_color_cb', // callback function to display input field
-        'waypoint', //page slug
-        'waypoint_section_developers', // section slug
-        array(
-            'label_for'         => 'waypoint_bg_color', 
-            'class'             => 'waypoint_row',
-            'waypoint_custom_data' => 'custom',
-        )
-    );
-
-    // Register a new field
+        // Register a new field
     add_settings_field(
         'waypoint_left_or_right',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
@@ -265,6 +249,39 @@ function waypoint826_settings_init() {
 
     // Register a new field
     add_settings_field(
+        'waypoint_menu_title',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Show menu title', 'waypoint' ),     // Label
+        'waypoint_menu_title_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_menu_title', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    // Register a new field in the "waypoint_section_developers" section, inside the "waypoint" page.
+    add_settings_field(
+        'waypoint_bg_color', // Field ID - As of WP 4.6 this value is used only internally.
+                                // Use $args' label_for to populate the id inside the callback.
+            __( 'Selected color', 'waypoint' ), // Label
+        'waypoint_bg_color_cb', // callback function to display input field
+        'waypoint', //page slug
+        'waypoint_section_developers', // section slug
+        array(
+            'label_for'         => 'waypoint_bg_color', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+
+
+
+    // Register a new field
+    add_settings_field(
         'waypoint_border_color',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
             __( 'Border colors', 'waypoint' ),     // Label
@@ -278,16 +295,47 @@ function waypoint826_settings_init() {
         )
     );
 
+
     // Register a new field
     add_settings_field(
-        'waypoint_menu_title',                       // Field ID - As of WP 4.6 this value is used only internally.
+        'waypoint_bg',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Show menu title', 'waypoint' ),     // Label
-        'waypoint_menu_title_cb',                    // callback function to display input field
+            __( 'Set the background colors', 'waypoint' ),     // Label
+        'waypoint_bg_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
         array(
-            'label_for'         => 'waypoint_menu_title', 
+            'label_for'         => 'waypoint_bg', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+       // Register a new field
+    add_settings_field(
+        'waypoint_text_size',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Set the text size', 'waypoint' ),     // Label
+        'waypoint_text_size_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_text_size', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+        // Register a new field
+    add_settings_field(
+        'waypoint_text_color',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Set the text color', 'waypoint' ),     // Label
+        'waypoint_text_color_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_text_color', 
             'class'             => 'waypoint_row',
             'waypoint_custom_data' => 'custom',
         )
@@ -313,7 +361,7 @@ add_action( 'admin_init', 'waypoint826_settings_init' );
  */
 function waypoint826_section_developers_callback( $args ) {
     ?>
-    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Follow the white rabbit.', 'waypoint' ); ?></p>
+    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Customize Waypoint layout, colors and text.', 'waypoint' ); ?></p>
     <?php
 }
 
@@ -342,6 +390,70 @@ function waypoint_bg_color_cb( $args ) {
 
     <p class="description">
         <?php esc_html_e( 'Add a HEX color to be used as the background of the current / selected li:a section in the waypoint side menu', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+
+
+    <?php
+    // Pass the value to JavaScript
+    ?>
+    <script type="text/javascript">
+        //window.bgColorValue = <?php echo json_encode( $bg_color_value ); ?>;
+        //console.log('Background Color Value:', bgColorValue); // Now the value is available in JS
+    </script>
+    <?php
+}
+
+function waypoint_text_color_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_text_color = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_text_color ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Add a HEX color to be used as the color of the text', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+
+
+    <?php
+    // Pass the value to JavaScript
+    ?>
+    <script type="text/javascript">
+        //window.bgColorValue = <?php echo json_encode( $bg_color_value ); ?>;
+        //console.log('Background Color Value:', bgColorValue); // Now the value is available in JS
+    </script>
+    <?php
+}
+
+function waypoint_bg_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $bg_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $bg_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Add a HEX color to be used as the waypoint side menu background color', 'waypoint' ); ?>
     </p>
     <p class="description">
         <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
@@ -410,6 +522,52 @@ function waypoint_left_or_right_cb( $args ) {
 
       <p class="description">
         <?php esc_html_e( 'Which side of the screen should waypoint appear', 'waypoint' ); ?>
+    </p>
+    <?php
+
+    ?>
+    <script type="text/javascript">
+       // window.leftOrRight = <?php echo json_encode( $waypoint_left_right ); ?>;
+       // console.log('Left or Right:', leftOrRight); // Now the value is available in JS
+    </script>
+    <?php
+}
+
+function waypoint_text_size_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_left_right = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <select 
+            id="<?php echo esc_attr( $args['label_for'] ); ?>"
+            data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>"
+            name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]">
+        <option value="8" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '8', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '8px', 'waypoint' ); ?>
+        </option>
+        <option value="10" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '10', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '10px', 'waypoint' ); ?>
+        </option> 
+        <option value="12" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '12', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '12px', 'waypoint' ); ?>
+        </option> 
+        <option value="14" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '14', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '14px', 'waypoint' ); ?>
+        </option> 
+        <option value="16" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '16', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '16px', 'waypoint' ); ?>
+        </option> 
+        <option value="18" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '18', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '18px', 'waypoint' ); ?>
+        </option> 
+        <option value="20" <?php echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], '20', false ) ) : ( '' ); ?>>
+            <?php esc_html_e( '20px', 'waypoint' ); ?>
+        </option> 
+    </select>
+
+      <p class="description">
+        <?php esc_html_e( 'Set the text size for Waypoint', 'waypoint' ); ?>
     </p>
     <?php
 
@@ -777,7 +935,10 @@ function waypoint826_run() {
                 // Retrieve the option from the (global) settings
                 $options = get_option( 'waypoint_options' );
                 $bg_color_value = isset( $options['waypoint_bg_color'] ) ? $options['waypoint_bg_color'] : '';
+                $bg_value = isset( $options['waypoint_bg'] ) ? $options['waypoint_bg'] : '';
+                $waypoint_text_color = isset( $options['waypoint_text_color'] ) ? $options['waypoint_text_color'] : '';
                 $waypoint_left_right = isset( $options['waypoint_left_or_right'] ) ? $options['waypoint_left_or_right'] : '';
+                $waypoint_text_size = isset( $options['waypoint_text_size'] ) ? $options['waypoint_text_size'] : '';
                 $waypoint_border_color_val = isset( $options['waypoint_border_color'] ) ? $options['waypoint_border_color'] : '';
                  $waypoint_menu_title_val = isset( $options['waypoint_menu_title'] ) ? $options['waypoint_menu_title'] : '';
 
@@ -796,7 +957,9 @@ function waypoint826_run() {
 
                     // Pass the PHP variable to the JavaScript file using wp_localize_script
                     wp_localize_script( 'my-custom-js', 'myScriptData', array(
-                        'bgColorValue' => $bg_color_value,
+                        'bgColorValue' => $bg_color_value, // selected state
+                        'bgValue' => $bg_value, // bg of all of waypoint - passing to js
+                        'waypointTextColor' => $waypoint_text_color, 
                         'waypointH2' => $checkbox_value_H2,
                         'waypointH3' => $checkbox_value_H3,
                         'waypointH4' => $checkbox_value_H4,
@@ -806,6 +969,7 @@ function waypoint826_run() {
                         'waypointFieldAlignToElement' => $field_value_align_to_element,
                         'waypointMasthead' => $field_value_masthead_define,
                         'waypointLeftOrRight' => $waypoint_left_right,
+                        'waypointTextSize' => $waypoint_text_size, // passing to js
                         'waypointBorderColor' => $waypoint_border_color_val,
                         'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
 
