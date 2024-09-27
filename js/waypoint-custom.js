@@ -121,11 +121,12 @@ document.addEventListener('DOMContentLoaded', function() {
     contentParagraph.innerHTML = "Contents";
 
     // Scroll to top
-    var scrollToTopArea = document.createElement('p');
-    scrollToTopArea.className = "scroll-to-top";
-    scrollToTopArea.innerHTML = "Scroll to top";
+    var scrllTopArea = document.createElement('p');
+    scrllTopArea.className = "scroll-to-top";
+    scrllTopArea.innerHTML = "Scroll to top";
 
-    scrollToTopArea.onclick = function () {
+    scrllTopArea.onclick = function () {
+
         window.scrollTo({
             top: 0,
             behavior: 'smooth' // Smooth scroll
@@ -305,10 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // This var could be user configurable
-        const hasScrollToTop = true;
+        const hasScrllTop = true;
 
-        if ( hasScrollToTop == true) {
-            mainContainer.appendChild(scrollToTopArea);
+        if ( hasScrllTop == true) {
+            
+            mainContainer.appendChild(scrllTopArea);
         }
     }
 
@@ -436,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Sets border for 'page content' and 'scroll to top'
         contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}`;
-        scrollToTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
+        scrllTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
 
     }
 
@@ -571,8 +573,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Default to height of the header element
         if (typeof refToMasthead !== 'undefined' && refToMasthead != null && refToMasthead !== '' && refToMasthead.length >= 3) {
-
-            console.log('getting through');
 
             //get height of masthead object
             var distanceFromTop = refToMasthead.getBoundingClientRect().height;
@@ -800,6 +800,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Nodelist? of DOM elements
         const tocLinks = document.querySelectorAll('.list-wrapper li a');
 
+        // It would be handy to have a duplicates eliminator
+
         // Create an array of IDs by mapping the href attributes
         const sections = Array.from(tocLinks)
             .map(link => link.getAttribute('href').replace('#', '')) // Remove the '#' from href
@@ -856,13 +858,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // BUG - I"m having to click before the enter press works. Focus state?
     // BUG - on interactive-trivia, the enter key isn't working
 
+    var waypointCount = 0;
+
     // 'Enter' keydown function
     window.addEventListener('keydown', function(event) {
+
+        // console.log('level 1');
 
         // Check if the key pressed is "Enter"
         if (event.key === 'Enter' || event.keyCode === 13) {
 
+            waypointCount++;
+            //console.log('waypointCount', waypointCount);
+
             // on Interactive Trivia, we're getting here...
+            // console.log('level 2');
 
             clearInterval(intervalID);
 
@@ -895,23 +905,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }); // End sections2 = 
             
             function handleSectionChange(sectionId) {
-                //console.log('section change called', j);
+                
                 //safely access currentlyObserverd as sectionId
 
                 for (let i = 0; i< sections2.length; i++) {
-
+                    //console.log('section change called i:', i, 'count', waypointCount);
+                    // Define observed
                     const sectionsConv = sections2[i].toString();
+                    // Define section
                     const observedConv = sectionId.toString();
                     //sections2[i]
-                    if ( sectionsConv == observedConv) {
+
+                    // If there's a match
+                    if ( sectionsConv === observedConv) {
 
                         // If there's a match, get the next section
                         const nextElem = document.getElementById(sections2[i + 1]);
-                        // Scroll down
-                        if (i < sections2.length - 1 && j === 1) {
-                            //nextElem.scrollIntoView({ behavior: 'auto' });
 
-                            //console.log('nextElem', nextElem);
+                        // Scroll down
+                        //console.log('sections2[i + 1]', sections2[i + 1]);
+                        if (nextElem && i <= sections2.length - 1 && j === 1) {
+
                             nextElem.scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'center'
@@ -919,16 +933,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             // nextElem.focus();
                             // Increment number of calls after scrolled
                             j++;
-                        } else if ( i = sections2.length -1 ) {
-                            // Do we want the page to turn around? 
+                            break;
+                        } else if ( i === sections2.length - 1) {
+
+                            // This isn't working...
                                 window.scrollTo({
                                     top: 0,
                                     behavior: 'smooth' // Smooth scroll
                                 });
-                            
 
-                        } else  {
                             break;
+
+                        } else {
+                           break;
                         }
                         //console.log('match',nextElem);
                         
