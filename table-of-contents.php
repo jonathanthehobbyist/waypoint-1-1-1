@@ -226,7 +226,7 @@ function waypoint826_settings_init() {
     // Register a new section in the "waypoint" page.
     add_settings_section(
         'waypoint_section_developers', // ID
-        __( '', 'waypoint' ), // Title
+        __( 'Customize the Waypoint structure, colors and text', 'waypoint' ), // Title
         'waypoint826_section_developers_callback', // Callback function
         'waypoint' // Page slug
     );
@@ -361,7 +361,7 @@ add_action( 'admin_init', 'waypoint826_settings_init' );
  */
 function waypoint826_section_developers_callback( $args ) {
     ?>
-    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Customize Waypoint layout, colors and text.', 'waypoint' ); ?></p>
+    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Customize Waypoint layout, colors and text', 'waypoint' ); ?></p>
     <?php
 }
 

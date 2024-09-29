@@ -61,8 +61,7 @@ html {
 	padding-left: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-bottom: 10px;
 	border-bottom: 1px solid;
-	cursor: arrow;
-	font-weight: 400;
+	font-weight: 500;
 }
 
 /*---   LIST STYLING   ---*/
@@ -79,8 +78,8 @@ ol.list-wrapper {
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);
-	margin-bottom: 0xp /* calc(var(--Base-Unit) * 1.25); */
-	line-height: 1.15;
+	margin-bottom: 0px; /* calc(var(--Base-Unit) * 1.25); */
+	line-height: 1.25!important;
 	padding-top: calc(var(--Base-Unit) * var(--multiplier));
 	padding-right: 0px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-bottom: calc(var(--Base-Unit) * var(--multiplier));
@@ -191,6 +190,7 @@ ol li a.h5_selector { margin-left: 9px; }
 
 .waypoint826-main p.scroll-to-top {
 	display: block;
+	font-weight: 500;
 	width: 100%;
 	color: var(--text-secondary);
 	font-size: 16px;
@@ -198,7 +198,7 @@ ol li a.h5_selector { margin-left: 9px; }
 	padding-left: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-top: 20px;
 	border-top: 1px solid;
-	font-family: 'League Spartan';
+	/* font-family: 'League Spartan'; */
 	position: fixed;
 	bottom: 20px;
 	cursor: pointer;

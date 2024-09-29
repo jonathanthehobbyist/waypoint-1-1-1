@@ -13,13 +13,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let wph4 = parseFloat(myScriptData.waypointH4);
     //var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
     let wph5 = parseFloat(myScriptData.waypointH5);
+    //
+    let waypointTxtSz = parseFloat(myScriptData.waypointTextSize)
 
+    //console.log(myScriptData.waypointTextSize);
 
     /*
     *   Next up
     *   - Contents / scroll to top styling
-    *   - left padding on li
-    *   - Have the interval fire every 4-7 seconds, every 3 is too much 
+    *   - DONE left padding on li
+    *   - DONE Have the interval fire every 4-7 seconds, every 3 is too much 
+        - DONE Pass left text size
+        - Margin between 
+        - ? When you're scrolled to top, and the 1st (selected) element is actually off the screen - feels like we often need a top of page 'intro'
     */
 
 
@@ -402,6 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         var viewportWidth = window.innerWidth;
+        
+
         // Get waypoint
         var elementWaypoint = document.querySelector('.waypoint826-main');
         // Get width
@@ -417,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge  }
         // contentArea is a user configurable area 
 
-    }
+    } // END calcWaypointSpaceNeeded
 
     /*----------   SET PADDING   -------------*/
 
@@ -431,19 +439,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Re-style waypoint
                 item.style.paddingLeft = (baseMargin * 5) + 'px';
-                item.style.paddingRight = (baseMargin) + 'px';
+                item.style.paddingRight = (baseMargin * 3) + 'px';
             });
             waypointContentLRPadding.style.paddingLeft = (baseMargin * 5) + 'px';
-            waypointContentLRPadding.style.paddingRight = (baseMargin) + 'px';
+            waypointContentLRPadding.style.paddingRight = (baseMargin * 3) + 'px';
         } else {
 
             waypointLeftRightPadding.forEach((item) => {
 
                 // Re-style waypoint
-                item.style.paddingLeft = (baseMargin) + 'px';
+                item.style.paddingLeft = (baseMargin * 3) + 'px';
                 item.style.paddingRight = (baseMargin * 5) + 'px';
             }); 
-            aypointContentLRPadding.style.paddingLeft = (baseMargin) + 'px';
+            aypointContentLRPadding.style.paddingLeft = (baseMargin * 3) + 'px';
             waypointContentLRPadding.style.paddingRight = (baseMargin * 5) + 'px';
         }
     }
@@ -451,6 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     /*----------   USER CONFIGS   -------------*/
+
 
 
 
@@ -503,11 +512,28 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.color = setColorText;
         });
 
+        contentParagraph.style.color = setColorText;
+        scrllTopArea.style.color = setColorText;
+
     }
 
     // Set text size
+    //waypointTxtSz
+    if (typeof waypointTxtSz !== 'undefined' && waypointTxtSz != null) {
 
-    // Where is selected color? 
+        const waypointTxtElem = document.querySelectorAll('.list-wrapper li a');
+
+        // Iterate through list and set colors
+        waypointTxtElem.forEach(item => {
+            item.style.fontSize = waypointTxtSz + 'px';
+        });
+
+        contentParagraph.style.fontSize = waypointTxtSz + 'px';
+        scrllTopArea.style.fontSize = waypointTxtSz + 'px';
+
+
+    }
+
 
 
 
@@ -680,6 +706,67 @@ document.addEventListener('DOMContentLoaded', function() {
         contentLeftEdge = value2;
         contentRightEdge = value3;
 
+        let viewportHeight = window.innerHeight;
+        // math - viewport height 100%, contents should never take up more than 80%, top elem and bottom elem = 20%
+        let waypointUsableHeight = (viewportHeight * .8);
+
+        // Get LIs height
+        let allListItemsLi = document.querySelectorAll('.waypoint826-main ol li');
+
+        let waypointLiHeight;
+
+        allListItemsLi.forEach(function(item) {
+            //waypointLiHeight = window.getComputedStyle(item).height();
+            waypointLiHeight = item.getBoundingClientRect().height;
+        });
+
+        // console.log('waypointLiHeight', waypointLiHeight);
+
+        let waypointLiNumItems = allListItemsLi.length;
+        //console.log(allListItemsLi.length);
+
+        if (waypointLiHeight * waypointLiNumItems > waypointUsableHeight) {
+
+            // too much space being taken up
+            let waypointSubtract = (waypointLiHeight * waypointLiNumItems - waypointUsableHeight);
+
+            // If negative, ok, don't do anything
+            // If positive, 
+
+            if ( waypointSubtract > 0) {
+
+                // Divide reminaing space by numItems, then divivde by two to get the space to be added to ea. top and bottom padding\
+                let waypointCalc = ((waypointSubtract / waypointLiNumItems) / 2);
+
+            }
+            //console.log('waypointCalc', waypointCalc);
+        }
+
+        // Gives us space for each LI
+        let waypointTotalSpace4Li = ((waypointUsableHeight / waypointLiNumItems) - (waypointTxtSz));
+        //console.log('textsz', waypointTxtSz);
+        //console.log('waypointtotalspace4li', waypointTotalSpace4Li);
+        //console.log('waypointUsableHeight', waypointUsableHeight);
+
+        var waypointLiMult = (((waypointTotalSpace4Li/baseMargin) - 4) / 2);
+
+
+        if (waypointLiMult > 1.5) {
+            waypointLiMult = 1.5;
+        } else if (waypointLiMult < .25) { 
+            waypointLiMult = .25;
+        } else {
+            waypointLiMult;
+        }
+
+        //console.log('waypointMult', waypointLiMult);
+
+        // Set the property
+        document.documentElement.style.setProperty('--multiplier', waypointLiMult);
+
+        // The multiplier mults the basemargin so it 
+
+
         // Get the bounding rectangle of the parent
         const parentRect = positionedParent.getBoundingClientRect().top;
 
@@ -773,6 +860,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }// Cut an else if and put it into notes
 
             checkForBlackout();
+
+            // on viewport size change, update top and bottom margin of li based on viewport size
+            // document.documentElement.style.setProperty('--main-bg-color', 'lightgreen');
+            // var viewportWidth = window.innerWidth;
 
     } // end updatePosition
 
