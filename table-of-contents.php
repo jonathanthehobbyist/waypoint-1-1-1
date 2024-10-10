@@ -132,6 +132,7 @@ function waypoint826_custom_box_html( $post ) {
 
     // Which element to add waypoint, which element to align waypoint to
     $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
+    $field_value_reposition = get_post_meta( $post->ID, '_waypoint_reposition', true );
     $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
     // Configuration (probably will correspond with a settings page)
@@ -178,6 +179,17 @@ function waypoint826_custom_box_html( $post ) {
         
         <br />
         <hr>
+
+        <h4 style="margin-bottom: .15em;">Define a wrapper to be re-positioned</h4>
+        <label for="waypoint_reposition">Enter a classname of the content wrapper</label>
+        <br /><!-- no dot --><br />
+        <input type="text" id="waypoint_reposition" name="waypoint_reposition" value="<?php echo esc_attr( $field_value_reposition ); ?>">
+        <!-- no dot necessary for class name -->
+        <!-- .post-content for example -->
+        <p></p>
+        
+        <br />
+        <hr>
    
 
         <!--form>
@@ -194,15 +206,20 @@ function waypoint826_custom_box_html( $post ) {
         <p></p>
 
         <br />
+
+
+
+
+
         <hr>
 
    
-            <h4 style="margin-bottom: .15em;">Define a header or masthead</h4>
-            <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><!-- hastag or dot ok -->
-            <br /><br />
-            <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
-            <p></p>
-            <br />
+        <h4 style="margin-bottom: .15em;">Define a header or masthead</h4>
+        <label for="waypoint_masthead_define">Define a masthead by ID or class(es) - we will use this to determine waypoint's position.top - generally aligning waypoint's top with the bottom of the menubar / header</label><!-- hastag or dot ok -->
+        <br /><br />
+        <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
+        <p></p>
+        <br />
         
     </div>
 
@@ -719,6 +736,7 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
         'waypoint_masthead_define',
         'waypoint_add_to_page',
         'waypoint_align_to_element',
+        'waypoint_reposition',
         //'waypoint_field_three',
         // Add more fields as needed
     ];
@@ -820,6 +838,16 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
             );
             error_log("$waypoint8field saved with value: $checkbox_value");
 
+        } else if ( $waypoint8field === 'waypoint_reposition' ) { // Align to element
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_reposition'] ) ? '1' : '0';
+            update_post_meta(
+                $waypoint826_post_id,
+                '_waypoint_reposition',
+                $checkbox_value
+            );
+            error_log("$waypoint8field saved with value: $checkbox_value");
+
         }
             // Handle regular text fields
             if ( array_key_exists( $waypoint8field, $_POST ) ) {
@@ -916,6 +944,7 @@ function waypoint826_run() {
             // Indiv. page settings for masthead, add to page, align to element
             $field_value_masthead_define = get_post_meta( $waypoint826_post_id, '_waypoint_masthead_define', true );
             $field_value_add_to = get_post_meta( $waypoint826_post_id, '_waypoint_add_to_page', true );
+            $field_value_reposition = get_post_meta( $waypoint826_post_id, '_waypoint_reposition', true );
             $field_value_align_to_element = get_post_meta( $waypoint826_post_id, '_waypoint_align_to_element', true );
 
             // Not sure what this variable is or is used for, investigate
@@ -949,6 +978,7 @@ function waypoint826_run() {
                 $checkbox_value_H5 = isset( $checkbox_value_H5 ) ? $checkbox_value_H5 : '';
                 $checkbox_value_intro = isset( $checkbox_value_intro ) ? $checkbox_value_intro : '';
                 $field_value_add_to = isset( $field_value_add_to ) ? $field_value_add_to : '';
+                $field_value_reposition = isset( $field_value_reposition ) ? $field_value_reposition : '';
                 $field_value_align_to_element = isset( $field_value_align_to_element ) ? $field_value_align_to_element : '';
                 $field_value_masthead_define = isset( $field_value_masthead_define ) ? $field_value_masthead_define : '';
 
@@ -966,6 +996,7 @@ function waypoint826_run() {
                         'waypointH5' => $checkbox_value_H5,
                         'waypointIntroEnable' => $checkbox_value_intro,
                         'waypointFieldAddTo' => $field_value_add_to,
+                        'waypointFieldReposition' => $field_value_reposition,
                         'waypointFieldAlignToElement' => $field_value_align_to_element,
                         'waypointMasthead' => $field_value_masthead_define,
                         'waypointLeftOrRight' => $waypoint_left_right,
