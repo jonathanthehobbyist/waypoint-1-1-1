@@ -1,8 +1,6 @@
  
 document.addEventListener('DOMContentLoaded', function() {
 
-
-
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
 
     // Change into a number    
@@ -70,6 +68,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return element;
     }
 
+    /*  ----------- UTILITY IDEAS ----------  */
+
+    function qs(selector, parent = document) {
+        return parent.querySelector(selector);
+    }
+
+    function qsa(selector, parent = document) {
+        return [...parent.querySelectorAll(selector)];
+    }
+
+
 
     
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -81,21 +90,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add ?
     if (typeof myScriptData.waypointFieldAddTo !== 'undefined' && myScriptData.waypointFieldAddTo != null){
-
         // Clean up
         const waypointFieldAdd = waypointHandleHashDot(myScriptData.waypointFieldAddTo);
-
-        var entirePage = document.querySelector('.' + waypointFieldAdd);
+        // Find DOM elem
+        const entirePage = qs('.' + waypointFieldAdd);
         entirePage.appendChild(mainContainer);
     }
-
-    // EXPERIMENT
-    // Add waypoint as a sibling to box wrapper
-    // 
-    /*
-    */
-
-
 
 
     /*  ------  USER CONFIGURABLE  ----------  */
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Iterate over waypointArr instead of headings
     waypointArr.forEach(function(selector, index) {
-        var heading = document.querySelector(selector); // Get the first matching element for this selector
+        var heading = qs(selector); // Get the first matching element for this selector
         if (heading) {
             var newValue = 'newValue_' + index; // Example new value
         } else {
@@ -207,10 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Validity
     if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
-
         // 1 = Right 0 = Left
         if (myScriptData.waypointLeftOrRight == 'Right') {
-
             // Set for later & easier useage
             var waypointPosLeftOrRight = '1';
         } else {
@@ -218,7 +216,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var waypointPosLeftOrRight = '0';
         }
     }
-
 
     
     /*  ----------- BUILDING THE LIST CONTENT ----------  */
@@ -330,8 +327,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (typeof myScriptData.waypointMenuTitleOnOff !== 'undefined' && myScriptData.waypointMenuTitleOnOff == 'visible') {
 
+            // visible
+            // invisible
+
+            
+                mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
+         
+
+            console.log("Title on/off" + myScriptData.waypointMenuTitleOnOff);
             // If user sets title area to visible, insert title area
-            mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
+            //mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
+        } else {
+            console.log("Title on/off" + myScriptData.waypointMenuTitleOnOff);
         }
 
         // This var could be user configurable
@@ -368,19 +375,16 @@ document.addEventListener('DOMContentLoaded', function() {
     } // END FINDPOSITIONEDPARENT()
 
     // Get actual value for waypoint
-    var absoluteElement = document.querySelector('.waypoint826-main'); 
+    var absoluteElement = qs('.waypoint826-main'); 
     var positionedParent = findPositionedParent(absoluteElement);
 
     if ( typeof positionedParent !== 'undefined' && positionedParent != null) {
         // True distance from the left viewport edge
 
         if ( waypointPosLeftOrRight == 1) {
-
             // Distance from the viewport's left edge to the element's right edge
             var WaypointParentPos = positionedParent.getBoundingClientRect().right;
         } else {
-
-            // Original
             // Distance from viewport left edge to element left edge
             var WaypointParentPos = positionedParent.getBoundingClientRect().left;
         }
@@ -409,17 +413,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 //console.log('log');
                 let space = param.trim(); 
                 let space2 = "." + space.replace(/ /g, '.');
-                let getElem = document.querySelector(space2);
+                let getElem = qs(space2);
                 // Returns DOM Element
                 return getElem; 
-            }
-            
+            }  
         }
     }
-
-    
-    //console.log('waypointContentArea', waypointContentArea);
-
 
 
     if (typeof myScriptData.waypointFieldReposition !== 'undefined' && myScriptData.waypointFieldReposition != null) {
@@ -427,42 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handles multiple spaces, if exist
         waypointElemToMove = "." + waypointElemToMove.replace(/ /g, '.'); 
         //console.log('waypointElemToMove', waypointElemToMove);
-    }
-
-
-    // THIS PREVIOUSLY ADJUSTED THE MAIN CONTENT AREA TO THE LEFT OR RIGHT BASED ON USER INPUT
-
-    // waypointFieldAlignToElement might have more than one class so, replace spaces with dots
-    /*const contentAreaWidth = "." + alignToElement.replace(/ /g, '.'); 
-
-    var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-    console.log('offset', offset);
-    let viewportWidth = window.innerWidth;
-
-    if (typeof waypointElemToMove !== 'undefined' && waypointElemToMove != null && waypointElemToMove.length > 2) {
-        // Get width of content
-        var contentWidthCalc = document.querySelector(contentAreaWidth);
-        var contentWidth = contentWidthCalc.getBoundingClientRect().width;
-        // Get DOM element of total area to shift
-        var totalArea = document.querySelector(waypointElemToMove);
-        // get the left edge of the total area to shift
-        var contentLeftEdge = totalArea.getBoundingClientRect().left;
-
-        const waypointNewWidth = viewportWidth - offset;
-        const waypointMargins = ((waypointNewWidth - contentWidth) / 2);
-
-        // [1] [2] [3] [4]  
-        totalArea.style.position = 'relative';
-        totalArea.style.left = '-' + (waypointMargins * .3) + 'px';
-
-    } else {
-        var contentLeftEdge = 0;
-    }
-
-     */  
-
-        //console.log('-' + (waypointMargins * .5) + 'px');
-        
+    }        
 
     /*  -------------------- USER CONFIGURABLE --------------------  */
 
@@ -470,6 +434,8 @@ document.addEventListener('DOMContentLoaded', function() {
     //alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
     var spaceForWaypoint;
+
+
 
     function calcWaypointSpaceNeeded() {
 
@@ -483,7 +449,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
 
             var contentLeftEdge = contentArea.getBoundingClientRect().left;
-            var contentLeftEdge  = contentArea.getBoundingClientRect().right;
+
+            // found an error 3/20/2025 was an error, should have been contentRightEdge
+            //var contentLeftEdge  = contentArea.getBoundingClientRect().right;
+
+            // corrected
+            var contentRightEdge  = contentArea.getBoundingClientRect().right;
+
         } else {
 
            var contentLeftEdge = 0;
@@ -491,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         var viewportWidth = window.innerWidth;
-        var elementWaypoint = document.querySelector('.waypoint826-main');
+        var elementWaypoint = qs('.waypoint826-main');
 
         // Get Waypoint width, clean
         var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
@@ -505,24 +477,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     } // END calcWaypointSpaceNeeded
 
-    var wrapper = document.querySelector('.box-container');
-    //wrapper.style.width = '92%';
-    //mainContainer.style.width = '230px';
+    const calculatorWaypointWidth = {
 
-    //var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
-    //let viewportWidth = window.innerWidth;
+    }
 
+    // error found 3.20.2025 - hard coded
+    var wrapper = qs('.box-container');
+
+    // Sets width of waypoint and maincontainer
     const calcWidthForWaypoint = {
           viewport: window.innerWidth,
           log: function(arg) {
             if ( arg !== undefined) {
-                wrapper.style.width = ((this.viewport - arg + 3) / this.viewport) * 100 + '%';
+                // commented out 3.20.2025
+                // wrapper.style.width = ((this.viewport - arg + 3) / this.viewport) * 100 + '%';
             }
           },
           another: function () {
-
+          // empty for now
           }
     };
+
+
+    /*
+        How does positioning work? 
+        - user defines waypoint Left or Right side of screen
+        - variable: waypointFieldReposition? = 
+        - variable: waypointFieldAlignToElement? = contentArea = user defined content area
+        - variable: waypointMasthead = class or ID of masthead div for vertical positioning
+        - variable: waypointFieldAddTo = ?
+        - variable: 
+        - right=1 left=0
+        - if the space for waypoint is less than 640, display is none
+        - if it's between 640 and 700, 
+        - if it's greater than 700
+        - mainContainer is the holder for waypoint826
+        - what function moves the maincontent to the left or right? 
+        - contentArea is user defined = 
+        -
+        -
+        -
+        -
+        -
+        -
+
+        How to simplify?
+        - Only allow left
+        - 
+
+    */
 
 
     function calcWaypointWidth() {
@@ -537,32 +540,31 @@ document.addEventListener('DOMContentLoaded', function() {
         let rightAdjustCalc = 0 + 'px';
         let leftAdjustCalc;
         let waypointWidth;
+        let multiplier;
 
         // Check how much screen real estate is left for waypoint to inhabit
         if ( spaceForWaypoint < 640) {
 
-                // Waypoint displays NONE
-                mainContainer.style.display = 'none';
+            mainContainer.style.display = 'none';
 
         } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
             mainContainer.style.display = 'block';
-            mainContainer.style.width = '210px';
             waypointWidth = '210';
+            mainContainer.style.width = waypointWidth + 'px';
+            multiplier = 3;
 
-            // Calc the left offset to give to 
-            leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 3) + adjustMargin) + 'px';  
-   
         } else if ( spaceForWaypoint >= 700 ) {
 
-            // Waypoint displays BLOCK, 200 width
             mainContainer.style.display = 'block';
-            mainContainer.style.width = '250px';
             waypointWidth = '250';
+            mainContainer.style.width = waypointWidth + 'px';
+            multiplier = 5;
+            console.log(multiplier);
 
-            // Calc the left offset to give to 
-            leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * 5) + adjustMargin) + 'px';
         }
+
+        leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * multiplier) + adjustMargin) + 'px';
 
         // 
         if ( waypointPosLeftOrRight == 1) {
@@ -570,8 +572,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             mainContainer.style.left = leftAdjustCalc;
         }
-    // Pass width of waypoint
-    calcWidthForWaypoint.log(waypointWidth); 
+
+        // Pass width of waypoint
+        calcWidthForWaypoint.log(waypointWidth); 
 
     } // END calcWaypointWidth()
 
@@ -582,9 +585,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
 
-        let waypointLeftRightPadding = document.querySelectorAll('.waypoint826-main ol.list-wrapper li');
-        let waypointContentLRPadding = document.querySelector('.waypoint826-main .content');
+        let waypointLeftRightPadding = qsa('.waypoint826-main ol.list-wrapper li');
+        let waypointContentLRPadding = qs('.waypoint826-main .content');
 
+
+        // 3.20.2025 could eliminate if L or R variable is reduced to left only
         if (myScriptData.waypointLeftOrRight == 'Right') {
             // LI
             waypointLeftRightPadding.forEach((item) => {
@@ -619,9 +624,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     /*----------   USER CONFIGS   -------------*/
-
-
-
 
     // Sets border colors
     if (typeof myScriptData.waypointBorderColor !== 'undefined' && myScriptData.waypointBorderColor != null) {
@@ -685,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    /*----------- SET RIGHT-HAND POS  --------------*/
+    /*----------- SET RIGHT-HAND POSITION  --------------*/
 
     // Set the right-hand position of the waypoint826 plugin
     function positionMainContainer() {
@@ -695,28 +697,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         /*  -----------  USER CONFIGURABLE  ----------  */
 
-        //console.log('alignToElement', alignToElement);
+        // What to do with this?
 
         // User can choose an element to align Waypoint to horizontally
         if (typeof alignToElement !== 'undefined' && alignToElement.length > 2) {
-            //console.log('line 620');
-            // Class or ID
-            // Remove spaces and add a dot '.' from the class or ID data passed from the user
-            /*var alignElement = alignToElement.replace(/ /g, '.');
-
-            // DOM element of class or ID 
-            const contentElement = document.querySelector('.' + alignElement);
-
-            // Get the computed styles for the contentElement
-            const computedStyle = window.getComputedStyle(contentElement);
-
-            // Set transition style
-            mainContainer.style.transition = 'opacity 0.5s ease-out, visibility 0.5s ease-out';*/
-
-            /*  ----------- INITIAL LEFT POSITIONING ----------  */
-
             calcWaypointWidth();
-
         }
 
 
@@ -725,7 +710,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Start the pulse for 5 seconds
         startPulse(1500);
 
-        /*  ----------- INIT POSITION TO TOP ----------  */
+        
+
+
+        /*
+
+        Not sure why 'cleaned HEX value is here, leaving for now'
+
+        */
 
 
         // Cleaned HEX value
@@ -734,45 +726,72 @@ document.addEventListener('DOMContentLoaded', function() {
             const waypointBorderColorClean = waypointHandleHashDot(myScriptData.waypointBorderColor);
         }
 
+
+
+        /*  ----------- INIT POSITION TO TOP ----------  */
+
+
+        /*
+
+        What am I trying to do? 
+        - Find the initial position of the waypoint div
+        - See if a masthead exists, else pin to top edge of viewport
+        - scroll up until it hits the top viewport edge
+        - stick
+        - unless the user scrolls to the top again, at which point resume the init position
+        - 
+
+        */
+
+        
+
+
+
         // does waypointMasthead have a #
         if (typeof myScriptData.waypointMasthead !== 'undefined' && myScriptData.waypointMasthead != null && myScriptData.waypointMasthead !== '') {
             // Log if it matches the ID pattern
-            // console.log("Masthead has an ID: ", myScriptData.waypointMasthead);
-
-            // console.log('waypointElementIDName is getting');
 
             var waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead);
-            //= String(myScriptData.waypointMasthead.replace('#', ''));
+            console.log("ID name" + waypointElementIDName);
             var refToMasthead = document.getElementById(waypointElementIDName);
+            console.log("ref to masthead " + refToMasthead);
+            var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("distance from top" + distanceFromTop );
 
-            // console.log('Found masthead by ID: ', refToMasthead);
 
         } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead.length > 7 || myScriptData.waypointMasthead == null) {
 
             // it *IS* undefined OR it's less than 3 characters
             var refToMasthead = undefined;
-            const waypointFindBody = document.querySelector('body');
+            const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
 
         }
 
         // Default to height of the header element
-        if (typeof refToMasthead !== 'undefined' && refToMasthead != null && refToMasthead !== '' && refToMasthead.length >= 3) {
+       /*  if (typeof refToMasthead !== 'undefined' && refToMasthead != null && refToMasthead !== '' && refToMasthead.length >= 3) {
 
             //get height of masthead object
             var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("distance from top" + distanceFromTop );
             // console.log('Height of masthead: ', distanceFromTop);
         } else {
             var distanceFromTop = 0;
+            console.log("distance from top" + distanceFromTop );
             // console.error('refToMasthead is null or undefined');
-            var waypointFindBody = document.querySelector('body');
+            var waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
         }
 
-        mainContainer.style.top = '0px';
+        */
+
+        // don't understand this
+
+        mainContainer.style.top = '80px';
 
         var waypointBox = document.getElementById('waypoint826-primary-container');
         let waypointTop = waypointBox.offsetTop;
+        console.log("waypointTop", waypointTop);
 
 
         /*  ----------- SCROLL FUNCTION ----------  */
@@ -786,10 +805,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clean up? 
             const waypointFieldAppendTo = waypointHandleHashDot(myScriptData.waypointFieldAddTo);
 
-            var waypointAddToElement = document.querySelector('.' + waypointFieldAppendTo);
+            var waypointAddToElement = qs('.' + waypointFieldAppendTo);
         } else {
            
         }
+
+        // this needs to work but doesn't currently
+        // distanceFromTop is defined both above and below, I wonder if that's creating a confliect
 
         window.addEventListener('scroll', function(event) {
 
@@ -797,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (typeof waypointAddToElement !== 'undefined') {
                 var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
-               // console.log('Distance from top: ', distanceFromTop);
+                console.log('Distance from top: ', distanceFromTop);
             } else {
                // console.error('waypointAddToElement is null or undefined');
             }
@@ -840,10 +862,7 @@ document.addEventListener('DOMContentLoaded', function() {
             waypointLiHeight = item.getBoundingClientRect().height;
         });
 
-        // console.log('waypointLiHeight', waypointLiHeight);
-
         let waypointLiNumItems = allListItemsLi.length;
-        //console.log(allListItemsLi.length);
 
         if (waypointLiHeight * waypointLiNumItems > waypointUsableHeight) {
 
@@ -851,25 +870,18 @@ document.addEventListener('DOMContentLoaded', function() {
             let waypointSubtract = (waypointLiHeight * waypointLiNumItems - waypointUsableHeight);
 
             // If negative, ok, don't do anything
-            // If positive, 
-
             if ( waypointSubtract > 0) {
 
                 // Divide reminaing space by numItems, then divivde by two to get the space to be added to ea. top and bottom padding\
                 let waypointCalc = ((waypointSubtract / waypointLiNumItems) / 2);
-
             }
             //console.log('waypointCalc', waypointCalc);
         }
 
         // Gives us space for each LI
         let waypointTotalSpace4Li = ((waypointUsableHeight / waypointLiNumItems) - (waypointTxtSz));
-        //console.log('textsz', waypointTxtSz);
-        //console.log('waypointtotalspace4li', waypointTotalSpace4Li);
-        //console.log('waypointUsableHeight', waypointUsableHeight);
 
         var waypointLiMult = (((waypointTotalSpace4Li/baseMargin) - 4) / 2);
-
 
         if (waypointLiMult > 1.5) {
             waypointLiMult = 1.5;
@@ -878,8 +890,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             waypointLiMult;
         }
-
-        //console.log('waypointMult', waypointLiMult);
 
         // Set the property
         document.documentElement.style.setProperty('--multiplier', waypointLiMult);
@@ -899,7 +909,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } else {
             // console.error('Masthead element not found');
-            const waypointFindBody = document.querySelector('body');
+            const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
         }
 
@@ -910,7 +920,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
 
             var distanceFromTop = 0;
-            var waypointFindBody = document.querySelector('body');
+            var waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
 
             // console.error('refToMasthead is null or undefined');
@@ -1005,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const tocListItems = document.querySelectorAll('.list-wrapper li');
                     tocListItems.forEach(li => li.classList.remove('active'));
 
-                    const activeLink = document.querySelector(`.list-wrapper li a[href="#${entry.target.id}"]`);
+                    const activeLink = qs(`.list-wrapper li a[href="#${entry.target.id}"]`);
 
                     if (activeLink) {
                         activeLink.parentElement.classList.add('active');
@@ -1019,8 +1029,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             setGlobalSettings();
         };
-
-
 
         const options = {
             rootMargin: '-10px 0px 0px 0px', // Adjust the top margin
@@ -1041,9 +1049,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return sections;
     } // END setupIntersectionObserver
 
-
-
-
     // BUG - scroll first, be in a middle of a section, then hit enter - sometimes it's not working
     // BUG - I"m having to click before the enter press works. Focus state?
     // BUG - on interactive-trivia, the enter key isn't working
@@ -1053,16 +1058,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 'Enter' keydown function
     window.addEventListener('keydown', function(event) {
 
-        // console.log('level 1');
-
         // Check if the key pressed is "Enter"
         if (event.key === 'Enter' || event.keyCode === 13) {
 
             waypointCount++;
-            //console.log('waypointCount', waypointCount);
-
-            // on Interactive Trivia, we're getting here...
-            // console.log('level 2');
 
             clearInterval(intervalID);
 
@@ -1099,41 +1098,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 //safely access currentlyObserverd as sectionId
 
                 for (let i = 0; i< sections2.length; i++) {
-                    //console.log('section change called i:', i, 'count', waypointCount);
                     // Define observed
                     const sectionsConv = sections2[i].toString();
                     // Define section
                     const observedConv = sectionId.toString();
-                    //sections2[i]
-
                     // If there's a match
                     if ( sectionsConv === observedConv) {
-
                         // If there's a match, get the next section
                         const nextElem = document.getElementById(sections2[i + 1]);
-
                         // Scroll down
-                        //console.log('sections2[i + 1]', sections2[i + 1]);
                         if (nextElem && i <= sections2.length - 1 && j === 1) {
-
                             nextElem.scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'center'
                             });
-                            // nextElem.focus();
                             // Increment number of calls after scrolled
                             j++;
                             break;
                         } else if ( i === sections2.length - 1) {
-
-                            // This isn't working...
                                 window.scrollTo({
                                     top: 0,
                                     behavior: 'smooth' // Smooth scroll
                                 });
-
                             break;
-
                         } else {
                            break;
                         }
@@ -1204,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let intervalID = setInterval(() => {
 
         // Try and find .waypoint-sc-scroll-down
-        const waypointBounce = document.querySelector('.waypoint-sc-scroll-down');
+        const waypointBounce = qs('.waypoint-sc-scroll-down');
 
         if (typeof waypointBounce !== 'undefined' && waypointBounce != null) {
             
