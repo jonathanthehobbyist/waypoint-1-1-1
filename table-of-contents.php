@@ -233,6 +233,19 @@ function waypoint826_custom_box_html( $post ) {
  * these functions could be run multiple times; this would result in a fatal error.
  */
 
+ /*  
+            
+        HOW TO ADD AN ADMIN - places to look
+        • NOTE: use Waypoint_ naming structure
+
+        • Add to - Add input field
+        • Add to - function waypoint826_settings_init()
+        • Add function similar to EXAMPLE: function waypoint_bg_color_cb()
+        • Add variable to function waypoint826_enqueue_my_custom_scripts()
+
+
+*/
+
 /**
  * custom option and settings
  */

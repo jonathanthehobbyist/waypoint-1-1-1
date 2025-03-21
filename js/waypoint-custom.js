@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
             waypointWidth = '210';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 5;
-            console.log(multiplier);
+            
 
         }
 
@@ -563,6 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if ( waypointPosLeftOrRight == 1) {
             mainContainer.style.right = rightAdjustCalc;
         } else {
+            console.log("Line 566ish mainContainer left");
             mainContainer.style.left = leftAdjustCalc;
         }
 
@@ -576,13 +577,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /*----------   SET PADDING FOR ....?  -------------*/
 
+
+        /* I may not need any of this */
+
+
+
         if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
 
         let waypointLeftRightPadding = qsa('.waypoint826-main ol.list-wrapper li');
-        let waypointContentLRPadding = qs('.waypoint826-main .content');
+        let waypointContentLRPadding = qs('.waypoint826-main .list-wrapper');
 
 
         // 3.20.2025 could eliminate if L or R variable is reduced to left only
+        
         if (myScriptData.waypointLeftOrRight == 'Right') {
             // LI
             waypointLeftRightPadding.forEach((item) => {
@@ -592,6 +599,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.style.paddingRight = (baseMargin * 3) + 'px';
             });
             // waypoint Main
+
+            // ERROR - when I set waypoint to invisible, this is throwing an error
+
             waypointContentLRPadding.style.paddingLeft = (baseMargin * 5) + 'px';
             waypointContentLRPadding.style.paddingRight = (baseMargin * 3) + 'px';
             // Scroll to top
@@ -603,11 +613,16 @@ document.addEventListener('DOMContentLoaded', function() {
             waypointLeftRightPadding.forEach((item) => {
 
                 // Re-style waypoint
-                item.style.paddingLeft = (baseMargin * 3) + 'px';
-                item.style.paddingRight = (baseMargin * 5) + 'px';
+                //item.style.paddingLeft = (baseMargin * 3) + 'px';
+                //item.style.paddingRight = (baseMargin * 5) + 'px';
             }); 
-            waypointContentLRPadding.style.paddingLeft = (baseMargin * 3) + 'px';
-            waypointContentLRPadding.style.paddingRight = (baseMargin * 5) + 'px';
+
+            // ERROR - when I set waypoint to invisible, this is throwing an error
+            if (waypointContentLRPadding != null) {
+
+                //waypointContentLRPadding.style.paddingLeft = (baseMargin * 3) + 'px';
+                // waypointContentLRPadding.style.paddingRight = (baseMargin * 5) + 'px';
+            }
             // Scroll to top
             scrllTopArea.style.paddingLeft = (baseMargin * 3) + 'px';
             scrllTopArea.style.paddingRight = (baseMargin * 5) + 'px';
@@ -776,13 +791,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
             //hashdot should probably return whether its a hash or a dot (ID or class) - for later
-            console.log("ID name " + waypointElementIDName);
+            
             var refToMasthead = document.getElementById(waypointElementIDName);
-            console.log("ref to masthead " + refToMasthead);
             var initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("distance from top " + initDistanceFromTop );
             mainContainer.style.top = initDistanceFromTop + 'px';
-            console.log('ran', initDistanceFromTop);
+            
 
         } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead == null) {
 
@@ -796,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var waypointBox = document.getElementById('waypoint826-primary-container');
         let waypointTop = waypointBox.offsetTop;
-        console.log("waypointTop", waypointTop);
+        
 
 
         /*  ----------- SCROLL FUNCTION ----------  */
@@ -814,6 +827,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
            
         }
+
+        /* VERTICAL POSITION */
 
         // this needs to work but doesn't currently
         // distanceFromTop is defined both above and below, I wonder if that's creating a confliect
