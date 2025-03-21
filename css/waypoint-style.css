@@ -94,7 +94,7 @@ ol.list-wrapper {
 	padding-bottom: calc(var(--Base-Unit) * var(--multiplier));
 
 	/* space for the psuedo border */
-	/* padding-left: 16px; /* calc(var(--Base-Unit) * 1.25);*/
+	padding-left: 16px; /* calc(var(--Base-Unit) * 1.25);
 
 	border-radius: 0px; /*calc(var(--Base-Unit) * .5);*/
 	transition: background-color .5s ease-out;
@@ -106,8 +106,8 @@ ol.list-wrapper {
 
 
 
-.waypoint826-main ol.list-wrapper li.active {
-	border-left: 3px;
+.waypoint826-main ol.list-wrapper li.active a {
+	
 	
 }
 

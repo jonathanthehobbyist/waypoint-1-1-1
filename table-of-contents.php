@@ -317,7 +317,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_bg',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Set the background colors', 'waypoint' ),     // Label
+            __( 'Set page background color', 'waypoint' ),     // Label
         'waypoint_bg_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
@@ -406,7 +406,7 @@ function waypoint_bg_color_cb( $args ) {
         data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
 
     <p class="description">
-        <?php esc_html_e( 'Add a HEX color to be used as the background of the current / selected li:a section in the waypoint side menu', 'waypoint' ); ?>
+        <?php esc_html_e( 'Add a HEX color for the active area background', 'waypoint' ); ?>
     </p>
     <p class="description">
         <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
@@ -470,7 +470,7 @@ function waypoint_bg_cb( $args ) {
         data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
 
     <p class="description">
-        <?php esc_html_e( 'Add a HEX color to be used as the waypoint side menu background color', 'waypoint' ); ?>
+        <?php esc_html_e( 'Describe the site background color as a HEX color', 'waypoint' ); ?>
     </p>
     <p class="description">
         <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
@@ -991,7 +991,7 @@ function waypoint826_run() {
                     // Pass the PHP variable to the JavaScript file using wp_localize_script
                     wp_localize_script( 'my-custom-js', 'myScriptData', array(
                         'bgColorValue' => $bg_color_value, // selected state
-                        'bgValue' => $bg_value, // bg of all of waypoint - passing to js
+                        'bgValue' => $bg_value, // bg of page - passing to js
                         'waypointTextColor' => $waypoint_text_color, 
                         'waypointH2' => $checkbox_value_H2,
                         'waypointH3' => $checkbox_value_H3,

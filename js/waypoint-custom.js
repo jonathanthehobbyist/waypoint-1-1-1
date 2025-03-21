@@ -656,7 +656,8 @@ document.addEventListener('DOMContentLoaded', function() {
         //scrllTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
     }
 
-    // Set Background color
+    // SET BACKGROUND COLOR
+
     if (typeof myScriptData.bgValue !== 'undefined' && myScriptData.bgValue != null) {
 
         const setColor = waypointHandleHashDot(myScriptData.bgValue);
@@ -664,7 +665,8 @@ document.addEventListener('DOMContentLoaded', function() {
         mainContainer.style.backgroundColor = setbgColor;
     }
 
-    // Set text color
+    // SET TEXT COLOR
+
     if (typeof myScriptData.waypointTextColor !== 'undefined' && myScriptData.waypointTextColor != null) {
 
         // Calls element cleaning function
@@ -681,7 +683,8 @@ document.addEventListener('DOMContentLoaded', function() {
         scrllTopArea.style.color = setColorText;
     }
 
-    // Set text size
+    // SET TEXT SIZE
+
     //waypointTxtSz
     if (typeof waypointTxtSz !== 'undefined' && waypointTxtSz != null) {
 
@@ -1009,7 +1012,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSection = null; // To keep track of the currently observed section
 
      function setupIntersectionObserver(onSectionChange) {
-        
 
         // Disconnect existing observer if it exists
         if (observer) {
@@ -1038,28 +1040,34 @@ document.addEventListener('DOMContentLoaded', function() {
                         li.style.borderLeft = ''; // clear inline style
                     });
 
-                    const tocLinks = qsa('.list-wrapper li a');
-                    tocLinks.forEach(a => {
-                        a.style.marginLeft = '-6px';
-                    });
+                   
 
                     const activeLink = qs(`.list-wrapper li a[href="#${entry.target.id}"]`);
 
                     if (activeLink) {
                         activeLink.parentElement.classList.add('active');
 
+                        const tocLIs = document.querySelectorAll('.list-wrapper li');
+                        tocLIs.forEach(li => {
+                            li.style.borderLeft = `3px solid ${setbgColor}`;
+                        });
+
                         // since the .active class is assigned here, I thought I'd do the one-time setting of the color and border width (so it's ready in the DOM)
+                        let selectedArea = qs('.active');
+                        selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+
                         
+
                         /*if (i==0) {
                             let selectedArea = qs('.active');
                             console.log("selected area: ", selectedArea);
                             selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
                             i++;
                         }*/
-                        const selectedArea = qsa('.active');
+                       /* const selectedArea = qsa('.active');
                         selectedArea.forEach(el => {
                             el.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
-                        });
+                        });*/
 
                    
 
