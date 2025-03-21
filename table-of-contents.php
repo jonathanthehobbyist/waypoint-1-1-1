@@ -301,7 +301,7 @@ function waypoint826_settings_init() {
     add_settings_field(
         'waypoint_border_color',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
-            __( 'Border colors', 'waypoint' ),     // Label
+            __( 'Left selected border color', 'waypoint' ),     // Label
         'waypoint_border_color_cb',                    // callback function to display input field
         'waypoint',                                     //page slug
         'waypoint_section_developers',                  // section slug
@@ -503,7 +503,10 @@ function waypoint_border_color_cb( $args ) {
         data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
 
     <p class="description">
-        <?php esc_html_e( 'Add a HEX color for waypoint borders', 'waypoint' ); ?>
+        <?php esc_html_e( 'Add a HEX color for the left selected border', 'waypoint' ); ?>
+        <p class="description">
+            <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+        </p>
     </p>
 
 

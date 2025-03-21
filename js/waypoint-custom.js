@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }); //end for loop
 
     // Append Waypoint826 
-    // Append title area is user selects to
+    // Append title area if user selects to
     if (typeof mainContainer !== 'undefined' && mainContainer != null) {
          // If parent div has first child, insert mainContainer before first child
         if (mainContainer.firstChild) {
@@ -324,6 +324,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // If mainContainer has 0 children, append
             mainContainer.appendChild(list);
         }
+
+
+    /* Waypoint TITLE area - 3.20.2025 it breaks if I turn it 'invisible' solve later */    
 
         if (typeof myScriptData.waypointMenuTitleOnOff !== 'undefined' && myScriptData.waypointMenuTitleOnOff == 'visible') {
 
@@ -341,43 +344,32 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Title on/off" + myScriptData.waypointMenuTitleOnOff);
         }
 
+
+
+
+    /* SCROLL TO TOP FUNCTION */
+
         // This var could be user configurable
-        const hasScrllTop = true;
+        const hasScrllTop = false;
 
         if ( hasScrllTop == true) {
             
             mainContainer.appendChild(scrllTopArea);
         }
-    }
 
-    // What is the purpose here? I think it has to do with left
 
-    function findPositionedParent(element) {
-        // Start with the parent of the element
-        let parent = mainContainer.parentElement;
+    } // end 'append title area'
 
-        // Traverse up the DOM tree
-        while (parent) {
-            // Get the computed style of the parent
-            const style = window.getComputedStyle(parent);
 
-            // Check if the parent has a position other than 'static'
-            if (style.position !== 'static') {
-                return parent; // This is the nearest positioned parent
-            }
 
-            // Move to the next parent element
-            parent = parent.parentElement;
-        }
 
-        // If no positioned parent is found, return null
-        return null;
-    } // END FINDPOSITIONEDPARENT()
 
-    // Get actual value for waypoint
-    var absoluteElement = qs('.waypoint826-main'); 
-    var positionedParent = findPositionedParent(absoluteElement);
 
+
+
+    // removed 3.20.2025
+    
+    /*
     if ( typeof positionedParent !== 'undefined' && positionedParent != null) {
         // True distance from the left viewport edge
 
@@ -389,8 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var WaypointParentPos = positionedParent.getBoundingClientRect().left;
         }
     }
-
-    // 
+    
     if (WaypointParentPos){
         //
         var adjustMargin = (parseFloat(WaypointParentPos));
@@ -398,6 +389,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 
         var adjustMargin = 0;
     }
+
+    */
 
        var alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
@@ -428,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
         //console.log('waypointElemToMove', waypointElemToMove);
     }        
 
-    /*  -------------------- USER CONFIGURABLE --------------------  */
+    /*  -------------------- USER CONFIGURATION --------------------  */
 
     // Remove whitespace from both ends of
     //alignToElement = myScriptData.waypointFieldAlignToElement.trim();
@@ -550,21 +543,21 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
             mainContainer.style.display = 'block';
-            waypointWidth = '210';
+            waypointWidth = '180';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 3;
 
         } else if ( spaceForWaypoint >= 700 ) {
 
             mainContainer.style.display = 'block';
-            waypointWidth = '250';
+            waypointWidth = '210';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 5;
             console.log(multiplier);
 
         }
 
-        leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * multiplier) + adjustMargin) + 'px';
+        leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * multiplier) /* // removed 3.20.2025 + adjustMargin*/) + 'px';
 
         // 
         if ( waypointPosLeftOrRight == 1) {
@@ -631,19 +624,36 @@ document.addEventListener('DOMContentLoaded', function() {
         var waypointBorderColorClean = waypointHandleHashDot(myScriptData.waypointBorderColor);
         // Used to be set in setGlobalSettings
         waypointBorderColorClean = '#' + waypointBorderColorClean;
+
+
+        /* 
+
+        Will eventually remove choice for R or L 
+        There's just some fuckoff error buried in my spag
+
+        */
+
         // Adjust border on R or L
         if ( waypointPosLeftOrRight == 1) { // Right
             // Border goes on left
             mainContainer.style.borderRight = 'none';
-            mainContainer.style.borderLeft = `1px solid ${waypointBorderColorClean}`;
-        } else { // Left
-            // Border goes on right
-            mainContainer.style.borderRight = `1px solid ${waypointBorderColorClean}`;
             mainContainer.style.borderLeft = 'none';
+
+            // Setting waypoint's selected cell to a 3px left border
+            //let selectedArea = qs('.active');
+            //console.log("selected area: ", selectedArea);
+            //selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`
+        } 
+
+        if ( waypointPosLeftOrRight == 0) { // Left
+
+            // Setting waypoint's selected cell to a 3px left border
+            
         }
+
         // Sets border for 'page content' and 'scroll to top'
-        contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}`;
-        scrllTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
+        //contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}`;
+        //scrllTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
     }
 
     // Set Background color
@@ -687,7 +697,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    /*----------- SET RIGHT-HAND POSITION  --------------*/
+    /*----------- SET HORIZONTAL POSITION  --------------*/
+
+
+    /* Find the POSITIONED PARENT to lock waypoint to viewport top */
+
+    function findPositionedParent(element) {
+        // Start with the parent of the element
+        let parent = mainContainer.parentElement;
+
+        // Traverse up the DOM tree
+        while (parent) {
+            // Get the computed style of the parent
+            const style = window.getComputedStyle(parent);
+
+            // Check if the parent has a position other than 'static'
+            if (style.position !== 'static') {
+                return parent; // This is the nearest positioned parent
+            }
+
+            // Move to the next parent element
+            parent = parent.parentElement;
+        }
+
+        // If no positioned parent is found, return null
+        return null;
+    } // END FINDPOSITIONEDPARENT()
+
+    // Get actual value for waypoint
+    var absoluteElement = qs('.waypoint826-main'); 
+    var positionedParent = findPositionedParent(absoluteElement);
+
+
+
 
     // Set the right-hand position of the waypoint826 plugin
     function positionMainContainer() {
@@ -697,28 +739,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         /*  -----------  USER CONFIGURABLE  ----------  */
 
-        // What to do with this?
-
         // User can choose an element to align Waypoint to horizontally
         if (typeof alignToElement !== 'undefined' && alignToElement.length > 2) {
             calcWaypointWidth();
         }
-
-
-        // END if ( alignToElement ) {
-
-        // Start the pulse for 5 seconds
+        // Start the pulse for 1.5 seconds
         startPulse(1500);
-
-        
-
-
-        /*
-
-        Not sure why 'cleaned HEX value is here, leaving for now'
-
-        */
-
 
         // Cleaned HEX value
         if (typeof myScriptData.waypointBorderColor !== 'undefined') {
@@ -726,40 +752,36 @@ document.addEventListener('DOMContentLoaded', function() {
             const waypointBorderColorClean = waypointHandleHashDot(myScriptData.waypointBorderColor);
         }
 
-
-
         /*  ----------- INIT POSITION TO TOP ----------  */
 
 
         /*
 
         What am I trying to do? 
-        - Find the initial position of the waypoint div
+        - Set the initial position of the waypoint div:
         - See if a masthead exists, else pin to top edge of viewport
-        - scroll up until it hits the top viewport edge
-        - stick
+        - scroll up smoothly until it hits the top viewport edge
+        - stick to viewport edge
         - unless the user scrolls to the top again, at which point resume the init position
         - 
 
         */
 
-        
-
-
-
-        // does waypointMasthead have a #
+        // does waypointMasthead exist, and have a #
         if (typeof myScriptData.waypointMasthead !== 'undefined' && myScriptData.waypointMasthead != null && myScriptData.waypointMasthead !== '') {
             // Log if it matches the ID pattern
 
-            var waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead);
-            console.log("ID name" + waypointElementIDName);
+            var waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
+            //hashdot should probably return whether its a hash or a dot (ID or class) - for later
+            console.log("ID name " + waypointElementIDName);
             var refToMasthead = document.getElementById(waypointElementIDName);
             console.log("ref to masthead " + refToMasthead);
-            var distanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("distance from top" + distanceFromTop );
+            var initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("distance from top " + initDistanceFromTop );
+            mainContainer.style.top = initDistanceFromTop + 'px';
+            console.log('ran', initDistanceFromTop);
 
-
-        } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead.length > 7 || myScriptData.waypointMasthead == null) {
+        } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead == null) {
 
             // it *IS* undefined OR it's less than 3 characters
             var refToMasthead = undefined;
@@ -768,26 +790,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }
 
-        // Default to height of the header element
-       /*  if (typeof refToMasthead !== 'undefined' && refToMasthead != null && refToMasthead !== '' && refToMasthead.length >= 3) {
-
-            //get height of masthead object
-            var distanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("distance from top" + distanceFromTop );
-            // console.log('Height of masthead: ', distanceFromTop);
-        } else {
-            var distanceFromTop = 0;
-            console.log("distance from top" + distanceFromTop );
-            // console.error('refToMasthead is null or undefined');
-            var waypointFindBody = qs('body');
-            waypointFindBody.appendChild(mainContainer);
-        }
-
-        */
-
-        // don't understand this
-
-        mainContainer.style.top = '80px';
 
         var waypointBox = document.getElementById('waypoint826-primary-container');
         let waypointTop = waypointBox.offsetTop;
@@ -816,31 +818,42 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('scroll', function(event) {
 
             var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
+            console.log("waypointY: ", waypointY);
 
             if (typeof waypointAddToElement !== 'undefined') {
                 var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
-                console.log('Distance from top: ', distanceFromTop);
+                console.log('DISTANCE from top: ', distanceFromTop, "initDISTANCE", initDistanceFromTop);
             } else {
                // console.error('waypointAddToElement is null or undefined');
             }
 
-            if ((waypointY - distanceFromTop) >= waypointTop) { // sets the point of the scroll where mainContainer becomes fixed
+            console.log("initDistance from inside listener", initDistanceFromTop);
 
-                // stick mainContainer to the top of the viewport
-                mainContainer.style.top = '0px';
+
+            if (waypointY >= initDistanceFromTop) {
                
-            } else { // mainContainer need to act like a POS: ABSOL element, scrolling...
+               mainContainer.classList.add('sticky');
+               mainContainer.style.top = '0px';
 
-                updatePosition();
+            } else if (waypointY < initDistanceFromTop) { 
 
+                mainContainer.classList.remove('sticky');
+                mainContainer.style.top = initDistanceFromTop + 'px';
             }
         });
 
     } // end positionMainContainer
 
-    /*  ----------- FOR POS:ABSOLUTE BEHAVIOR ----------  */
 
-    function updatePosition() {
+
+
+
+
+    /*  ----------- FOR POS:ABSOLUTE BEHAVIOR IE SCROLLING WITH CONTENT ----------  */
+
+    function updatePosition(initFromTop) {
+
+        //mainContainer.style.top = initFromTop;
 
         // Call earlier function that calculates 1) spaceforwaypoint and 2) contentleftedge
         const {value1, value2, value3} = calcWaypointSpaceNeeded();
@@ -852,7 +865,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // math - viewport height 100%, contents should never take up more than 80%, top elem and bottom elem = 20%
         let waypointUsableHeight = (viewportHeight * .8);
 
-        // Get LIs height
+        // Get a single LIs height
         let allListItemsLi = document.querySelectorAll('.waypoint826-main ol li');
 
         let waypointLiHeight;
@@ -899,6 +912,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var parentRect = positionedParent.getBoundingClientRect().top;
         }
 
+        // MUCH OF THIS CODE IS REDUNDANT AND OVER COMPLICATED
+
         // Test, find, replace and create var menuHeight
         if (typeof myScriptData.waypointMasthead !== 'undefined' && myScriptData.waypointMasthead != null && typeof waypointElementIDName !== 'undefined' && myScriptData.waypointMasthead !== '') {
 
@@ -928,11 +943,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // console.log('distanceFromTop', distanceFromTop);
 
-        if ( window.scrollY < distanceFromTop ){
+        // commmented out 3.20.2025
+
+        /*if ( window.scrollY < distanceFromTop ){
             mainContainer.style.top = parentRect + 'px';
         } else if ( window.scrollY > distanceFromTop ) {
             //mainContainer.style.top = parentRect + 'px';
-        }
+        }*/
 
         // console.log(parentRect.top);
 
@@ -992,6 +1009,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSection = null; // To keep track of the currently observed section
 
      function setupIntersectionObserver(onSectionChange) {
+        
+
         // Disconnect existing observer if it exists
         if (observer) {
             observer.disconnect();
@@ -1013,12 +1032,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (entry.isIntersecting) {
                     // Clear previous active list items
                     const tocListItems = document.querySelectorAll('.list-wrapper li');
-                    tocListItems.forEach(li => li.classList.remove('active'));
+                    tocListItems.forEach(li => {
+                        li.classList.remove('active');
+                        
+                        li.style.borderLeft = ''; // clear inline style
+                    });
+
+                    const tocLinks = qsa('.list-wrapper li a');
+                    tocLinks.forEach(a => {
+                        a.style.marginLeft = '-6px';
+                    });
 
                     const activeLink = qs(`.list-wrapper li a[href="#${entry.target.id}"]`);
 
                     if (activeLink) {
                         activeLink.parentElement.classList.add('active');
+
+                        // since the .active class is assigned here, I thought I'd do the one-time setting of the color and border width (so it's ready in the DOM)
+                        
+                        /*if (i==0) {
+                            let selectedArea = qs('.active');
+                            console.log("selected area: ", selectedArea);
+                            selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+                            i++;
+                        }*/
+                        const selectedArea = qsa('.active');
+                        selectedArea.forEach(el => {
+                            el.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+                        });
+
+                   
+
                     }
 
                     // Call the provided callback with the observed section

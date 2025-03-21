@@ -37,7 +37,7 @@ html {
 .waypoint826-main {
 	width: 250px;
 	background-color:none;
-	border-right: 1px solid #ccc;
+	border: none;
 	position: fixed; 
 
 	/* right: 80%; */
@@ -50,6 +50,14 @@ html {
 	z-index: 9999;
 }
 
+.waypoint826-main.sticky {
+	position: fixed; 
+}
+
+.waypoint826-main { 
+	position: absolute; 
+}
+
 
 /*---   MENU TITLE   ---*/
 
@@ -60,7 +68,6 @@ html {
 	padding-right: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-left: 20px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-bottom: 10px;
-	border-bottom: 1px solid;
 	font-weight: 500;
 }
 
@@ -74,6 +81,8 @@ html {
 ol.list-wrapper {
 
 	margin-left: 0!important;
+	padding: 0;
+	list-style: none;
 }
 
 .waypoint826-main ol.list-wrapper li {
@@ -83,10 +92,23 @@ ol.list-wrapper {
 	padding-top: calc(var(--Base-Unit) * var(--multiplier));
 	padding-right: 0px; /*calc(var(--Base-Unit) * 1.25);*/
 	padding-bottom: calc(var(--Base-Unit) * var(--multiplier));
-	padding-left: 0px; /* calc(var(--Base-Unit) * 1.25);*/
+
+	/* space for the psuedo border */
+	/* padding-left: 16px; /* calc(var(--Base-Unit) * 1.25);*/
+
 	border-radius: 0px; /*calc(var(--Base-Unit) * .5);*/
 	transition: background-color .5s ease-out;
 	font-weight: 400;
+	position: relative;
+
+	box-sizing: border-box;
+}
+
+
+
+.waypoint826-main ol.list-wrapper li.active {
+	border-left: 3px;
+	
 }
 
 
@@ -110,9 +132,15 @@ ol.list-wrapper {
 
 .waypoint826-main ol.list-wrapper li.active a {
 	color: var(--text-primary)!important;
+
 }
 
-.waypoint826-main ol li.active a {}
+
+
+
+.waypoint826-main ol li.active a {
+	
+}
 
 
 #waypoint826-primary-container {
