@@ -131,9 +131,13 @@ function waypoint826_custom_box_html( $post ) {
     $field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
 
     // Which element to add waypoint, which element to align waypoint to
-    $field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
-    $field_value_reposition = get_post_meta( $post->ID, '_waypoint_reposition', true );
-    $field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
+
+    //3.21.2025
+    //$field_value_add_to = get_post_meta( $post->ID, '_waypoint_add_to_page', true );
+
+    //3.21.2025
+    //$field_value_reposition = get_post_meta( $post->ID, '_waypoint_reposition', true );
+    //$field_value_align_to_element = get_post_meta( $post->ID, '_waypoint_align_to_element', true );
 
     // Configuration (probably will correspond with a settings page)
     // May not need this:
@@ -167,7 +171,10 @@ function waypoint826_custom_box_html( $post ) {
     </div>
 
     <hr>
+    <?php
 
+    // 3.21.2025
+    /*
     <div class="other-options">
         <h4 style="margin-bottom: .15em;">Choose where to place Waypoint</h4>
         <label for="waypoint_add_to_page">Enter a classname(s) to append waypoint as a child</label>
@@ -179,7 +186,11 @@ function waypoint826_custom_box_html( $post ) {
         
         <br />
         <hr>
+    */
+        ?>
 
+        <?php
+        /*
         <h4 style="margin-bottom: .15em;">Define a wrapper to be re-positioned</h4>
         <label for="waypoint_reposition">Enter a classname of the content wrapper</label>
         <br /><!-- no dot --><br />
@@ -190,7 +201,8 @@ function waypoint826_custom_box_html( $post ) {
         
         <br />
         <hr>
-   
+        */
+        ?>
 
         <!--form>
           <label for="selection">Choose an option:</label>
@@ -199,6 +211,8 @@ function waypoint826_custom_box_html( $post ) {
             <option value="id">ID</option>
           </select>
         </form-->
+        <?php
+        /*
         <h4 style="margin-bottom: .15em;">Float Waypoint next to content</h4>
         <label for="waypoint_align_to_element">Enter a class name of a tag with main content - we will use this to calculate the width of the main content</label>
         <br /><br /><!-- no dot -->
@@ -206,10 +220,8 @@ function waypoint826_custom_box_html( $post ) {
         <p></p>
 
         <br />
-
-
-
-
+        */
+        ?>
 
         <hr>
 
@@ -240,8 +252,16 @@ function waypoint826_custom_box_html( $post ) {
 
         • Add to - Add input field
         • Add to - function waypoint826_settings_init()
-        • Add function similar to EXAMPLE: function waypoint_bg_color_cb()
+        • Add function similar to EXAMPLE: function waypoint_bg_color_cb() - there's a variable that needs to be renamed, it appears in 2 places
         • Add variable to function waypoint826_enqueue_my_custom_scripts()
+
+
+
+       PLAN
+        • Choose where to place Waypoint
+        • Define a wrapper to be re-positioned
+        • Float waypoint next to content
+        • Define a header or masthead
 
 
 */
@@ -261,7 +281,44 @@ function waypoint826_settings_init() {
         'waypoint' // Page slug
     );
 
-        // Register a new field
+    /* MOVED SETTINGS FROM INDIVIDUAL PAGES */
+
+    // Register a new field
+
+    add_settings_field(
+        'waypoint_append_to',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Append to for mobile', 'waypoint' ),     // Label
+        'waypoint_append_to_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_append_to', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    add_settings_field(
+        'waypoint_place_next_to',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Place next to', 'waypoint' ),     // Label
+        'waypoint_place_next_to_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_place_next_to', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+
+
+    /* ORIG SETTINGS */
+
+    // Register a new field
+
     add_settings_field(
         'waypoint_left_or_right',                       // Field ID - As of WP 4.6 this value is used only internally.
                                                         // Use $args' label_for to populate the id inside the callback.
@@ -405,6 +462,62 @@ function waypoint826_section_developers_callback( $args ) {
  *
  * @param array $args
  */
+
+
+/* NEW GLOBAL SETTINGS */
+
+function waypoint_append_to_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_append_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_append_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'On mobile, waypoint will appear in this area', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'Enter a classname(s) - No dot or hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+    <?php
+
+}
+
+function waypoint_place_next_to_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_place_next_to_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_place_next_to_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Place Waypoint next to element', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'Class identifier - no dot or hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+    <?php
+
+}
+
+
+
+/* ORIG SETTINGS */
+
 function waypoint_bg_color_cb( $args ) {
     // Get the value of the setting we've registered with register_setting()
     $options = get_option( 'waypoint_options' );
@@ -750,9 +863,9 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
         'waypoint_H5_enable',
         'waypoint_intro_enable',
         'waypoint_masthead_define',
-        'waypoint_add_to_page',
-        'waypoint_align_to_element',
-        'waypoint_reposition',
+        //'waypoint_align_to_element',
+        //'waypoint_reposition',
+        //'waypoint_add_to_page', /* 3.21.2025 */
         //'waypoint_field_three',
         // Add more fields as needed
     ];
@@ -834,17 +947,12 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
             error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $waypoint8field === 'waypoint_add_to_page' ) { // Add to page
-            // Handle the checkbox field
-            $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
-            update_post_meta(
-                $waypoint826_post_id,
-                '_waypoint_add_to_page',
-                $checkbox_value
-            );
-            error_log("$waypoint8field saved with value: $checkbox_value");
+        } 
 
-        } else if ( $waypoint8field === 'waypoint_align_to_element' ) { // Align to element
+        /* 
+        // 3.21.2025
+
+        else if ( $waypoint8field === 'waypoint_align_to_element' ) { // Align to element
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_align_to_element'] ) ? '1' : '0';
             update_post_meta(
@@ -863,8 +971,19 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
                 $checkbox_value
             );
             error_log("$waypoint8field saved with value: $checkbox_value");
+        }*/
+        //3.21.2025
+        /*else if ( $waypoint8field === 'waypoint_add_to_page' ) { // Add to page
+            // Handle the checkbox field
+            $checkbox_value = isset( $_POST['waypoint_add_to_page'] ) ? '1' : '0';
+            update_post_meta(
+                $waypoint826_post_id,
+                '_waypoint_add_to_page',
+                $checkbox_value
+            );
+            error_log("$waypoint8field saved with value: $checkbox_value");
 
-        }
+        } */
             // Handle regular text fields
             if ( array_key_exists( $waypoint8field, $_POST ) ) {
                 $sanitized_value = sanitize_text_field( $_POST[$waypoint8field] );
@@ -959,9 +1078,17 @@ function waypoint826_run() {
 
             // Indiv. page settings for masthead, add to page, align to element
             $field_value_masthead_define = get_post_meta( $waypoint826_post_id, '_waypoint_masthead_define', true );
-            $field_value_add_to = get_post_meta( $waypoint826_post_id, '_waypoint_add_to_page', true );
-            $field_value_reposition = get_post_meta( $waypoint826_post_id, '_waypoint_reposition', true );
-            $field_value_align_to_element = get_post_meta( $waypoint826_post_id, '_waypoint_align_to_element', true );
+
+
+
+            //3.21.2025
+            //$field_value_add_to = get_post_meta( $waypoint826_post_id, '_waypoint_add_to_page', true );
+
+            //3.21.2025
+            // $field_value_reposition = get_post_meta( $waypoint826_post_id, '_waypoint_reposition', true );
+
+            // 3.21.2025
+            // $field_value_align_to_element = get_post_meta( $waypoint826_post_id, '_waypoint_align_to_element', true );
 
             // Not sure what this variable is or is used for, investigate
             $checkbox_value_intro = get_post_meta( $waypoint826_post_id, '_waypoint_intro_enable', true );
@@ -987,19 +1114,37 @@ function waypoint826_run() {
                 $waypoint_border_color_val = isset( $options['waypoint_border_color'] ) ? $options['waypoint_border_color'] : '';
                  $waypoint_menu_title_val = isset( $options['waypoint_menu_title'] ) ? $options['waypoint_menu_title'] : '';
 
+                 // added 3.21.2025
+                 $waypoint_append_value = isset( $options['waypoint_append_to'] ) ? $options['waypoint_append_to'] : '';
+
+                 // added 3.21.2025
+                 $waypoint_place_next_to_value = isset( $options['waypoint_place_next_to'] ) ? $options['waypoint_place_next_to'] : '';
+
+                 //echo $waypoint_place_next_to_value;
+
+
                 // Make sure variables are defined
                 $checkbox_value_H2 = isset( $checkbox_value_H2 ) ? $checkbox_value_H2 : '';
                 $checkbox_value_H3 = isset( $checkbox_value_H3 ) ? $checkbox_value_H3 : '';
                 $checkbox_value_H4 = isset( $checkbox_value_H4 ) ? $checkbox_value_H4 : '';
                 $checkbox_value_H5 = isset( $checkbox_value_H5 ) ? $checkbox_value_H5 : '';
                 $checkbox_value_intro = isset( $checkbox_value_intro ) ? $checkbox_value_intro : '';
-                $field_value_add_to = isset( $field_value_add_to ) ? $field_value_add_to : '';
-                $field_value_reposition = isset( $field_value_reposition ) ? $field_value_reposition : '';
-                $field_value_align_to_element = isset( $field_value_align_to_element ) ? $field_value_align_to_element : '';
+
+                // 3.21.2025
+                //$field_value_add_to = isset( $field_value_add_to ) ? $field_value_add_to : '';
+
+                //3.21.2025
+                //$field_value_reposition = isset( $field_value_reposition ) ? $field_value_reposition : '';
+
+                // 3.21.2025
+                // $field_value_align_to_element = isset( $field_value_align_to_element ) ? $field_value_align_to_element : '';
+
                 $field_value_masthead_define = isset( $field_value_masthead_define ) ? $field_value_masthead_define : '';
 
              
                 /* if ( isset($bg_color_value, $checkbox_value_H2, $checkbox_value_H3, $checkbox_value_H4, $checkbox_value_H5, $checkbox_value_intro, $field_value_add_to, $field_value_align_to_element, $field_value_masthead_define) ) { */
+
+                // Getting rid of $field_value_reposition 3.21.2025
 
                     // Pass the PHP variable to the JavaScript file using wp_localize_script
                     wp_localize_script( 'my-custom-js', 'myScriptData', array(
@@ -1011,14 +1156,15 @@ function waypoint826_run() {
                         'waypointH4' => $checkbox_value_H4,
                         'waypointH5' => $checkbox_value_H5,
                         'waypointIntroEnable' => $checkbox_value_intro,
-                        'waypointFieldAddTo' => $field_value_add_to,
-                        'waypointFieldReposition' => $field_value_reposition,
-                        'waypointFieldAlignToElement' => $field_value_align_to_element,
+                        'waypointFieldAddTo' => $waypoint_append_value, // added 3.21.2025
+                        'waypointFieldAlignToElement' => $waypoint_place_next_to_value,
                         'waypointMasthead' => $field_value_masthead_define,
                         'waypointLeftOrRight' => $waypoint_left_right,
                         'waypointTextSize' => $waypoint_text_size, // passing to js
                         'waypointBorderColor' => $waypoint_border_color_val,
                         'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
+                        // 'waypointFieldAddTo' => $field_value_add_to,  /* line 820 waypoint-custom.js */
+                        // 'waypointFieldReposition' => $field_value_reposition, 
 
                     ));
                 /* } else {

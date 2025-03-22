@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
     /*  ----------- UTILITY IDEAS ----------  */
 
     function qs(selector, parent = document) {
-        return parent.querySelector(selector);
+        const el = parent.querySelector(selector);
+        return el || null;
     }
 
     function qsa(selector, parent = document) {
@@ -88,13 +89,39 @@ document.addEventListener('DOMContentLoaded', function() {
     mainContainer.className = 'waypoint826-main';
     mainContainer.id = 'waypoint826-primary-container';
 
-    // Add ?
-    if (typeof myScriptData.waypointFieldAddTo !== 'undefined' && myScriptData.waypointFieldAddTo != null){
+    // append mainContainer to HTML body
+    const appendTo = qs('body');
+    appendTo.appendChild(mainContainer);
+
+    //
+     function formatText(input) {
+      if (!input || !input.trim()) return null; // or return a default value like '.default'
+
+
+      return input
+        .trim()
+        .split(/\s+/)           // split by one or more spaces
+        .map(part => `.${part}`) // prepend a dot to each
+        .join('');
+    }
+    
+
+
+    // APPEND WAYPOINT TO BODY
+
+    /* GOING TO DEPRECIATE UNTIL I FIGURE OUT MOBILE - 3.21.2025*/
+
+    // ftm, waypoint will be appended to body
+    if (myScriptData?.waypointFieldAddTo){
+        
         // Clean up
-        const waypointFieldAdd = waypointHandleHashDot(myScriptData.waypointFieldAddTo);
-        // Find DOM elem
-        const entirePage = qs('.' + waypointFieldAdd);
-        entirePage.appendChild(mainContainer);
+        //const waypointFieldAdd = formatText(myScriptData.waypointFieldAddTo);
+        
+        // ORIG - Find DOM elem
+        //const appendTo = qs(waypointFieldAdd);
+        //appendTo.appendChild(mainContainer);
+
+        
     }
 
 
@@ -392,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     */
 
-       var alignToElement = myScriptData.waypointFieldAlignToElement.trim();
+       //var alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
 
     /*  -----------  UTILITY: INPUT CLEAN & GET DOM ELEM  ----------  */
@@ -413,13 +440,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    /*
+    
+    //3.21.2025
 
     if (typeof myScriptData.waypointFieldReposition !== 'undefined' && myScriptData.waypointFieldReposition != null) {
         var waypointElemToMove = myScriptData.waypointFieldReposition;
         // Handles multiple spaces, if exist
         waypointElemToMove = "." + waypointElemToMove.replace(/ /g, '.'); 
         //console.log('waypointElemToMove', waypointElemToMove);
-    }        
+    }  
+    */      
 
     /*  -------------------- USER CONFIGURATION --------------------  */
 
@@ -433,41 +464,49 @@ document.addEventListener('DOMContentLoaded', function() {
     function calcWaypointSpaceNeeded() {
 
         // Returns DOM Elem
-        let contentArea = waypointScrub(myScriptData.waypointFieldAlignToElement, 'class');
-        
-        // get the left position of the user-defined content block
-        if (typeof contentArea !== 'undefined') {
+        if (myScriptData?.waypointFieldAlignToElement) {
+            
+            // changing the name of placeNextTo, its misleading - its really placeNextTo
+            const placeNextTo = qs(formatText(myScriptData.waypointFieldAlignToElement));
+            const elemContentWidth = window.getComputedStyle(placeNextTo).width;
+            const cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
 
-            var elemContentWidth = window.getComputedStyle(contentArea).width;
-            var cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
-
-            var contentLeftEdge = contentArea.getBoundingClientRect().left;
+            var contentLeftEdge = placeNextTo.getBoundingClientRect().left;
 
             // found an error 3/20/2025 was an error, should have been contentRightEdge
-            //var contentLeftEdge  = contentArea.getBoundingClientRect().right;
+            //var contentLeftEdge  = placeNextTo.getBoundingClientRect().right;
 
             // corrected
-            var contentRightEdge  = contentArea.getBoundingClientRect().right;
+            var contentRightEdge  = placeNextTo.getBoundingClientRect().right;
 
-        } else {
+            const viewportWidth = window.innerWidth;
+            const elementWaypoint = qs('.waypoint826-main');
 
-           var contentLeftEdge = 0;
-           var contentRightEdge = 0;
+            // Get Waypoint width, clean
+            const elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
+            
+            var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
+
+
+            var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
+            const waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
+
+            //console.log(spaceForWaypoint, contentLeftEdge, contentRightEdge, cleanElemWaypointWidth);
+
+            // Send the calc'd values back to the function
+            
+
+            
+        } else if (!myScriptData?.waypointFieldAlignToElement) {
+
+            var contentLeftEdge = 0;
+            var contentRightEdge = 0; 
+
         }
 
-        var viewportWidth = window.innerWidth;
-        var elementWaypoint = qs('.waypoint826-main');
-
-        // Get Waypoint width, clean
-        var elemWaypointWidth = window.getComputedStyle(elementWaypoint).width;
-        var cleanElemWaypointWidth = elemWaypointWidth.replace(/px/g, '');
-
-        var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
-        let waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
-
-        // Send the calc'd values back to the function
         return { value1: spaceForWaypoint, value2: contentLeftEdge, value3: contentRightEdge, value4: cleanElemWaypointWidth  }
 
+ 
     } // END calcWaypointSpaceNeeded
 
     const calculatorWaypointWidth = {
@@ -496,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
         How does positioning work? 
         - user defines waypoint Left or Right side of screen
         - variable: waypointFieldReposition? = 
-        - variable: waypointFieldAlignToElement? = contentArea = user defined content area
+        - variable: waypointFieldAlignToElement? = placeNextTo = user defined content area
         - variable: waypointMasthead = class or ID of masthead div for vertical positioning
         - variable: waypointFieldAddTo = ?
         - variable: 
@@ -506,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
         - if it's greater than 700
         - mainContainer is the holder for waypoint826
         - what function moves the maincontent to the left or right? 
-        - contentArea is user defined = 
+        - placeNextTo is user defined = 
         -
         -
         -
@@ -553,7 +592,6 @@ document.addEventListener('DOMContentLoaded', function() {
             waypointWidth = '210';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 5;
-            
 
         }
 
@@ -749,9 +787,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    // Set the right-hand position of the waypoint826 plugin
+    // Set the init position of the waypoint826 div
     function positionMainContainer() {
-        //console.log('posMainCont');
 
         mainContainer.style.opacity = '0.2';
 
@@ -786,21 +823,21 @@ document.addEventListener('DOMContentLoaded', function() {
         */
 
         // does waypointMasthead exist, and have a #
-        if (typeof myScriptData.waypointMasthead !== 'undefined' && myScriptData.waypointMasthead != null && myScriptData.waypointMasthead !== '') {
-            // Log if it matches the ID pattern
+        //console.log("wpmh", myScriptData.waypointMasthead);
+        if (myScriptData?.waypointMasthead) {
+            // if waypointMasthead exists
 
-            var waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
+            const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
             //hashdot should probably return whether its a hash or a dot (ID or class) - for later
             
-            var refToMasthead = document.getElementById(waypointElementIDName);
-            var initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
+            const refToMasthead = document.getElementById(waypointElementIDName);
+            const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
             mainContainer.style.top = initDistanceFromTop + 'px';
             
-
-        } else if (typeof myScriptData.waypointMasthead == 'undefined' || myScriptData.waypointMasthead.length < 3 || myScriptData.waypointMasthead == null) {
+        } else if (!myScriptData.waypointMasthead) {
 
             // it *IS* undefined OR it's less than 3 characters
-            var refToMasthead = undefined;
+            const refToMasthead = undefined;
             const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
 
@@ -817,13 +854,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initial position update
         updatePosition();
 
+
+
         // Check if myScriptData.waypointFieldAddTo exists
-        if (typeof myScriptData.waypointFieldAddTo !== 'undefined' && myScriptData.waypointFieldAddTo != null) {
+        // waypointFieldAddTo is where waypoint will be appended to on a mobile view
+        if (myScriptData.waypointFieldAddTo) {
 
             // Clean up? 
-            const waypointFieldAppendTo = waypointHandleHashDot(myScriptData.waypointFieldAddTo);
+            const waypointFieldAppendTo = formatText(myScriptData.waypointFieldAddTo);
 
-            var waypointAddToElement = qs('.' + waypointFieldAppendTo);
+            var waypointAddToElement = qs(waypointFieldAppendTo);
         } else {
            
         }
@@ -838,14 +878,20 @@ document.addEventListener('DOMContentLoaded', function() {
             var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
             console.log("waypointY: ", waypointY);
 
-            if (typeof waypointAddToElement !== 'undefined') {
+            if (waypointAddToElement) {
                 var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
-                console.log('DISTANCE from top: ', distanceFromTop, "initDISTANCE", initDistanceFromTop);
+                //console.log('DISTANCE from top: ', distanceFromTop, "initDISTANCE", initDistanceFromTop);
             } else {
                // console.error('waypointAddToElement is null or undefined');
             }
 
-            console.log("initDistance from inside listener", initDistanceFromTop);
+            const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
+            //hashdot should probably return whether its a hash or a dot (ID or class) - for later
+            
+            const refToMasthead = document.getElementById(waypointElementIDName);
+            const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
+
+            //console.log("initDistance from inside listener", initDistanceFromTop);
 
 
             if (waypointY >= initDistanceFromTop) {
@@ -931,24 +977,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // MUCH OF THIS CODE IS REDUNDANT AND OVER COMPLICATED
-
+        //onsole.log("wpeIDn2", waypointElementIDName);
         // Test, find, replace and create var menuHeight
-        if (typeof myScriptData.waypointMasthead !== 'undefined' && myScriptData.waypointMasthead != null && typeof waypointElementIDName !== 'undefined' && myScriptData.waypointMasthead !== '') {
-
+        if (myScriptData.waypointMasthead) {
+            
             // Clean up - removes any hashes or dots
-            const waypiontMH = waypointHandleHashDot(myScriptData.waypointMasthead );
+            const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead)
 
-            var refToMasthead = document.getElementById(waypointElementIDName);
+            const refToMasthead = document.getElementById(waypointElementIDName);
+            var distanceFromTop = refToMasthead.getBoundingClientRect().height;
 
         } else {
             // console.error('Masthead element not found');
             const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
         }
-
+        /*
+        // 3.21.2025
         // Default to height of the header element
-        if (typeof refToMasthead !== 'undefined' && myScriptData.waypointMasthead !== '') {
-            var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+        if (refToMasthead && myScriptData?.waypointMasthead) {
+            
             // console.log('Height of masthead: ', distanceFromTop);
         } else {
 
@@ -958,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // console.error('refToMasthead is null or undefined');
         }
-    
+        */
         // console.log('distanceFromTop', distanceFromTop);
 
         // commmented out 3.20.2025
@@ -971,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // console.log(parentRect.top);
 
-        let alignToElement = myScriptData.waypointFieldAlignToElement.trim();
+        // let alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
         //var offset = parseFloat(mainContainer.offsetWidth); // Number of pixels to offset
    
