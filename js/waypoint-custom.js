@@ -3,10 +3,6 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    window.addEventListener('scroll', () => {
-  console.log('🔥 SCROLL EVENT! scrollY:', window.scrollY);
-}, { passive: true });
-
 
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
 
@@ -163,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.scrollTo({
             top: 0,
-            /* behavior: 'smooth' // Smooth scroll */
+            behavior: 'smooth' // Smooth scroll 
         });
     }
 
@@ -418,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var waypointElemToMove = myScriptData.waypointFieldReposition;
         // Handles multiple spaces, if exist
         waypointElemToMove = "." + waypointElemToMove.replace(/ /g, '.'); 
-        //console.log('waypointElemToMove', waypointElemToMove);
+        
     }  
     */      
 
@@ -461,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var spaceForWaypoint = (viewportWidth - cleanElemContentWidth);
             const waypointSpaceNeeded = (Number(cleanElemWaypointWidth));
 
-            //console.log(spaceForWaypoint, contentLeftEdge, contentRightEdge, cleanElemWaypointWidth);
+            
 
             // Send the calc'd values back to the function
             
@@ -501,35 +497,6 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
-    /*
-        How does positioning work? 
-        - user defines waypoint Left or Right side of screen
-        - variable: waypointFieldReposition? = 
-        - variable: waypointFieldAlignToElement? = placeNextTo = user defined content area
-        - variable: waypointMasthead = class or ID of masthead div for vertical positioning
-        - variable: waypointFieldAddTo = ?
-        - variable: 
-        - right=1 left=0
-        - if the space for waypoint is less than 640, display is none
-        - if it's between 640 and 700, 
-        - if it's greater than 700
-        - mainContainer is the holder for waypoint826
-        - what function moves the maincontent to the left or right? 
-        - placeNextTo is user defined = 
-        -
-        -
-        -
-        -
-        -
-        -
-
-        How to simplify?
-        - Only allow left
-        - 
-
-    */
-
-
     function calcWaypointWidth() {
         // Pass in
         const {value1, value2, value3, value4} = calcWaypointSpaceNeeded();
@@ -544,30 +511,55 @@ document.addEventListener('DOMContentLoaded', function() {
         let waypointWidth;
         let multiplier;
 
+        console.log("Henry");
+  
+        if (mainContainer.parentElement === document.body) {
+            //console.log("parent is Body");
+        } else {
+            //console.log("parent is Not body");
+        }
+
         // Check how much screen real estate is left for waypoint to inhabit
         if ( spaceForWaypoint < 640) {
 
-            mainContainer.style.display = 'none';
+            mainContainer.style.display = 'block';
 
             /* FOR LATER - MOBILE */
 
             // assume mobile view
             // can append waypoint to mobile append to element
             // change styling
+            //console.log("myscript", myScriptData.waypointFieldAddTo);
+            const appendTo = qs(formatText(myScriptData.waypointFieldAddTo));
+            //console.log("Levi is the awesomest", appendTo);
+            appendTo.insertBefore(mainContainer, appendTo.firstChild);
+
+            waypointWidth = 'auto';
+            mainContainer.style.width = waypointWidth;
+            mainContainer.style.position = "static"; 
 
         } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
             mainContainer.style.display = 'block';
-            waypointWidth = '180';
+            waypointWidth = '150';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 3;
+
+            // append mainContainer to HTML body
+
+            const appendTo = qs('body');
+            appendTo.appendChild(mainContainer);
 
         } else if ( spaceForWaypoint >= 700 ) {
 
             mainContainer.style.display = 'block';
-            waypointWidth = '210';
+            waypointWidth = '180';
             mainContainer.style.width = waypointWidth + 'px';
             multiplier = 5;
+
+            // append mainContainer to HTML body
+            const appendTo = qs('body');
+            appendTo.appendChild(mainContainer);
 
         }
 
@@ -587,14 +579,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } // END calcWaypointWidth()
 
 
-
-
     /*----------   SET PADDING FOR ....?  -------------*/
 
 
         /* I may not need any of this */
-
-
 
         if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
 
@@ -643,8 +631,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-
     /*----------   USER CONFIGS   -------------*/
 
     // Sets border colors
@@ -658,7 +644,6 @@ document.addEventListener('DOMContentLoaded', function() {
         /* 
 
         Will eventually remove choice for R or L 
-        There's just some fuckoff error buried in my spag
 
         */
 
@@ -670,7 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Setting waypoint's selected cell to a 3px left border
             //let selectedArea = qs('.active');
-            //console.log("selected area: ", selectedArea);
+            
             //selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`
         } 
 
@@ -766,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set the init position of the waypoint826 div
     function positionMainContainer() {
 
-        console.log("PMC fired!");
+        
 
         mainContainer.style.opacity = '0.2';
 
@@ -792,18 +777,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (myScriptData?.waypointMasthead) {
             // if waypointMasthead exists
-            console.log("masthead exists");
+            
 
             const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
             //hashdot should probably return whether its a hash or a dot (ID or class) - for later
             
             const refToMasthead = document.getElementById(waypointElementIDName);
             const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("initDistanceFromTop", initDistanceFromTop);
+            
             mainContainer.style.top = initDistanceFromTop + 'px';
             
         } else if (!myScriptData.waypointMasthead) {
-            console.log("masthead doesnt exist");
+            
             // it *IS* undefined OR it's less than 3 characters
             const refToMasthead = undefined;
             const waypointFindBody = qs('body');
@@ -844,7 +829,7 @@ document.addEventListener('DOMContentLoaded', function() {
         //scrollable.addEventListener('scroll', handleScroll, { passive: true });
 
        // Get these references once, outside the scroll event
-        console.log("Initial scroll position:", document.documentElement.scrollTop || document.body.scrollTop);
+        
 
         const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead);
         const refToMasthead = document.getElementById(waypointElementIDName);
@@ -853,13 +838,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initial position update
         updatePosition();
 
-        console.log("Initial distance from top:", initDistanceFromTop);
+        
 
         function handleScroll() {
-            console.log("HS run!");
+            
             var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
 
-            console.log("waypointY", waypointY);
+            
 
             if (waypointY >= initDistanceFromTop) {
                 mainContainer.classList.add('sticky');
@@ -875,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function() {
           //const scrollable = document.querySelector('.mainContainer');
           //scrollable.addEventListener('scroll', handleScroll, { passive: true });
           handleScroll(); // Run it immediately
-          console.log("RAF run!");
+          
         });
 
         
@@ -924,7 +909,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Divide reminaing space by numItems, then divivde by two to get the space to be added to ea. top and bottom padding\
                 let waypointCalc = ((waypointSubtract / waypointLiNumItems) / 2);
             }
-            //console.log('waypointCalc', waypointCalc);
+            
         }
 
         // Gives us space for each LI
@@ -969,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Default to height of the header element
         if (refToMasthead && myScriptData?.waypointMasthead) {
             
-            // console.log('Height of masthead: ', distanceFromTop);
+            
         } else {
 
             var distanceFromTop = 0;
@@ -979,7 +964,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // console.error('refToMasthead is null or undefined');
         }
         */
-        // console.log('distanceFromTop', distanceFromTop);
+        
 
         // commmented out 3.20.2025
 
@@ -989,7 +974,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //mainContainer.style.top = parentRect + 'px';
         }*/
 
-        // console.log(parentRect.top);
+        
 
         // let alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
@@ -1095,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         /*if (i==0) {
                             let selectedArea = qs('.active');
-                            console.log("selected area: ", selectedArea);
+                            
                             selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
                             i++;
                         }*/
@@ -1169,7 +1154,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Update the last observed section
                     lastObserved = currentlyObserved; 
-                    //console.log('lastObserved', lastObserved);
+                    
 
                     j++;
                     if ( j === 1) {
@@ -1196,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Scroll down
                         if (nextElem && i <= sections2.length - 1 && j === 1) {
                             nextElem.scrollIntoView({
-                                /* behavior: 'smooth', */
+                                behavior: 'smooth',
                                 block: 'center'
                             });
                             // Increment number of calls after scrolled
@@ -1205,13 +1190,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else if ( i === sections2.length - 1) {
                                 window.scrollTo({
                                     top: 0,
-                                   /* behavior: 'smooth' // Smooth scroll */
+                                   behavior: 'smooth' // Smooth scroll
                                 });
                             break;
                         } else {
                            break;
                         }
-                        //console.log('match',nextElem);
+                        
                         
                     } // end if
                 } // end for
@@ -1242,7 +1227,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePosition();
 
         const handleSectionChange = (observedSection) => {
-            // console.log("Currently Observed Section:", observedSection.id); // Logs the ID of the observed section
+            
         };
 
         // Set up the observer with the callback
