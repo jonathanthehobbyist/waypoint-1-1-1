@@ -128,7 +128,8 @@ function waypoint826_custom_box_html( $post ) {
     $checkbox_value_intro = get_post_meta( $post->ID, '_waypoint_intro_enable', true );
 
     // Define the masthead
-    $field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
+    // 3.22.2025
+    //$field_value_masthead_define = get_post_meta( $post->ID, '_waypoint_masthead_define', true );
 
     // Which element to add waypoint, which element to align waypoint to
 
@@ -221,7 +222,7 @@ function waypoint826_custom_box_html( $post ) {
 
         <br />
         */
-        ?>
+        /*
 
         <hr>
 
@@ -232,7 +233,8 @@ function waypoint826_custom_box_html( $post ) {
         <input type="text" id="waypoint_masthead_define" name="waypoint_masthead_define" value="<?php echo esc_attr( $field_value_masthead_define ); ?>">
         <p></p>
         <br />
-        
+        */
+    ?>
     </div>
 
     <?php
@@ -276,7 +278,7 @@ function waypoint826_settings_init() {
     // Register a new section in the "waypoint" page.
     add_settings_section(
         'waypoint_section_developers', // ID
-        __( 'Customize the Waypoint structure, colors and text', 'waypoint' ), // Title
+        __( 'For posts only - customize the waypoint826 table of contents', 'waypoint' ), // Title
         'waypoint826_section_developers_callback', // Callback function
         'waypoint' // Page slug
     );
@@ -308,6 +310,20 @@ function waypoint826_settings_init() {
         'waypoint_section_developers',                  // section slug
         array(
             'label_for'         => 'waypoint_place_next_to', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    add_settings_field(
+        'waypoint_masthead',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Masthead', 'waypoint' ),     // Label
+        'waypoint_masthead_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_masthead', 
             'class'             => 'waypoint_row',
             'waypoint_custom_data' => 'custom',
         )
@@ -508,6 +524,30 @@ function waypoint_place_next_to_cb( $args ) {
     </p>
     <p class="description">
         <?php esc_html_e( 'Class identifier - no dot or hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+    <?php
+
+}
+
+function waypoint_masthead_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_masthead_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_masthead_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Define a navigation or masthead by ID', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'ID - no dot or hashtag necessary, this will stop waypoints scrolling at the masthead', 'waypoint' ); ?>
     </p>
 
     <?php
@@ -862,7 +902,7 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
         'waypoint_H4_enable',
         'waypoint_H5_enable',
         'waypoint_intro_enable',
-        'waypoint_masthead_define',
+        //'waypoint_masthead_define',
         //'waypoint_align_to_element',
         //'waypoint_reposition',
         //'waypoint_add_to_page', /* 3.21.2025 */
@@ -936,7 +976,10 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
             error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } else if ( $waypoint8field === 'waypoint_masthead_define' ) { // Masthead field
+        } /*
+            // 3.22.2025
+
+            else if ( $waypoint8field === 'waypoint_masthead_define' ) { // Masthead field
             // Handle the checkbox field
             $checkbox_value = isset( $_POST['waypoint_masthead_define'] ) ? '1' : '0';
             update_post_meta(
@@ -947,7 +990,7 @@ function waypoint826_save_postdata( $waypoint826_post_id ) {
             error_log("$waypoint8field saved with value: $checkbox_value");
 
 
-        } 
+        } */
 
         /* 
         // 3.21.2025
@@ -1077,7 +1120,9 @@ function waypoint826_run() {
             // Shows at top left, right now the 
 
             // Indiv. page settings for masthead, add to page, align to element
-            $field_value_masthead_define = get_post_meta( $waypoint826_post_id, '_waypoint_masthead_define', true );
+            
+            // 3.22.2025
+            //$field_value_masthead_define = get_post_meta( $waypoint826_post_id, '_waypoint_masthead_define', true );
 
 
 
@@ -1120,6 +1165,8 @@ function waypoint826_run() {
                  // added 3.21.2025
                  $waypoint_place_next_to_value = isset( $options['waypoint_place_next_to'] ) ? $options['waypoint_place_next_to'] : '';
 
+                 $waypoint_masthead_value = isset( $options['waypoint_masthead'] ) ? $options['waypoint_masthead'] : '';
+
                  //echo $waypoint_place_next_to_value;
 
 
@@ -1139,7 +1186,8 @@ function waypoint826_run() {
                 // 3.21.2025
                 // $field_value_align_to_element = isset( $field_value_align_to_element ) ? $field_value_align_to_element : '';
 
-                $field_value_masthead_define = isset( $field_value_masthead_define ) ? $field_value_masthead_define : '';
+                // 3.22.2025
+                //$field_value_masthead_define = isset( $field_value_masthead_define ) ? $field_value_masthead_define : '';
 
              
                 /* if ( isset($bg_color_value, $checkbox_value_H2, $checkbox_value_H3, $checkbox_value_H4, $checkbox_value_H5, $checkbox_value_intro, $field_value_add_to, $field_value_align_to_element, $field_value_masthead_define) ) { */
@@ -1158,11 +1206,11 @@ function waypoint826_run() {
                         'waypointIntroEnable' => $checkbox_value_intro,
                         'waypointFieldAddTo' => $waypoint_append_value, // added 3.21.2025
                         'waypointFieldAlignToElement' => $waypoint_place_next_to_value,
-                        'waypointMasthead' => $field_value_masthead_define,
                         'waypointLeftOrRight' => $waypoint_left_right,
                         'waypointTextSize' => $waypoint_text_size, // passing to js
                         'waypointBorderColor' => $waypoint_border_color_val,
                         'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
+                        'waypointMasthead' => $waypoint_masthead_value,
                         // 'waypointFieldAddTo' => $field_value_add_to,  /* line 820 waypoint-custom.js */
                         // 'waypointFieldReposition' => $field_value_reposition, 
 

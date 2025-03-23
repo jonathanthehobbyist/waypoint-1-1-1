@@ -1,38 +1,22 @@
  
+
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    window.addEventListener('scroll', () => {
+  console.log('🔥 SCROLL EVENT! scrollY:', window.scrollY);
+}, { passive: true });
+
 
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
 
     // Change into a number    
     let wph2 = parseFloat(myScriptData.waypointH2);
-    //let waypointH3 = <?php echo json_encode($checkbox_value_H3); ?>;
     let wph3 = parseFloat(myScriptData.waypointH3);
-    //var waypointH4 = <?php echo json_encode($checkbox_value_H4); ?>;
     let wph4 = parseFloat(myScriptData.waypointH4);
-    //var waypointH5 = <?php echo json_encode($checkbox_value_H5); ?>;
     let wph5 = parseFloat(myScriptData.waypointH5);
-    //
+    
     let waypointTxtSz = parseFloat(myScriptData.waypointTextSize)
-
-    //console.log('Reposition', myScriptData.waypointFieldReposition);
-
-    //console.log(myScriptData.waypointTextSize);
-
-    /*
-    *   Next up
-    *   - Contents / scroll to top styling
-    *   - DONE left padding on li
-    *   - DONE Have the interval fire every 4-7 seconds, every 3 is too much 
-        - DONE Pass left text size
-        - DONE Margin between LI
-        - 'Enter' isn't working on live instance
-        - Contents P needs equal bottom margin to top
-        - Realign central content - on/off
-        - ? When you're scrolled to top, and the 1st (selected) element is actually off the screen - feels like we often need a top of page 'intro'
-        - Kind of a brittle experience - need to do some form validation
-    */
-
-
 
 
     /*  ----------- UTILITY: INPUT CLEANUP - COLOR  ----------  */
@@ -68,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return element;
     }
 
-    /*  ----------- UTILITY IDEAS ----------  */
+    /*  ----------- UTILITIES ----------  */
 
     function qs(selector, parent = document) {
         const el = parent.querySelector(selector);
@@ -79,7 +63,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return [...parent.querySelectorAll(selector)];
     }
 
+     function formatText(input) {
+      if (!input || !input.trim()) return null; // or return a default value like '.default'
 
+
+      return input
+        .trim()
+        .split(/\s+/)               // creates a new, same-length array split by one or more spaces
+        .map(part => `.${part}`)    // creates a new array of the same length, prepends a dot to each
+        .join('');                  // joins the array into a string (can be joined by an optional separator in this case, none)
+    }
 
     
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
@@ -92,20 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // append mainContainer to HTML body
     const appendTo = qs('body');
     appendTo.appendChild(mainContainer);
-
-    //
-     function formatText(input) {
-      if (!input || !input.trim()) return null; // or return a default value like '.default'
-
-
-      return input
-        .trim()
-        .split(/\s+/)           // split by one or more spaces
-        .map(part => `.${part}`) // prepend a dot to each
-        .join('');
-    }
-    
-
+   
 
     // APPEND WAYPOINT TO BODY
 
@@ -120,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // ORIG - Find DOM elem
         //const appendTo = qs(waypointFieldAdd);
         //appendTo.appendChild(mainContainer);
-
         
     }
 
@@ -184,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.scrollTo({
             top: 0,
-            behavior: 'smooth' // Smooth scroll
+            /* behavior: 'smooth' // Smooth scroll */
         });
     }
 
@@ -256,7 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Currently keeps the exact formatting IE uppercase, all caps etc. 
        var innerContent = element.innerText;
 
-       // Cleans up the string to make it into a usable class name / on-page anchor link
+       // CREATE CLASS NAME
+
        var str = innerContent;
        str = str.replace(/^\s/g, ''); //removes any space at the beginning of an input
        str = str.replace(/\s+/g, '-'); //converts 1 or more spaces to a dash
@@ -357,18 +337,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (typeof myScriptData.waypointMenuTitleOnOff !== 'undefined' && myScriptData.waypointMenuTitleOnOff == 'visible') {
 
-            // visible
-            // invisible
+            // visible or invisible
 
-            
                 mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
          
-
-            console.log("Title on/off" + myScriptData.waypointMenuTitleOnOff);
+            
             // If user sets title area to visible, insert title area
             //mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
         } else {
-            console.log("Title on/off" + myScriptData.waypointMenuTitleOnOff);
+            
         }
 
 
@@ -384,14 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContainer.appendChild(scrllTopArea);
         }
 
-
     } // end 'append title area'
-
-
-
-
-
-
 
 
     // removed 3.20.2025
@@ -427,10 +397,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Parameters: param: element |  elemType: 'class' or 'id'
     function waypointScrub(param, elemType) {
-        if (typeof param !== 'undefined' && param != null && param.length > 2) { 
+        if (param) { 
 
-            if ( typeof elemType !== 'undefined' && elemType.toLowerCase() == 'class') {
-                //console.log('log');
+            if ( elemType && elemType.toLowerCase() == 'class') {
+                
                 let space = param.trim(); 
                 let space2 = "." + space.replace(/ /g, '.');
                 let getElem = qs(space2);
@@ -579,6 +549,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             mainContainer.style.display = 'none';
 
+            /* FOR LATER - MOBILE */
+
+            // assume mobile view
+            // can append waypoint to mobile append to element
+            // change styling
+
         } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
             mainContainer.style.display = 'block';
@@ -601,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if ( waypointPosLeftOrRight == 1) {
             mainContainer.style.right = rightAdjustCalc;
         } else {
-            console.log("Line 566ish mainContainer left");
+            
             mainContainer.style.left = leftAdjustCalc;
         }
 
@@ -790,19 +766,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set the init position of the waypoint826 div
     function positionMainContainer() {
 
+        console.log("PMC fired!");
+
         mainContainer.style.opacity = '0.2';
 
         /*  -----------  USER CONFIGURABLE  ----------  */
 
         // User can choose an element to align Waypoint to horizontally
-        if (typeof alignToElement !== 'undefined' && alignToElement.length > 2) {
+        /*if (typeof alignToElement !== 'undefined' && alignToElement.length > 2) {
             calcWaypointWidth();
-        }
+        }*/
         // Start the pulse for 1.5 seconds
         startPulse(1500);
 
         // Cleaned HEX value
-        if (typeof myScriptData.waypointBorderColor !== 'undefined') {
+        if (myScriptData.waypointBorderColor) {
             // Calls HEX color cleaning function
             const waypointBorderColorClean = waypointHandleHashDot(myScriptData.waypointBorderColor);
         }
@@ -810,32 +788,22 @@ document.addEventListener('DOMContentLoaded', function() {
         /*  ----------- INIT POSITION TO TOP ----------  */
 
 
-        /*
-
-        What am I trying to do? 
-        - Set the initial position of the waypoint div:
-        - See if a masthead exists, else pin to top edge of viewport
-        - scroll up smoothly until it hits the top viewport edge
-        - stick to viewport edge
-        - unless the user scrolls to the top again, at which point resume the init position
-        - 
-
-        */
-
         // does waypointMasthead exist, and have a #
-        //console.log("wpmh", myScriptData.waypointMasthead);
+        
         if (myScriptData?.waypointMasthead) {
             // if waypointMasthead exists
+            console.log("masthead exists");
 
             const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
             //hashdot should probably return whether its a hash or a dot (ID or class) - for later
             
             const refToMasthead = document.getElementById(waypointElementIDName);
             const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("initDistanceFromTop", initDistanceFromTop);
             mainContainer.style.top = initDistanceFromTop + 'px';
             
         } else if (!myScriptData.waypointMasthead) {
-
+            console.log("masthead doesnt exist");
             // it *IS* undefined OR it's less than 3 characters
             const refToMasthead = undefined;
             const waypointFindBody = qs('body');
@@ -843,22 +811,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }
 
-
-        var waypointBox = document.getElementById('waypoint826-primary-container');
-        let waypointTop = waypointBox.offsetTop;
+        // not used anywhere, can delete 3.22.2025
+        //var waypointBox = document.getElementById('waypoint826-primary-container');
+        //let waypointTop = waypointBox.offsetTop;
         
 
 
         /*  ----------- SCROLL FUNCTION ----------  */
 
-        // Initial position update
-        updatePosition();
+        
 
-
+        // not necessary? 3.22.2025
 
         // Check if myScriptData.waypointFieldAddTo exists
         // waypointFieldAddTo is where waypoint will be appended to on a mobile view
-        if (myScriptData.waypointFieldAddTo) {
+        /*if (myScriptData.waypointFieldAddTo) {
 
             // Clean up? 
             const waypointFieldAppendTo = formatText(myScriptData.waypointFieldAddTo);
@@ -866,49 +833,54 @@ document.addEventListener('DOMContentLoaded', function() {
             var waypointAddToElement = qs(waypointFieldAppendTo);
         } else {
            
-        }
+        }*/
 
         /* VERTICAL POSITION */
 
         // this needs to work but doesn't currently
         // distanceFromTop is defined both above and below, I wonder if that's creating a confliect
 
-        window.addEventListener('scroll', function(event) {
+        
+        //scrollable.addEventListener('scroll', handleScroll, { passive: true });
 
+       // Get these references once, outside the scroll event
+        console.log("Initial scroll position:", document.documentElement.scrollTop || document.body.scrollTop);
+
+        const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead);
+        const refToMasthead = document.getElementById(waypointElementIDName);
+        const initDistanceFromTop =  mainContainer.offsetTop;  //refToMasthead.getBoundingClientRect().height;
+
+        // Initial position update
+        updatePosition();
+
+        console.log("Initial distance from top:", initDistanceFromTop);
+
+        function handleScroll() {
+            console.log("HS run!");
             var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
-            console.log("waypointY: ", waypointY);
 
-            if (waypointAddToElement) {
-                var distanceFromTop = waypointAddToElement.getBoundingClientRect().top + window.scrollY;
-                //console.log('DISTANCE from top: ', distanceFromTop, "initDISTANCE", initDistanceFromTop);
-            } else {
-               // console.error('waypointAddToElement is null or undefined');
-            }
-
-            const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
-            //hashdot should probably return whether its a hash or a dot (ID or class) - for later
-            
-            const refToMasthead = document.getElementById(waypointElementIDName);
-            const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
-
-            //console.log("initDistance from inside listener", initDistanceFromTop);
-
+            console.log("waypointY", waypointY);
 
             if (waypointY >= initDistanceFromTop) {
-               
-               mainContainer.classList.add('sticky');
-               mainContainer.style.top = '0px';
-
-            } else if (waypointY < initDistanceFromTop) { 
-
+                mainContainer.classList.add('sticky');
+                mainContainer.style.top = '0px';
+            } else {
                 mainContainer.classList.remove('sticky');
                 mainContainer.style.top = initDistanceFromTop + 'px';
             }
+        }
+        
+        requestAnimationFrame(() => {
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          //const scrollable = document.querySelector('.mainContainer');
+          //scrollable.addEventListener('scroll', handleScroll, { passive: true });
+          handleScroll(); // Run it immediately
+          console.log("RAF run!");
         });
 
+        
+
     } // end positionMainContainer
-
-
 
 
 
@@ -1074,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let observer;
     let currentSection = null; // To keep track of the currently observed section
 
-     function setupIntersectionObserver(onSectionChange) {
+    function setupIntersectionObserver(onSectionChange) {
 
         // Disconnect existing observer if it exists
         if (observer) {
@@ -1224,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Scroll down
                         if (nextElem && i <= sections2.length - 1 && j === 1) {
                             nextElem.scrollIntoView({
-                                behavior: 'smooth',
+                                /* behavior: 'smooth', */
                                 block: 'center'
                             });
                             // Increment number of calls after scrolled
@@ -1233,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else if ( i === sections2.length - 1) {
                                 window.scrollTo({
                                     top: 0,
-                                    behavior: 'smooth' // Smooth scroll
+                                   /* behavior: 'smooth' // Smooth scroll */
                                 });
                             break;
                         } else {
