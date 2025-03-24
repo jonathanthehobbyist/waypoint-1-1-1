@@ -70,6 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .join('');                  // joins the array into a string (can be joined by an optional separator in this case, none)
     }
 
+    const getCSSVar = (name) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
     
     /*  ----------- CREATE WAYPOINT CONTAINTER ----------  */
 
@@ -318,7 +321,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Append Waypoint826 
     // Append title area if user selects to
-    if (typeof mainContainer !== 'undefined' && mainContainer != null) {
+
+
+    /* This is where mainContainer was being appended....?  */
+
+    if (mainContainer) {
          // If parent div has first child, insert mainContainer before first child
         if (mainContainer.firstChild) {
              mainContainer.insertBefore(list, mainContainer.firstChild);
@@ -327,9 +334,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // If mainContainer has 0 children, append
             mainContainer.appendChild(list);
         }
+    }
 
 
-    /* Waypoint TITLE area - 3.20.2025 it breaks if I turn it 'invisible' solve later */    
+    // Removed 3.23.2025
+    /* 
+
+
+    // Waypoint TITLE area - 3.20.2025 it breaks if I turn it 'invisible' solve later     
 
         if (typeof myScriptData.waypointMenuTitleOnOff !== 'undefined' && myScriptData.waypointMenuTitleOnOff == 'visible') {
 
@@ -344,20 +356,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
         }
 
-
+    */
 
 
     /* SCROLL TO TOP FUNCTION */
 
-        // This var could be user configurable
+        // This var could be user configurable, right now is disabled
         const hasScrllTop = false;
 
         if ( hasScrllTop == true) {
             
-            mainContainer.appendChild(scrllTopArea);
+            // mainContainer.appendChild(scrllTopArea);
         }
 
-    } // end 'append title area'
+    //} // end 'append title area'
 
 
     // removed 3.20.2025
@@ -496,8 +508,81 @@ document.addEventListener('DOMContentLoaded', function() {
           }
     };
 
+    function applyStyling(elem, screensize) {
 
-    function calcWaypointWidth() {
+        // elem should always be mainContainer
+
+        const primary = getCSSVar('--text-primary');
+
+        // For Mobile
+        if (elem && screensize == "small") {
+            // Notes
+
+            // Reset borderleft
+            elem.style.borderLeft = "none";
+
+            // Show the Table of Contents title on Mobile
+            elem.insertBefore(contentParagraph, elem.firstChild);
+
+            Object.assign(contentParagraph.style, {
+                paddingLeft: '0px',
+                paddingBottom: '3px',
+                marginBottom: '6px',
+                borderBottom: '1px solid #ccc'
+            });
+
+            // Style
+            Object.assign(elem.style,  {
+                display: 'block',
+                width: 'auto',
+                position: 'static'
+            });
+
+            // Style LI within elem
+            elem.querySelectorAll("li").forEach(li => {
+
+                Object.assign(li.style, {
+                    paddingLeft: '0px',
+                    paddingTop: '0px',
+                    paddingBottom: '0px',
+                    borderLeftColor: 'none',
+                });
+            });
+
+            // Style .active within elem
+            elem.querySelectorAll(".active").forEach(active => {
+
+                Object.assign(active.style, {
+                    borderLeft: 'none',
+                });
+            });
+
+            // style a within elem
+            elem.querySelectorAll("a").forEach(a => {
+
+                Object.assign(a.style, {
+                    display: 'inline-flex',
+                    height: '40px',
+                    alignItems: 'center',
+                    color: primary,
+                    fontWeight: '400'
+                });
+            });
+
+        } else if (elem && screensize == "large") {
+
+            // Table of Contents title takes users input
+  
+            // Notes
+            Object.assign(elem.style,  {
+                display: 'block',
+                width: '150px'
+            });
+        }
+    }
+
+
+    function calcWaypointWidth(elem) {
         // Pass in
         const {value1, value2, value3, value4} = calcWaypointSpaceNeeded();
         // Values
@@ -506,60 +591,54 @@ document.addEventListener('DOMContentLoaded', function() {
         contentRightEdge = value3; // Right edge of content to left edge of viewport
         offset = value4;
 
-        let rightAdjustCalc = 0 + 'px';
+        let rightAdjustCalc = 0 + 'px'; // Don't need
         let leftAdjustCalc;
         let waypointWidth;
         let multiplier;
 
-        console.log("Henry");
-  
-        if (mainContainer.parentElement === document.body) {
-            //console.log("parent is Body");
-        } else {
-            //console.log("parent is Not body");
-        }
+        
 
         // Check how much screen real estate is left for waypoint to inhabit
         if ( spaceForWaypoint < 640) {
 
-            mainContainer.style.display = 'block';
-
-            /* FOR LATER - MOBILE */
-
-            // assume mobile view
-            // can append waypoint to mobile append to element
-            // change styling
-            //console.log("myscript", myScriptData.waypointFieldAddTo);
+            // Append
             const appendTo = qs(formatText(myScriptData.waypointFieldAddTo));
-            //console.log("Levi is the awesomest", appendTo);
             appendTo.insertBefore(mainContainer, appendTo.firstChild);
+            // Apply styles
+            applyStyling(mainContainer, "small");
 
-            waypointWidth = 'auto';
-            mainContainer.style.width = waypointWidth;
-            mainContainer.style.position = "static"; 
 
         } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
 
-            mainContainer.style.display = 'block';
-            waypointWidth = '150';
-            mainContainer.style.width = waypointWidth + 'px';
+            // For leftAdjustCalc
             multiplier = 3;
 
-            // append mainContainer to HTML body
-
+            // Append mainContainer to HTML body
             const appendTo = qs('body');
             appendTo.appendChild(mainContainer);
+
+            // Apply styles
+            applyStyling(mainContainer, "large");
+
+            if (elem) {  
+            //Specific for setting the active state borderLeft
+                elem.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+            }
+
 
         } else if ( spaceForWaypoint >= 700 ) {
 
-            mainContainer.style.display = 'block';
-            waypointWidth = '180';
-            mainContainer.style.width = waypointWidth + 'px';
+            // For leftAdjustCalc
             multiplier = 5;
-
-            // append mainContainer to HTML body
+            // Append mainContainer to HTML body
             const appendTo = qs('body');
             appendTo.appendChild(mainContainer);
+            // Apply styles
+            applyStyling(mainContainer, "large");
+            //Specific for setting the active state borderLeft
+            if (elem) { 
+                elem.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+            }
 
         }
 
@@ -1074,8 +1153,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         // since the .active class is assigned here, I thought I'd do the one-time setting of the color and border width (so it's ready in the DOM)
                         let selectedArea = qs('.active');
-                        selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
-
+                        //selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
+                        calcWaypointWidth(selectedArea);
                         
 
                         /*if (i==0) {
@@ -1088,8 +1167,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         selectedArea.forEach(el => {
                             el.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
                         });*/
-
-                   
 
                     }
 
@@ -1127,6 +1204,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var waypointCount = 0;
 
+    /* should I check if the shortcode is even being used? */
+
+    // may be more than one instance
+    // returns an array, need forEach
+
+    // I can eventually delete this (even the add listener) 3.23.2025
+    const shortCodeUsed = qsa('.waypoint-sc-scroll-down'); 
+
+    if (shortCodeUsed) {
+        // console.log('short code found');
+    
     // 'Enter' keydown function
     window.addEventListener('keydown', function(event) {
 
@@ -1203,6 +1291,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } // End handleSectionChange  
         } // end eventKey if
     }); // end eventListener
+
+} // end if (shortcode)
 
     window.addEventListener('load', handleResize);
 
