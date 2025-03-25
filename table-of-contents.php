@@ -1251,7 +1251,7 @@ function waypoint826_run() {
 
                  $waypoint_border_right_value = isset( $options['waypoint_border_right'] ) ? $options['waypoint_border_right'] : '';
 
-                 //echo $waypoint_place_next_to_value;
+                 //echo $waypoint_border_right_value;
 
 
                 // Make sure variables are defined

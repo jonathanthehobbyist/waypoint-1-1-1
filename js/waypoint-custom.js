@@ -542,8 +542,17 @@
             }
 
             // Border Right
-            if (myScriptData.waypointBorderRight){
+            const olWrapper = qs('.border-box');
 
+            if (myScriptData.waypointBorderRight && olWrapper){
+
+                const borderRightColor = '#' + myScriptData.waypointBorderRight
+
+                Object.assign(olWrapper.style, {
+                    borderRight: `1px solid ${borderRightColor}`,
+                    paddingTop: '20px',
+                    paddingBottom: '20px',
+                }); 
             }
         }
     }
