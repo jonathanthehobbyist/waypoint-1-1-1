@@ -38,7 +38,7 @@ html {
 	width: 250px;
 	background-color:none;
 	border: none;
-	position: fixed; 
+	position: absolute; 
 
 	/* right: 80%; */
 	height: 100%;
@@ -217,9 +217,8 @@ ol li a.h5_selector { margin-left: 9px; }
 /*---   WAYPOINT SCROLL TO TOP   ---*/
 
 .waypoint826-main p.scroll-to-top {
-	display: block;
+	display: none;
 	font-weight: 500;
-	width: 100%;
 	color: var(--text-secondary);
 	font-size: 16px;
 	padding-right: 20px; /*calc(var(--Base-Unit) * 1.25);*/

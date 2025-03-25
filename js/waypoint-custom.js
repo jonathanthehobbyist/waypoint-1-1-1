@@ -1,7 +1,4 @@
- 
-
-
-document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
 
 
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
@@ -200,27 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
     // Cascades to other settings
     var baseMargin = 8;
 
 
 
-
-    /*  ----------- GLOBAL USER CONFIG OPTIONS ----------  */
-
-    // On left or right of the screen
-
-    // Validity
-    if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
-        // 1 = Right 0 = Left
-        if (myScriptData.waypointLeftOrRight == 'Right') {
-            // Set for later & easier useage
-            var waypointPosLeftOrRight = '1';
-        } else {
-            // Defaults to Left
-            var waypointPosLeftOrRight = '0';
-        }
-    }
 
     
     /*  ----------- BUILDING THE LIST CONTENT ----------  */
@@ -319,8 +302,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }); //end for loop
 
-    // Append Waypoint826 
-    // Append title area if user selects to
 
 
     /* This is where mainContainer was being appended....?  */
@@ -337,67 +318,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // Removed 3.23.2025
-    /* 
-
-
-    // Waypoint TITLE area - 3.20.2025 it breaks if I turn it 'invisible' solve later     
-
-        if (typeof myScriptData.waypointMenuTitleOnOff !== 'undefined' && myScriptData.waypointMenuTitleOnOff == 'visible') {
-
-            // visible or invisible
-
-                mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
-         
-            
-            // If user sets title area to visible, insert title area
-            //mainContainer.insertBefore(contentParagraph, mainContainer.firstChild);
-        } else {
-            
-        }
-
-    */
-
-
     /* SCROLL TO TOP FUNCTION */
 
-        // This var could be user configurable, right now is disabled
-        const hasScrllTop = false;
+        if ( myScriptData.waypointShowScrollUp == 'show') {
 
-        if ( hasScrllTop == true) {
-            
-            // mainContainer.appendChild(scrllTopArea);
+            mainContainer.appendChild(scrllTopArea);
+            scrllTopArea.style.display = "inline";
         }
 
     //} // end 'append title area'
 
-
-    // removed 3.20.2025
-    
-    /*
-    if ( typeof positionedParent !== 'undefined' && positionedParent != null) {
-        // True distance from the left viewport edge
-
-        if ( waypointPosLeftOrRight == 1) {
-            // Distance from the viewport's left edge to the element's right edge
-            var WaypointParentPos = positionedParent.getBoundingClientRect().right;
-        } else {
-            // Distance from viewport left edge to element left edge
-            var WaypointParentPos = positionedParent.getBoundingClientRect().left;
-        }
-    }
-    
-    if (WaypointParentPos){
-        //
-        var adjustMargin = (parseFloat(WaypointParentPos));
-    } else {
-        // 
-        var adjustMargin = 0;
-    }
-
-    */
-
-       //var alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
 
     /*  -----------  UTILITY: INPUT CLEAN & GET DOM ELEM  ----------  */
@@ -417,23 +347,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }  
         }
     }
-
-    /*
-    
-    //3.21.2025
-
-    if (typeof myScriptData.waypointFieldReposition !== 'undefined' && myScriptData.waypointFieldReposition != null) {
-        var waypointElemToMove = myScriptData.waypointFieldReposition;
-        // Handles multiple spaces, if exist
-        waypointElemToMove = "." + waypointElemToMove.replace(/ /g, '.'); 
         
-    }  
-    */      
 
     /*  -------------------- USER CONFIGURATION --------------------  */
-
-    // Remove whitespace from both ends of
-    //alignToElement = myScriptData.waypointFieldAlignToElement.trim();
 
     var spaceForWaypoint;
 
@@ -527,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Object.assign(contentParagraph.style, {
                 paddingLeft: '0px',
                 paddingBottom: '3px',
-                marginBottom: '6px',
+                marginBottom: '0px',
                 borderBottom: '1px solid #ccc'
             });
 
@@ -565,9 +481,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: '40px',
                     alignItems: 'center',
                     color: primary,
-                    fontWeight: '400'
+                    fontWeight: '500',
+                    textDecoration: 'underline',
                 });
             });
+
+            // Style LI within elem
+            const listWrapper = elem.querySelector(".list-wrapper");
+
+            if (listWrapper){
+                Object.assign(listWrapper.style, {
+                    paddingBottom: '30px',
+                    paddingTop: '20px',
+                    borderBottom: '1px solid #ccc',
+                });
+            }         
 
         } else if (elem && screensize == "large") {
 
@@ -643,14 +571,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         leftAdjustCalc = (contentLeftEdge - offset - (baseMargin * multiplier) /* // removed 3.20.2025 + adjustMargin*/) + 'px';
-
-        // 
-        if ( waypointPosLeftOrRight == 1) {
-            mainContainer.style.right = rightAdjustCalc;
-        } else {
-            
-            mainContainer.style.left = leftAdjustCalc;
-        }
+        mainContainer.style.left = leftAdjustCalc;
+        
 
         // Pass width of waypoint
         calcWidthForWaypoint.log(waypointWidth); 
@@ -658,57 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } // END calcWaypointWidth()
 
 
-    /*----------   SET PADDING FOR ....?  -------------*/
 
-
-        /* I may not need any of this */
-
-        if ( typeof myScriptData.waypointLeftOrRight !== 'undefined' && myScriptData.waypointLeftOrRight != null) {
-
-        let waypointLeftRightPadding = qsa('.waypoint826-main ol.list-wrapper li');
-        let waypointContentLRPadding = qs('.waypoint826-main .list-wrapper');
-
-
-        // 3.20.2025 could eliminate if L or R variable is reduced to left only
-        
-        if (myScriptData.waypointLeftOrRight == 'Right') {
-            // LI
-            waypointLeftRightPadding.forEach((item) => {
-
-                // Re-style waypoint LI
-                item.style.paddingLeft = (baseMargin * 5) + 'px';
-                item.style.paddingRight = (baseMargin * 3) + 'px';
-            });
-            // waypoint Main
-
-            // ERROR - when I set waypoint to invisible, this is throwing an error
-
-            waypointContentLRPadding.style.paddingLeft = (baseMargin * 5) + 'px';
-            waypointContentLRPadding.style.paddingRight = (baseMargin * 3) + 'px';
-            // Scroll to top
-            scrllTopArea.style.paddingLeft = (baseMargin * 5) + 'px';
-            scrllTopArea.style.paddingRight = (baseMargin * 3) + 'px';
-
-        } else { // Left
-
-            waypointLeftRightPadding.forEach((item) => {
-
-                // Re-style waypoint
-                //item.style.paddingLeft = (baseMargin * 3) + 'px';
-                //item.style.paddingRight = (baseMargin * 5) + 'px';
-            }); 
-
-            // ERROR - when I set waypoint to invisible, this is throwing an error
-            if (waypointContentLRPadding != null) {
-
-                //waypointContentLRPadding.style.paddingLeft = (baseMargin * 3) + 'px';
-                // waypointContentLRPadding.style.paddingRight = (baseMargin * 5) + 'px';
-            }
-            // Scroll to top
-            scrllTopArea.style.paddingLeft = (baseMargin * 3) + 'px';
-            scrllTopArea.style.paddingRight = (baseMargin * 5) + 'px';
-        }
-    }
 
     /*----------   USER CONFIGS   -------------*/
 
@@ -719,34 +591,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Used to be set in setGlobalSettings
         waypointBorderColorClean = '#' + waypointBorderColorClean;
 
-
-        /* 
-
-        Will eventually remove choice for R or L 
-
-        */
-
-        // Adjust border on R or L
-        if ( waypointPosLeftOrRight == 1) { // Right
-            // Border goes on left
-            mainContainer.style.borderRight = 'none';
-            mainContainer.style.borderLeft = 'none';
-
-            // Setting waypoint's selected cell to a 3px left border
-            //let selectedArea = qs('.active');
-            
-            //selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`
-        } 
-
-        if ( waypointPosLeftOrRight == 0) { // Left
-
-            // Setting waypoint's selected cell to a 3px left border
-            
-        }
-
-        // Sets border for 'page content' and 'scroll to top'
-        //contentParagraph.style.borderBottom = `1px solid ${waypointBorderColorClean}`;
-        //scrllTopArea.style.borderTop = `1px solid ${waypointBorderColorClean}`; 
     }
 
     // SET BACKGROUND COLOR
@@ -836,10 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         /*  -----------  USER CONFIGURABLE  ----------  */
 
-        // User can choose an element to align Waypoint to horizontally
-        /*if (typeof alignToElement !== 'undefined' && alignToElement.length > 2) {
-            calcWaypointWidth();
-        }*/
+
         // Start the pulse for 1.5 seconds
         startPulse(1500);
 
@@ -856,7 +697,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (myScriptData?.waypointMasthead) {
             // if waypointMasthead exists
-            
 
             const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead); //removes the hash or do
             //hashdot should probably return whether its a hash or a dot (ID or class) - for later
@@ -875,9 +715,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }
 
-        // not used anywhere, can delete 3.22.2025
-        //var waypointBox = document.getElementById('waypoint826-primary-container');
-        //let waypointTop = waypointBox.offsetTop;
         
 
 
@@ -1153,6 +990,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         // since the .active class is assigned here, I thought I'd do the one-time setting of the color and border width (so it's ready in the DOM)
                         let selectedArea = qs('.active');
+
+                        // Passes a param to calcWaypointWidth which adds the styling
+
                         //selectedArea.style.borderLeft = `3px solid ${waypointBorderColorClean}`;
                         calcWaypointWidth(selectedArea);
                         
@@ -1198,9 +1038,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return sections;
     } // END setupIntersectionObserver
 
-    // BUG - scroll first, be in a middle of a section, then hit enter - sometimes it's not working
-    // BUG - I"m having to click before the enter press works. Focus state?
-    // BUG - on interactive-trivia, the enter key isn't working
 
     var waypointCount = 0;
 
