@@ -141,6 +141,11 @@
         });
     });
 
+    /* Creating DIV and OL elements */
+
+    const borderBox = document.createElement('div');
+    borderBox.classList.add('border-box');
+
     // 
     const list = document.createElement('ol');
     list.classList.add('list-wrapper');
@@ -166,7 +171,6 @@
     // NOT currently used but keep
 
     // the map method creates a new array populated with the results of calling a provided function on every element in the calling array
-    // 
     let valuesOfHeadings = waypointArr.map(function(heading) {
         return parseInt(heading.replace('h', ''), 10);
     });
@@ -304,16 +308,18 @@
 
 
 
-    /* This is where mainContainer was being appended....?  */
+    /* -------- APPEND BORDERBOX AND LIST TO MAINCONTAINER -------- */
 
     if (mainContainer) {
-         // If parent div has first child, insert mainContainer before first child
+         // 
         if (mainContainer.firstChild) {
-             mainContainer.insertBefore(list, mainContainer.firstChild);
+             //mainContainer.insertBefore(list, mainContainer.firstChild);
 
         } else {
             // If mainContainer has 0 children, append
-            mainContainer.appendChild(list);
+            mainContainer.appendChild(borderBox);
+            borderBox.appendChild(list);
+            borderBox.insertBefore(contentParagraph, borderBox.firstChild);
         }
     }
 
@@ -524,9 +530,20 @@
             });
 
             // Only show the title area on large if user opts to
-            if (myScriptData?.waypointMenuTitleOnOff) {
-                //console.log("myScriptData?.waypointMenuTitleOnOff", myScriptData.waypointMenuTitleOnOff);
-                elem.insertBefore(contentParagraph, elem.firstChild);
+            if (myScriptData.waypointMenuTitleOnOff == 'visible') {
+                
+                //elem.insertBefore(contentParagraph, elem.firstChild);
+                contentParagraph.style.display = 'block';
+
+            } else if (myScriptData.waypointMenuTitleOnOff == 'invisible') {
+
+                contentParagraph.style.display = 'none';
+
+            }
+
+            // Border Right
+            if (myScriptData.waypointBorderRight){
+
             }
         }
     }
@@ -665,7 +682,7 @@
     /* Find the POSITIONED PARENT to lock waypoint to viewport top */
 
     function findPositionedParent(element) {
-        console.log("positioned parent fired");
+        
         // Start with the parent of the element
         let parent = mainContainer.parentElement;
 
@@ -676,7 +693,7 @@
 
             // Check if the parent has a position other than 'static'
             if (style.position !== 'static') {
-                console.log("parent", parent);
+                
                 return parent; // This is the nearest positioned parent
             }
 
@@ -732,10 +749,10 @@
             
             const refToMasthead = document.getElementById(waypointElementIDName);
             const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("initDistanceFromTop: ", initDistanceFromTop);
+            
             
             mainContainer.style.top = (initDistanceFromTop + extraPadding) + 'px';
-            console.log("addition", (initDistanceFromTop + extraPadding));
+            
             
         } else if (!myScriptData.waypointMasthead) {
             
@@ -839,7 +856,7 @@
 
         // Get a single LIs height
         let allListItemsLi = document.querySelectorAll('.waypoint826-main ol li');
-        console.log("allListItemsLi", allListItemsLi);
+        
 
         let waypointLiHeight;
 
@@ -847,7 +864,7 @@
 
             //waypointLiHeight = window.getComputedStyle(item).height();
             waypointLiHeight = item.getBoundingClientRect().height;
-            console.log("waypointLiHeight", waypointLiHeight);
+            
         });
 
         let waypointLiNumItems = allListItemsLi.length;
@@ -908,12 +925,12 @@
             const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead)
 
             const refToMasthead = document.getElementById(waypointElementIDName);
-            console.log("refToMasthead", refToMasthead);
+            
             var distanceFromTop = refToMasthead.getBoundingClientRect().height;
-            console.log("distanceFromTop", distanceFromTop);
+            
 
         } else {
-            // console.error('Masthead element not found');
+            // 
             const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
         }*/
@@ -929,7 +946,7 @@
             var waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
 
-            // console.error('refToMasthead is null or undefined');
+            // 
         }
         */
         
@@ -1102,7 +1119,7 @@
     const shortCodeUsed = qsa('.waypoint-sc-scroll-down'); 
 
     if (shortCodeUsed) {
-        // console.log('short code found');
+        // 
     
     // 'Enter' keydown function
     window.addEventListener('keydown', function(event) {

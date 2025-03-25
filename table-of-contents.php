@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.9.2
+ * Version: 1.9.4
  */
 
 // Activation functions
@@ -416,6 +416,20 @@ function waypoint826_settings_init() {
         )
     );
 
+    add_settings_field(
+        'waypoint_border_right',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Right-hand border', 'waypoint' ),     // Label
+        'waypoint_border_right_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_border_right', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
 
     // Register a new field
     add_settings_field(
@@ -725,6 +739,30 @@ function waypoint_border_color_cb( $args ) {
         window.borderColorValue = <?php echo json_encode( $waypoint_border_color_val ); ?>;
         console.log('Background Color Value:', borderColorValue); // Now the value is available in JS
     </script>
+    <?php
+
+}
+
+function waypoint_border_right_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_border_right_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_border_right_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'HEX color for right waypoint border', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+    </p>
+
     <?php
 
 }
@@ -1211,6 +1249,8 @@ function waypoint826_run() {
 
                  $waypoint_extra_value = isset( $options['waypoint_extra'] ) ? $options['waypoint_extra'] : '';
 
+                 $waypoint_border_right_value = isset( $options['waypoint_border_right'] ) ? $options['waypoint_border_right'] : '';
+
                  //echo $waypoint_place_next_to_value;
 
 
@@ -1256,6 +1296,7 @@ function waypoint826_run() {
                         'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
                         'waypointMasthead' => $waypoint_masthead_value,
                         'waypointExtraPadding' => $waypoint_extra_value,
+                        'waypointBorderRight' => $waypoint_border_right_value,
                         // 'waypointFieldAddTo' => $field_value_add_to,  /* line 820 waypoint-custom.js */
                         // 'waypointFieldReposition' => $field_value_reposition, 
 
