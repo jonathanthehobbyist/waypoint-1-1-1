@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.9.0
+ * Version: 1.9.2
  */
 
 // Activation functions
@@ -287,7 +287,7 @@ function waypoint826_settings_init() {
         'waypoint' // Page slug
     );
 
-    /* MOVED SETTINGS FROM INDIVIDUAL PAGES */
+    /* NEW SETTINGS */
 
     // Register a new field
 
@@ -328,6 +328,20 @@ function waypoint826_settings_init() {
         'waypoint_section_developers',                  // section slug
         array(
             'label_for'         => 'waypoint_masthead', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+    add_settings_field(
+        'waypoint_extra',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Extra top margin', 'waypoint' ),     // Label
+        'waypoint_extra_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_extra', 
             'class'             => 'waypoint_row',
             'waypoint_custom_data' => 'custom',
         )
@@ -552,6 +566,30 @@ function waypoint_masthead_cb( $args ) {
     </p>
     <p class="description">
         <?php esc_html_e( 'ID - no dot or hashtag necessary, this will stop waypoints scrolling at the masthead', 'waypoint' ); ?>
+    </p>
+
+    <?php
+
+}
+
+function waypoint_extra_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_extra_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_extra_value ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Align waypoint with text by adding some extra top padding on Desktop screens', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'Numbers only, units are pixels but no px necessary', 'waypoint' ); ?>
     </p>
 
     <?php
@@ -1171,6 +1209,8 @@ function waypoint826_run() {
 
                  $waypoint_masthead_value = isset( $options['waypoint_masthead'] ) ? $options['waypoint_masthead'] : '';
 
+                 $waypoint_extra_value = isset( $options['waypoint_extra'] ) ? $options['waypoint_extra'] : '';
+
                  //echo $waypoint_place_next_to_value;
 
 
@@ -1215,6 +1255,7 @@ function waypoint826_run() {
                         'waypointBorderColor' => $waypoint_border_color_val,
                         'waypointMenuTitleOnOff' => $waypoint_menu_title_val,
                         'waypointMasthead' => $waypoint_masthead_value,
+                        'waypointExtraPadding' => $waypoint_extra_value,
                         // 'waypointFieldAddTo' => $field_value_add_to,  /* line 820 waypoint-custom.js */
                         // 'waypointFieldReposition' => $field_value_reposition, 
 

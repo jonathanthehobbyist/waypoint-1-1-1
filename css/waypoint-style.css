@@ -3,7 +3,7 @@
 	--text-primary: #222;
 	--text-secondary: #777777;
 	--Base-Unit: 8px;
-	--multiplier: .75;
+	--multiplier: 1.25;
 }
 
 /* Animation for the bobbing effect */
@@ -35,7 +35,7 @@ html {
 }
 
 .waypoint826-main {
-	width: 250px;
+	
 	background-color:none;
 	border: none;
 	position: absolute; 
@@ -52,6 +52,9 @@ html {
 
 .waypoint826-main.sticky {
 	position: fixed; 
+	height: 100vh; /* so we can scroll within it */
+  	overflow-y: auto;
+  	margin-top: 20px;
 }
 
 .waypoint826-main { 
@@ -73,17 +76,15 @@ html {
 
 /*---   LIST STYLING   ---*/
 
-.waypoint826-main ol {
+.waypoint826-main ol.list-wrapper {
 	list-style-type: none;
 	margin: 0!important;
-}
-
-ol.list-wrapper {
-
-	margin-left: 0!important;
-	padding: 0;
+	padding-top: 30px;
+	padding-bottom: 10px;
+	border-right: 1px solid #ccc;
 	list-style: none;
 }
+
 
 .waypoint826-main ol.list-wrapper li {
 	color: var(--text-secondary);

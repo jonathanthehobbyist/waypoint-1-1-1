@@ -148,7 +148,7 @@
     // Create a header or title area
     var contentParagraph = document.createElement('p');
     contentParagraph.className = "content";
-    contentParagraph.innerHTML = "Contents";
+    contentParagraph.innerHTML = "Table of contents";
 
     // Scroll to top
     var scrllTopArea = document.createElement('p');
@@ -320,6 +320,7 @@
 
     /* SCROLL TO TOP FUNCTION */
 
+
         if ( myScriptData.waypointShowScrollUp == 'show') {
 
             mainContainer.appendChild(scrllTopArea);
@@ -367,11 +368,9 @@
 
             var contentLeftEdge = placeNextTo.getBoundingClientRect().left;
 
-            // found an error 3/20/2025 was an error, should have been contentRightEdge
-            //var contentLeftEdge  = placeNextTo.getBoundingClientRect().right;
 
             // corrected
-            var contentRightEdge  = placeNextTo.getBoundingClientRect().right;
+            var contentRightEdge = placeNextTo.getBoundingClientRect().right;
 
             const viewportWidth = window.innerWidth;
             const elementWaypoint = qs('.waypoint826-main');
@@ -408,7 +407,7 @@
     }
 
     // error found 3.20.2025 - hard coded
-    var wrapper = qs('.box-container');
+    //var wrapper = qs('.box-container');
 
     // Sets width of waypoint and maincontainer
     const calcWidthForWaypoint = {
@@ -437,7 +436,7 @@
             // Reset borderleft
             elem.style.borderLeft = "none";
 
-            // Show the Table of Contents title on Mobile
+            // Always show the Table of Contents title on Mobile
             elem.insertBefore(contentParagraph, elem.firstChild);
 
             Object.assign(contentParagraph.style, {
@@ -462,6 +461,7 @@
                     paddingTop: '0px',
                     paddingBottom: '0px',
                     borderLeftColor: 'none',
+                    borderLeftWidth: '0px'
                 });
             });
 
@@ -504,8 +504,30 @@
             // Notes
             Object.assign(elem.style,  {
                 display: 'block',
-                width: '150px'
+                width: '190px'
             });
+
+            // Style LI within elem
+            elem.querySelectorAll("li").forEach(li => {
+
+                Object.assign(li.style, {
+                    paddingRight: '24px',
+                });
+            });
+
+            // Style .active within elem
+            elem.querySelectorAll(".active").forEach(active => {
+
+                Object.assign(active.style, {
+                    fontWeight: '500',
+                });
+            });
+
+            // Only show the title area on large if user opts to
+            if (myScriptData?.waypointMenuTitleOnOff) {
+                //console.log("myScriptData?.waypointMenuTitleOnOff", myScriptData.waypointMenuTitleOnOff);
+                elem.insertBefore(contentParagraph, elem.firstChild);
+            }
         }
     }
 
@@ -643,6 +665,7 @@
     /* Find the POSITIONED PARENT to lock waypoint to viewport top */
 
     function findPositionedParent(element) {
+        console.log("positioned parent fired");
         // Start with the parent of the element
         let parent = mainContainer.parentElement;
 
@@ -653,6 +676,7 @@
 
             // Check if the parent has a position other than 'static'
             if (style.position !== 'static') {
+                console.log("parent", parent);
                 return parent; // This is the nearest positioned parent
             }
 
@@ -674,15 +698,13 @@
     // Set the init position of the waypoint826 div
     function positionMainContainer() {
 
-        
-
         mainContainer.style.opacity = '0.2';
 
         /*  -----------  USER CONFIGURABLE  ----------  */
 
 
         // Start the pulse for 1.5 seconds
-        startPulse(1500);
+        startPulse(500);
 
         // Cleaned HEX value
         if (myScriptData.waypointBorderColor) {
@@ -690,10 +712,17 @@
             const waypointBorderColorClean = waypointHandleHashDot(myScriptData.waypointBorderColor);
         }
 
-        /*  ----------- INIT POSITION TO TOP ----------  */
+        /*  ----------- SET mainContainer's INIT POSITION TO TOP BASED ON MASTHEAD HEIGHT ----------  */
 
 
         // does waypointMasthead exist, and have a #
+
+        // is there a conflict between this and 'place waypoint next to'
+            
+        if (myScriptData.waypointExtraPadding) {
+            var extraPadding = Number(myScriptData.waypointExtraPadding);
+            
+        }
         
         if (myScriptData?.waypointMasthead) {
             // if waypointMasthead exists
@@ -703,8 +732,10 @@
             
             const refToMasthead = document.getElementById(waypointElementIDName);
             const initDistanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("initDistanceFromTop: ", initDistanceFromTop);
             
-            mainContainer.style.top = initDistanceFromTop + 'px';
+            mainContainer.style.top = (initDistanceFromTop + extraPadding) + 'px';
+            console.log("addition", (initDistanceFromTop + extraPadding));
             
         } else if (!myScriptData.waypointMasthead) {
             
@@ -715,8 +746,7 @@
 
         }
 
-        
-
+    
 
         /*  ----------- SCROLL FUNCTION ----------  */
 
@@ -746,6 +776,10 @@
 
        // Get these references once, outside the scroll event
         
+        // if adding extra padding, add it to the init
+        if (myScriptData.waypointExtraPadding) {
+            //myScriptData.waypointExtraPadding
+        }
 
         const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead);
         const refToMasthead = document.getElementById(waypointElementIDName);
@@ -759,8 +793,6 @@
         function handleScroll() {
             
             var waypointY = document.documentElement.scrollTop || document.body.scrollTop;
-
-            
 
             if (waypointY >= initDistanceFromTop) {
                 mainContainer.classList.add('sticky');
@@ -792,6 +824,9 @@
 
         //mainContainer.style.top = initFromTop;
 
+        // I might be able to depreciate this entire function
+
+
         // Call earlier function that calculates 1) spaceforwaypoint and 2) contentleftedge
         const {value1, value2, value3} = calcWaypointSpaceNeeded();
         spaceForWaypoint = value1;
@@ -804,15 +839,20 @@
 
         // Get a single LIs height
         let allListItemsLi = document.querySelectorAll('.waypoint826-main ol li');
+        console.log("allListItemsLi", allListItemsLi);
 
         let waypointLiHeight;
 
         allListItemsLi.forEach(function(item) {
+
             //waypointLiHeight = window.getComputedStyle(item).height();
             waypointLiHeight = item.getBoundingClientRect().height;
+            console.log("waypointLiHeight", waypointLiHeight);
         });
 
         let waypointLiNumItems = allListItemsLi.length;
+
+        /* 
 
         if (waypointLiHeight * waypointLiNumItems > waypointUsableHeight) {
 
@@ -828,7 +868,11 @@
             
         }
 
+        */
+
         // Gives us space for each LI
+        /*
+        3.24.2025
         let waypointTotalSpace4Li = ((waypointUsableHeight / waypointLiNumItems) - (waypointTxtSz));
 
         var waypointLiMult = (((waypointTotalSpace4Li/baseMargin) - 4) / 2);
@@ -840,9 +884,10 @@
         } else {
             waypointLiMult;
         }
+        */
 
         // Set the property
-        document.documentElement.style.setProperty('--multiplier', waypointLiMult);
+        //document.documentElement.style.setProperty('--multiplier', waypointLiMult);
 
         // Get the bounding rectangle of the parent
         if (typeof positionedParent !== 'undefined' && positionedParent != null) {
@@ -851,20 +896,27 @@
 
         // MUCH OF THIS CODE IS REDUNDANT AND OVER COMPLICATED
         //onsole.log("wpeIDn2", waypointElementIDName);
+
         // Test, find, replace and create var menuHeight
-        if (myScriptData.waypointMasthead) {
+
+
+        /* These CONST are blocks-scoped - nothing can use them... */
+
+       /* if (myScriptData.waypointMasthead) {
             
             // Clean up - removes any hashes or dots
             const waypointElementIDName = waypointHandleHashDot(myScriptData.waypointMasthead)
 
             const refToMasthead = document.getElementById(waypointElementIDName);
+            console.log("refToMasthead", refToMasthead);
             var distanceFromTop = refToMasthead.getBoundingClientRect().height;
+            console.log("distanceFromTop", distanceFromTop);
 
         } else {
             // console.error('Masthead element not found');
             const waypointFindBody = qs('body');
             waypointFindBody.appendChild(mainContainer);
-        }
+        }*/
         /*
         // 3.21.2025
         // Default to height of the header element
