@@ -432,7 +432,7 @@
     function applyStyling(elem, screensize) {
 
         // elem should always be mainContainer
-
+        // get CSS value
         const primary = getCSSVar('--text-primary');
 
         // For Mobile
@@ -445,6 +445,7 @@
             // Always show the Table of Contents title on Mobile
             elem.insertBefore(contentParagraph, elem.firstChild);
 
+            // Style the table of content title
             Object.assign(contentParagraph.style, {
                 paddingLeft: '0px',
                 paddingBottom: '3px',
@@ -452,12 +453,44 @@
                 borderBottom: '1px solid #ccc'
             });
 
-            // Style
+            // Style .sticky
+            qsa('.waypoint826-main.sticky').forEach(sticky =>{
+
+                Object.assign(sticky.style, {
+                    height: 'auto!important',
+                    overflowY: 'none',
+                });
+            });
+
+            // Style mainContainer (or element)
             Object.assign(elem.style,  {
                 display: 'block',
                 width: 'auto',
-                position: 'static'
+                position: 'static',
+                height: 'auto!important',
+                paddingBottom: '40px',
             });
+
+            // in order to center the mobile waypoint
+            // we need to check if it's placed next to
+            // and get the width of that element
+
+            if (myScriptData?.waypointFieldAlignToElement) {
+                
+                // find aligntoelement DIV
+                const blah = qs(formatText(myScriptData?.waypointFieldAlignToElement));
+                
+            }   
+
+            // Border Right
+            const olWrapper = qs('.border-box');
+
+            Object.assign(olWrapper.style, {
+                borderRight: 'none',
+                paddingTop: '0px',
+                paddingBottom: '20px',
+            }); 
+            
 
             // Style LI within elem
             elem.querySelectorAll("li").forEach(li => {
@@ -479,8 +512,13 @@
                 });
             });
 
-            // style a within elem
+            // style A within elem
             elem.querySelectorAll("a").forEach(a => {
+
+                const text = a.textContent;
+                  if (text.length > 0) {
+                    a.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+                  }
 
                 Object.assign(a.style, {
                     display: 'inline-flex',
@@ -492,6 +530,11 @@
                 });
             });
 
+            elem.querySelectorAll('a').forEach(anchor => {
+              
+            });
+
+
             // Style LI within elem
             const listWrapper = elem.querySelector(".list-wrapper");
 
@@ -501,7 +544,13 @@
                     paddingTop: '20px',
                     borderBottom: '1px solid #ccc',
                 });
-            }         
+            }   
+
+            // Active class is transparent in small view
+            qsa('.waypoint826-main li.active').forEach(active => {
+                active.style.backgrounColor = 'transparent';
+            });
+      
 
         } else if (elem && screensize == "large") {
 
@@ -510,7 +559,16 @@
             // Notes
             Object.assign(elem.style,  {
                 display: 'block',
-                width: '190px'
+                width: '190px', 
+            });
+
+            // 
+            qsa('.waypoint826-main.sticky').forEach(sticky =>{
+
+                Object.assign(sticky.style, {
+                    height: '100vh',
+                    overflowY: 'auto',
+                });
             });
 
             // Style LI within elem
@@ -554,6 +612,15 @@
                     paddingBottom: '20px',
                 }); 
             }
+
+            //
+            const activeColor = '#' + myScriptData.bgColorValue;
+            // Get the active class, put it into an array
+            qsa('.waypoint826-main li.active').forEach(active => {
+                active.style.backgroundColor = activeColor;
+            });
+            
+            
         }
     }
 
@@ -1252,7 +1319,7 @@
          });
 
         // Get the active class, put it into an array
-        var activeSelection = document.querySelectorAll('.waypoint826-main li.active');
+        /* var activeSelection = document.querySelectorAll('.waypoint826-main li.active');
 
         if (activeSelection.length > 0) {
             // Apply the passed var
@@ -1260,7 +1327,7 @@
             // Need to clean this outside setGlobalSettings and then pass in
             var activeColor = '#' + myScriptData.bgColorValue;
             activeSelection[0].style.backgroundColor = activeColor;
-        }
+        }*/
 
     }
 

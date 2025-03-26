@@ -52,8 +52,8 @@ html {
 
 .waypoint826-main.sticky {
 	position: fixed; 
-	height: 100vh; /* so we can scroll within it */
-  	overflow-y: auto;
+	/* height: 100vh; */ /*so we can scroll within it */
+  	/*overflow-y: auto;*/
   	margin-top: 20px;
 }
 
@@ -82,6 +82,7 @@ html {
 	padding-top: 0px;
 	padding-bottom: 10px;
 	list-style: none;
+	min-
 }
 
 
@@ -104,7 +105,7 @@ html {
 	box-sizing: border-box;
 }
 
-
+.waypoint826-main .border-box {}
 
 .waypoint826-main ol.list-wrapper li.active a {
 	
