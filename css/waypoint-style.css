@@ -2,6 +2,7 @@
 	--primary: #2366E5; /*#4280f7;*/
 	--text-primary: #222;
 	--text-secondary: #777777;
+	--text-hover: #cccccc;
 	--Base-Unit: 8px;
 	--multiplier: 1.25;
 }
@@ -38,7 +39,6 @@ html {
 	
 	background-color:none;
 	border: none;
-	position: absolute; 
 
 	/* right: 80%; */
 	height: 100%;
@@ -61,7 +61,7 @@ html {
 
 .waypoint826-main.large.sticky {
 	height: 100vh;
-    overflowY: auto;
+    overflow-y: auto;
 }
 
 .waypoint826-main.small.sticky {
@@ -143,6 +143,10 @@ html {
 	font-size: 18px;
 }
 
+.waypoint826-main ol.list-wrapper li a:hover {
+	color: var(--text-hover);
+}
+
 .waypoint826-main ol.list-wrapper li a::first-letter {
 	text-transform: uppercase;
 }
@@ -150,7 +154,7 @@ html {
 
 
 .waypoint826-main ol.list-wrapper li.active a {
-	color: var(--text-primary)!important;
+	color: var(--text-primary);
 
 }
 

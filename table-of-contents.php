@@ -475,6 +475,36 @@ function waypoint826_settings_init() {
             'waypoint_custom_data' => 'custom',
         )
     );
+
+         // Register a new field
+    add_settings_field(
+        'waypoint_text_color_hover',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Set the :hover text color', 'waypoint' ),     // Label
+        'waypoint_text_color_hover_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_text_color_hover', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
+
+         // Register a new field
+    add_settings_field(
+        'waypoint_text_color_secondary',                       // Field ID - As of WP 4.6 this value is used only internally.
+                                                        // Use $args' label_for to populate the id inside the callback.
+            __( 'Set the secondary text color', 'waypoint' ),     // Label
+        'waypoint_text_color_secondary_cb',                    // callback function to display input field
+        'waypoint',                                     //page slug
+        'waypoint_section_developers',                  // section slug
+        array(
+            'label_for'         => 'waypoint_text_color_secondary', 
+            'class'             => 'waypoint_row',
+            'waypoint_custom_data' => 'custom',
+        )
+    );
 }
 
 /**
@@ -675,6 +705,52 @@ function waypoint_text_color_cb( $args ) {
         //window.bgColorValue = <?php echo json_encode( $bg_color_value ); ?>;
         //console.log('Background Color Value:', bgColorValue); // Now the value is available in JS
     </script>
+    <?php
+}
+
+function waypoint_text_color_hover_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_text_color_hover = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_text_color_hover ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Add a HEX color to be used as the hover color of the text', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+    </p>
+
+    <?php
+}
+
+function waypoint_text_color_secondary_cb( $args ) {
+    // Get the value of the setting we've registered with register_setting()
+    $options = get_option( 'waypoint_options' );
+    $waypoint_text_color_secondary = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : ''; // Get the current value
+    ?>
+
+    <input 
+        type="text" 
+        id="<?php echo esc_attr( $args['label_for'] ); ?>" 
+        name="waypoint_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
+        value="<?php echo esc_attr( $waypoint_text_color_secondary ); ?>" 
+        data-custom="<?php echo esc_attr( $args['waypoint_custom_data'] ); ?>">
+
+    <p class="description">
+        <?php esc_html_e( 'Add a HEX color to be used as the secondary color of the text', 'waypoint' ); ?>
+    </p>
+    <p class="description">
+        <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+    </p>
+
     <?php
 }
 
@@ -1234,6 +1310,11 @@ function waypoint826_run() {
                 $bg_color_value = isset( $options['waypoint_bg_color'] ) ? $options['waypoint_bg_color'] : '';
                 $bg_value = isset( $options['waypoint_bg'] ) ? $options['waypoint_bg'] : '';
                 $waypoint_text_color = isset( $options['waypoint_text_color'] ) ? $options['waypoint_text_color'] : '';
+
+                $waypoint_text_color_hover_value = isset( $options['waypoint_text_color'] ) ? $options['waypoint_text_color'] : '';
+
+                $waypoint_text_color_secondary_value = isset( $options['waypoint_text_color_secondary'] ) ? $options['waypoint_text_color_secondary'] : '';
+
                 $waypoint_show_or_hide_value = isset( $options['waypoint_show_or_hide'] ) ? $options['waypoint_show_or_hide'] : '';
                 $waypoint_text_size = isset( $options['waypoint_text_size'] ) ? $options['waypoint_text_size'] : '';
                 $waypoint_border_color_val = isset( $options['waypoint_border_color'] ) ? $options['waypoint_border_color'] : '';
@@ -1283,6 +1364,8 @@ function waypoint826_run() {
                         'bgColorValue' => $bg_color_value, // selected state
                         'bgValue' => $bg_value, // bg of page - passing to js
                         'waypointTextColor' => $waypoint_text_color, 
+                        'waypointTextColorHover' => $waypoint_text_color_hover_value,
+                        'waypointTextColorSecondary' => $waypoint_text_color_secondary_value,
                         'waypointH2' => $checkbox_value_H2,
                         'waypointH3' => $checkbox_value_H3,
                         'waypointH4' => $checkbox_value_H4,

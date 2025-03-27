@@ -1,5 +1,23 @@
  document.addEventListener('DOMContentLoaded', function() {
 
+      const textColor = "#" + myScriptData.waypointTextColor;
+        const textSecondary = "#" + myScriptData.waypointTextColorSecondary;
+        const textHover = "#" + myScriptData.waypointTextColorHover;
+
+        if (myScriptData.waypointTextColor) {
+            document.documentElement.style.setProperty('--text-primary', textColor);
+            console.log(myScriptData.waypointTextColor);
+        }
+        
+        if (myScriptData.waypointTextColorSecondary) {
+            document.documentElement.style.setProperty('--text-secondary', textSecondary);
+            console.log("secondary", myScriptData.waypointTextColorSecondary);
+        }
+
+        if (myScriptData.waypointTextColorHover) {
+            document.documentElement.style.setProperty('--text-hover', textHover);
+            console.log("hover", myScriptData.waypointTextColorHover);
+        }
 
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
 
@@ -429,7 +447,16 @@
           }
     };
 
+    function styleText() {
+
+      
+
+    }
+
     function applyStyling(elem, screensize) {
+
+        // do this first
+        styleText();
 
         // Apply stable - non-dynamic - styles to mainContainer > li > a etc.
 
@@ -526,8 +553,8 @@
                 Object.assign(a.style, {
                     display: 'inline-flex',
                     height: '40px',
-                    alignItems: 'center',
                     color: primary,
+                    alignItems: 'center',
                     fontWeight: '500',
                     textDecoration: 'underline',
                 });
@@ -731,7 +758,7 @@
 
     // SET TEXT COLOR
 
-    if (typeof myScriptData.waypointTextColor !== 'undefined' && myScriptData.waypointTextColor != null) {
+   /* if (typeof myScriptData.waypointTextColor !== 'undefined' && myScriptData.waypointTextColor != null) {
 
         // Calls element cleaning function
         const waypointTxtClr = waypointHandleHashDot(myScriptData.waypointTextColor);
@@ -745,7 +772,7 @@
 
         contentParagraph.style.color = setColorText;
         scrllTopArea.style.color = setColorText;
-    }
+    }*/
 
     // SET TEXT SIZE
 
