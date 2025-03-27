@@ -431,12 +431,24 @@
 
     function applyStyling(elem, screensize) {
 
+        // Apply stable - non-dynamic - styles to mainContainer > li > a etc.
+
         // elem should always be mainContainer
         // get CSS value
         const primary = getCSSVar('--text-primary');
 
         // For Mobile
         if (elem && screensize == "small") {
+
+            // I want to add or remove styles li.classList.remove(''); .add
+            // here add small and remove large
+
+            if (elem.classList.contains('large')) {
+                //
+                elem.classList.replace('large', 'small');
+            } else {
+                elem.classList.add('small');
+            }
             // Notes
 
             // Reset borderleft
@@ -451,15 +463,6 @@
                 paddingBottom: '3px',
                 marginBottom: '0px',
                 borderBottom: '1px solid #ccc'
-            });
-
-            // Style .sticky
-            qsa('.waypoint826-main.sticky').forEach(sticky =>{
-
-                Object.assign(sticky.style, {
-                    height: 'auto!important',
-                    overflowY: 'none',
-                });
             });
 
             // Style mainContainer (or element)
@@ -545,17 +548,19 @@
                     borderBottom: '1px solid #ccc',
                 });
             }   
-
-            // Active class is transparent in small view
-            qsa('.waypoint826-main li.active').forEach(active => {
-                active.style.backgroundColor = 'transparent';
-                console.log("transparent called");
-            });
       
 
         } else if (elem && screensize == "large") {
 
             // Table of Contents title takes users input
+
+            // Add correct classes
+            if (elem.classList.contains('small')) {
+                //
+                elem.classList.replace('small', 'large');
+            } else {
+                elem.classList.add('large');
+            }
   
             // Notes
             Object.assign(elem.style,  {
@@ -564,13 +569,12 @@
             });
 
             // 
-            qsa('.waypoint826-main.sticky').forEach(sticky =>{
+            /*qsa('.waypoint826-main.large.sticky').forEach(sticky =>{
 
                 Object.assign(sticky.style, {
-                    height: '100vh',
-                    overflowY: 'auto',
+                    
                 });
-            });
+            });*/
 
             // Style LI within elem
             elem.querySelectorAll("li").forEach(li => {
@@ -614,15 +618,21 @@
                 }); 
             }
 
+            // this needs to happen at handleIntersect() line 1115ish
+
             //
             const activeColor = '#' + myScriptData.bgColorValue;
-            console.log("before qsa activeColor in large", activeColor);
+            //console.log("before qsa activeColor in large", activeColor);
             // Get the active class, put it into an array
-            qsa('.waypoint826-main li.active').forEach(active => {
-                active.style.backgroundColor = activeColor;
-                console.log("activeColor in large inside qsa", activeColor);
+            const activeLi = qs('.waypoint826-main.large li.active');
+            const nonActiveLi = qs('.waypoint826-main.large li');
 
-            });
+            if (activeLi) {
+                activeLi.style.backgroundColor = activeColor;
+            } else {
+                nonActiveLi.style.backgroundColor = 'transparent';
+            }
+
         }
     }
 
@@ -1121,9 +1131,8 @@
                         li.classList.remove('active');
                         
                         li.style.borderLeft = ''; // clear inline style
+                        li.style.backgroundColor = '';
                     });
-
-                   
 
                     const activeLink = qs(`.list-wrapper li a[href="#${entry.target.id}"]`);
 
