@@ -548,7 +548,8 @@
 
             // Active class is transparent in small view
             qsa('.waypoint826-main li.active').forEach(active => {
-                active.style.backgrounColor = 'transparent';
+                active.style.backgroundColor = 'transparent';
+                console.log("transparent called");
             });
       
 
@@ -615,12 +616,13 @@
 
             //
             const activeColor = '#' + myScriptData.bgColorValue;
+            console.log("before qsa activeColor in large", activeColor);
             // Get the active class, put it into an array
             qsa('.waypoint826-main li.active').forEach(active => {
                 active.style.backgroundColor = activeColor;
+                console.log("activeColor in large inside qsa", activeColor);
+
             });
-            
-            
         }
     }
 
@@ -1313,10 +1315,10 @@
         // This really just needs to be called to reset the li a background
 
         // Remove backgrounds before setting active
-        var allListItemsLi = document.querySelectorAll('.waypoint826-main li');
+        /*var allListItemsLi = document.querySelectorAll('.waypoint826-main li');
          allListItemsLi.forEach(function(item) {
             item.style.backgroundColor = 'transparent';
-         });
+         });*/
 
         // Get the active class, put it into an array
         /* var activeSelection = document.querySelectorAll('.waypoint826-main li.active');

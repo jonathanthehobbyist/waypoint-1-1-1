@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.9.6
+ * Version: 1.9.8
  */
 
 // Activation functions
