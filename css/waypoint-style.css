@@ -74,6 +74,9 @@ html {
 	background-color: transparent!important;
 }
 
+.waypoint826-main.large li.active {
+	transition: background-color 1s ease, transform 0.3s ease;
+}
 
 
 
@@ -114,7 +117,7 @@ html {
 	padding-left: 16px; /* calc(var(--Base-Unit) * 1.25);
 
 	border-radius: 0px; /*calc(var(--Base-Unit) * .5);*/
-	transition: background-color .5s ease-out;
+	
 	font-weight: 400;
 	position: relative;
 
@@ -155,6 +158,7 @@ html {
 
 .waypoint826-main ol.list-wrapper li.active a {
 	color: var(--text-primary);
+
 
 }
 
