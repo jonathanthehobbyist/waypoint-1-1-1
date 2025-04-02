@@ -79,7 +79,7 @@
 
 
       return input
-        .trim()
+        .trim()                     // removes whitespaces at beginning and end
         .split(/\s+/)               // creates a new, same-length array split by one or more spaces
         .map(part => `.${part}`)    // creates a new array of the same length, prepends a dot to each
         .join('');                  // joins the array into a string (can be joined by an optional separator in this case, none)
@@ -384,9 +384,23 @@
 
         // Returns DOM Elem
         if (myScriptData?.waypointFieldAlignToElement) {
-            
+            console.log("fired");
             // changing the name of placeNextTo, its misleading - its really placeNextTo
             const placeNextTo = qs(formatText(myScriptData.waypointFieldAlignToElement));
+
+            if (!placeNextTo) {
+              return {
+                value1: 0,
+                value2: 0,
+                value3: 0,
+                value4: 0
+              };
+            }
+
+            console.log("placeNextTo: ", placeNextTo);
+
+
+
             const elemContentWidth = window.getComputedStyle(placeNextTo).width;
             const cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
 
@@ -960,7 +974,7 @@
 
 
         // Call earlier function that calculates 1) spaceforwaypoint and 2) contentleftedge
-        const {value1, value2, value3} = calcWaypointSpaceNeeded();
+        const { value1 = 0, value2 = 0, value3 = 0 } = calcWaypointSpaceNeeded() || {};
         spaceForWaypoint = value1;
         contentLeftEdge = value2;
         contentRightEdge = value3;
