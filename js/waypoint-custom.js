@@ -6,17 +6,17 @@
 
         if (myScriptData.waypointTextColor) {
             document.documentElement.style.setProperty('--text-primary', textColor);
-            console.log(myScriptData.waypointTextColor);
+            //console.log(myScriptData.waypointTextColor);
         }
         
         if (myScriptData.waypointTextColorSecondary) {
             document.documentElement.style.setProperty('--text-secondary', textSecondary);
-            console.log("secondary", myScriptData.waypointTextColorSecondary);
+            //console.log("secondary", myScriptData.waypointTextColorSecondary);
         }
 
         if (myScriptData.waypointTextColorHover) {
             document.documentElement.style.setProperty('--text-hover', textHover);
-            console.log("hover", myScriptData.waypointTextColorHover);
+            //console.log("hover", myScriptData.waypointTextColorHover);
         }
 
     /*  ------  USER CONFIGURABLE, FROM INDIVIDUAL POSTS  ----------  */
@@ -384,7 +384,7 @@
 
         // Returns DOM Elem
         if (myScriptData?.waypointFieldAlignToElement) {
-            console.log("fired");
+            // console.log("fired");
             // changing the name of placeNextTo, its misleading - its really placeNextTo
             const placeNextTo = qs(formatText(myScriptData.waypointFieldAlignToElement));
 
@@ -397,9 +397,7 @@
               };
             }
 
-            console.log("placeNextTo: ", placeNextTo);
-
-
+            // console.log("placeNextTo: ", placeNextTo);
 
             const elemContentWidth = window.getComputedStyle(placeNextTo).width;
             const cleanElemContentWidth = elemContentWidth.replace(/px/g, '');
@@ -591,23 +589,48 @@
             }   
       
 
-        } else if (elem && screensize == "large") {
+        } else if (elem && screensize == "large" || elem && screensize == "medium") {
+
+            if (elem && screensize == "medium") { // medium
+
+                var wordUse = "medium";
+                var waypointWidth = '160px';
+
+            } else if (elem && screensize == "large" ) { // large
+
+                var wordUse = "large";
+                var waypointWidth = '190px';
+
+            }
 
             // Table of Contents title takes users input
 
             // Add correct classes
             if (elem.classList.contains('small')) {
                 //
-                elem.classList.replace('small', 'large');
+                elem.classList.replace('small', wordUse);
             } else {
-                elem.classList.add('large');
+                elem.classList.add(wordUse);
             }
   
             // Notes
             Object.assign(elem.style,  {
                 display: 'block',
-                width: '190px', 
+                width: waypointWidth, 
             });
+
+            // this needs to happen at handleIntersect() line 1115ish
+            const activeColor = '#' + myScriptData.bgColorValue;
+            //console.log("before qsa activeColor in large", activeColor);
+            // Get the active class, put it into an array
+            const activeLi = qs(`.waypoint826-main.${wordUse} li.active`);
+            const nonActiveLi = qs(`.waypoint826-main.${wordUse} li`);
+
+            if (activeLi) {
+                activeLi.style.backgroundColor = activeColor;
+            } else {
+                nonActiveLi.style.backgroundColor = 'transparent';
+            }
 
             // 
             /*qsa('.waypoint826-main.large.sticky').forEach(sticky =>{
@@ -659,20 +682,7 @@
                 }); 
             }
 
-            // this needs to happen at handleIntersect() line 1115ish
-
-            //
-            const activeColor = '#' + myScriptData.bgColorValue;
-            //console.log("before qsa activeColor in large", activeColor);
-            // Get the active class, put it into an array
-            const activeLi = qs('.waypoint826-main.large li.active');
-            const nonActiveLi = qs('.waypoint826-main.large li');
-
-            if (activeLi) {
-                activeLi.style.backgroundColor = activeColor;
-            } else {
-                nonActiveLi.style.backgroundColor = 'transparent';
-            }
+            
 
         }
     }
@@ -692,10 +702,12 @@
         let waypointWidth;
         let multiplier;
 
-        
+        //console.log("spaceForWaypoint", spaceForWaypoint);
+        // console.log("contentLeftEdge", contentLeftEdge);
 
-        // Check how much screen real estate is left for waypoint to inhabit
-        if ( spaceForWaypoint < 640) {
+        // How much screen real estate is left for waypoint
+
+        if ( spaceForWaypoint < 500) { // Mobile view (used to be 640)
 
             // Append
             const appendTo = qs(formatText(myScriptData.waypointFieldAddTo));
@@ -704,17 +716,17 @@
             applyStyling(mainContainer, "small");
 
 
-        } else if ( spaceForWaypoint >= 640 && spaceForWaypoint < 700) {
-
-            // For leftAdjustCalc
-            multiplier = 3;
+        } else if ( spaceForWaypoint >= 500 && spaceForWaypoint < 700) { //
 
             // Append mainContainer to HTML body
             const appendTo = qs('body');
             appendTo.appendChild(mainContainer);
 
+            // For leftAdjustCalc
+            multiplier = 4;
+
             // Apply styles
-            applyStyling(mainContainer, "large");
+            applyStyling(mainContainer, "medium");
 
             if (elem) {  
             //Specific for setting the active state borderLeft
@@ -724,13 +736,16 @@
 
         } else if ( spaceForWaypoint >= 700 ) {
 
-            // For leftAdjustCalc
-            multiplier = 5;
             // Append mainContainer to HTML body
             const appendTo = qs('body');
             appendTo.appendChild(mainContainer);
+
+            // For leftAdjustCalc
+            multiplier = 5;
+
             // Apply styles
             applyStyling(mainContainer, "large");
+
             //Specific for setting the active state borderLeft
             if (elem) { 
                 elem.style.borderLeft = `3px solid ${waypointBorderColorClean}`;

@@ -3,7 +3,7 @@
  * Plugin Name: Waypoint 826 - Table of Contents
  * Description: Adds a table of contents to select pages and posts based on h2, h3 and h4 headings
  * Author: Jon Simmons
- * Version: 1.9.9
+ * Version: 1.9.9.2
  */
 
 // Activation functions
@@ -662,6 +662,7 @@ function waypoint_bg_color_cb( $args ) {
     </p>
     <p class="description">
         <?php esc_html_e( 'No hashtag necessary', 'waypoint' ); ?>
+        <?php esc_html_e( 'Needs to be set or else the left selected border on active li doesnt work', 'waypoint' ); ?>
     </p>
 
 

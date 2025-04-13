@@ -41,7 +41,7 @@ html {
 	border: none;
 
 	/* right: 80%; */
-	height: 100%;
+	/* height: 100%; */ /* This is causing a display error  */
 	opacity: .2;
 	padding: 0px 0px 60px 0px;
 	transition: left 0.5s ease;
